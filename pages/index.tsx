@@ -1,8 +1,15 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useState } from 'react'
 import styles from '../styles/Home.module.css'
 
+import Information from '../components/information'
+
+import { Person } from '../utils/person'
+
 const Home: NextPage = () => {
+  const [children, setChilden] = useState<Person[]>([])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -15,6 +22,12 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <div>
+          <Information title={'Ha figli?'} people={children} setPeople={setChilden} />
+        </div>
+
+        <div>{`${JSON.stringify(children)}`}</div>
       </main>
     </div>
   )
