@@ -1,4 +1,4 @@
-import { Box, Center, Code, Container, Heading } from '@chakra-ui/react'
+import { Center, Code, Container, Heading } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useState } from 'react'
@@ -8,7 +8,10 @@ import Information from '../components/information'
 import { Person } from '../utils/person'
 
 const Home: NextPage = () => {
-  const [children, setChilden] = useState<Person[]>([])
+  const [children, setChildren] = useState<Person[]>([])
+  const [spouse, setSpouse] = useState<Person>()
+  const [parents, setParents] = useState<Person[]>([])
+  const [siblings, setSiblings] = useState<Person[]>([])
 
   return (
     <Container maxWidth="container.lg" padding="8">
@@ -22,11 +25,16 @@ const Home: NextPage = () => {
         <Center>
           <Heading as="h1">Calcola eredità</Heading>
         </Center>
-        <Box>
-          <Information title={'Ha figli?'} people={children} setPeople={setChilden} />
-        </Box>
+        <Information title={'Quanti figli ha?'} people={children} setPeople={setChildren} />
+        {/* <Information title={'Ha un coniuge?'} person={spouse} setPerson={setSpouse} /> */}
+        {children.length === 0 && (
+          <>
+            <Information title={'Quanti genitori ha?'} people={parents} setPeople={setParents} />
+            <Information title={'Quanti fratelli ha?'} people={siblings} setPeople={setSiblings} />
+          </>
+        )}
 
-        <Code>{`${JSON.stringify({ children })}`}</Code>
+        <Code>{`${JSON.stringify({ deceased: { children, spouse, parents, siblings } })}`}</Code>
       </main>
     </Container>
   )

@@ -1,4 +1,13 @@
-import { Box, Heading, Input, SimpleGrid } from '@chakra-ui/react'
+import {
+  Box,
+  Heading,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  SimpleGrid,
+} from '@chakra-ui/react'
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from 'react'
 
 import Card from './card'
@@ -11,10 +20,8 @@ interface InformationProps {
 }
 
 const Information = ({ title, people, setPeople }: InformationProps) => {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const numberPeople = parseInt(number)
-    if (isNaN(numberPeople) || numberPeople < 0 || numberPeople === people.length) {
+  const changeNumber = (_: string, numberPeople: number) => {
+    if (numberPeople === people.length) {
       return
     }
 
@@ -32,19 +39,27 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
     setPeople(newPeople)
   }
 
-  const [number, setNumber] = useState('0')
-
   return (
     <Box>
-      <Heading as="h2">{title}</Heading>
+      <Heading as="h2" paddingBlock="4">
+        {title}
+      </Heading>
       <Box>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            value={number}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setNumber(e.target.value)}
-          />
-        </form>
+        <NumberInput
+          size="md"
+          maxW={20}
+          defaultValue={people.length}
+          min={0}
+          max={10}
+          allowMouseWheel
+          onChange={changeNumber}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
         <SimpleGrid minChildWidth="250px" spacing="2" marginTop="4">
           {people.map((p, i) => (
             <Card key={i} person={p} index={i} handleName={changeName}></Card>
