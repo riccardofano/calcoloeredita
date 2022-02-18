@@ -6,4 +6,5 @@ export interface Person {
   unilateral?: Person[]
   parents?: Person[]
   predead?: boolean
+  inheritance?: number
 }

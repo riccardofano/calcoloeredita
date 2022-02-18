@@ -1,9 +1,10 @@
-import { Center, Code, Container, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react'
+import { Box, Button, Center, Code, Container, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useState } from 'react'
 
 import Information from '../components/information'
+import { calculateInheritance } from '../utils/inheritance'
 
 import { Person } from '../utils/person'
 
@@ -13,6 +14,18 @@ const Home: NextPage = () => {
   const [spouse, setSpouse] = useState<Person>()
   const [parents, setParents] = useState<Person[]>([])
   const [siblings, setSiblings] = useState<Person[]>([])
+
+  const showInhertance = () => {
+    if (name) {
+      const deceased = calculateInheritance({ name, children, spouse, parents, siblings })
+      if (deceased) {
+        setChildren(deceased.children ?? children)
+        setSpouse(deceased.spouse ?? spouse)
+        setParents(deceased.parents ?? parents)
+        setSiblings((deceased?.siblings ?? []).concat(deceased?.unilateral ?? []) ?? siblings)
+      }
+    }
+  }
 
   return (
     <Container maxWidth="container.lg" padding="8">
@@ -39,7 +52,18 @@ const Home: NextPage = () => {
           </>
         )}
 
-        <Code>{`${JSON.stringify({ deceased: { name, children, spouse, parents, siblings } })}`}</Code>
+        <Box>
+          <Button
+            type="submit"
+            colorScheme="green"
+            isDisabled={!(name && (children.length || spouse || parents.length || siblings.length))}
+            onClick={showInhertance}
+          >
+            Calcola
+          </Button>
+        </Box>
+
+        <Code>{`${JSON.stringify({ deceased: name, children, spouse, parents, siblings })}`}</Code>
       </main>
     </Container>
   )
