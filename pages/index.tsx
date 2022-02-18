@@ -1,4 +1,4 @@
-import { Center, Code, Container, Heading } from '@chakra-ui/react'
+import { Center, Code, Container, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useState } from 'react'
@@ -8,6 +8,7 @@ import Information from '../components/information'
 import { Person } from '../utils/person'
 
 const Home: NextPage = () => {
+  const [name, setName] = useState<string | undefined>()
   const [children, setChildren] = useState<Person[]>([])
   const [spouse, setSpouse] = useState<Person>()
   const [parents, setParents] = useState<Person[]>([])
@@ -25,6 +26,10 @@ const Home: NextPage = () => {
         <Center>
           <Heading as="h1">Calcola eredità</Heading>
         </Center>
+        <FormControl isInvalid={name === ''} isRequired>
+          <FormLabel htmlFor="name">Nome del defunto</FormLabel>
+          <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)}></Input>
+        </FormControl>
         <Information title={'Quanti figli ha?'} people={children} setPeople={setChildren} />
         {/* <Information title={'Ha un coniuge?'} person={spouse} setPerson={setSpouse} /> */}
         {children.length === 0 && (
@@ -34,7 +39,7 @@ const Home: NextPage = () => {
           </>
         )}
 
-        <Code>{`${JSON.stringify({ deceased: { children, spouse, parents, siblings } })}`}</Code>
+        <Code>{`${JSON.stringify({ deceased: { name, children, spouse, parents, siblings } })}`}</Code>
       </main>
     </Container>
   )
