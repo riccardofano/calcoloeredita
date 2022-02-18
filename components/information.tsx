@@ -1,3 +1,4 @@
+import { Box, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react'
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from 'react'
 import { Person } from '../utils/person'
 
@@ -26,20 +27,24 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
 
   return (
     <div>
-      <h2>{title}</h2>
-      <div>
+      <Heading as="h2">{title}</Heading>
+      <Box>
         <form onSubmit={handleSubmit}>
-          <input type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+          <Input
+            type="text"
+            value={number}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setNumber(e.target.value)}
+          />
         </form>
-        <div>
+        <Wrap>
           {people.map((p, i) => (
-            <span key={i}>
+            <WrapItem key={i}>
               <label htmlFor=""></label>
-              <input type="text" value={p.name} onChange={(e) => changeName(e, i)} />
-            </span>
+              <Input type="text" value={p.name} onChange={(e: ChangeEvent<HTMLInputElement>) => changeName(e, i)} />
+            </WrapItem>
           ))}
-        </div>
-      </div>
+        </Wrap>
+      </Box>
     </div>
   )
 }
