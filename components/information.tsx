@@ -8,7 +8,7 @@ import {
   NumberInputStepper,
   SimpleGrid,
 } from '@chakra-ui/react'
-import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction } from 'react'
 
 import Card from './card'
 import { Person } from '../utils/person'
@@ -25,18 +25,25 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
       return
     }
 
-    let newPeople: Person[] =
-      numberPeople > people.length
-        ? people.concat(Array(numberPeople - people.length).fill({ name: '' }))
-        : people.slice(0, numberPeople - people.length)
+    setPeople((oldPeople) =>
+      numberPeople > oldPeople.length
+        ? oldPeople.concat(Array(numberPeople - oldPeople.length).fill({ name: '' }))
+        : oldPeople.slice(0, numberPeople - oldPeople.length)
+    )
+  }
 
+  const updateValue = (index: number, key: string, value: unknown) => {
+    const newPeople = [...people]
+    newPeople[index] = { ...newPeople[index], [key]: value }
     setPeople(newPeople)
   }
 
-  const changeName = (e: ChangeEvent<HTMLInputElement>, i: number) => {
-    const newPeople = [...people]
-    newPeople[i] = { ...newPeople[i], name: e.target.value }
-    setPeople(newPeople)
+  const handleName = (e: ChangeEvent<HTMLInputElement>, i: number) => {
+    updateValue(i, 'name', e.target.value)
+  }
+
+  const handleDeath = (e: ChangeEvent<HTMLInputElement>, i: number) => {
+    updateValue(i, 'predead', e.target.checked)
   }
 
   return (
@@ -60,9 +67,10 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
+
         <SimpleGrid minChildWidth="250px" spacing="2" marginTop="4">
-          {people.map((p, i) => (
-            <Card key={i} person={p} index={i} handleName={changeName}></Card>
+          {people.map((person, index) => (
+            <Card key={index} person={person} index={index} onNameChange={handleName} onDeadChange={handleDeath}></Card>
           ))}
         </SimpleGrid>
       </Box>
