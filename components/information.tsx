@@ -1,5 +1,7 @@
-import { Box, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react'
+import { Box, Heading, Input, SimpleGrid } from '@chakra-ui/react'
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from 'react'
+
+import Card from './card'
 import { Person } from '../utils/person'
 
 interface InformationProps {
@@ -11,10 +13,17 @@ interface InformationProps {
 const Information = ({ title, people, setPeople }: InformationProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const numberPeople = parseInt(number)
+    if (isNaN(numberPeople) || numberPeople < 0 || numberPeople === people.length) {
+      return
+    }
 
-    const numberPeople = parseInt(number) || 0
-    const arr: Person[] = Array<Person>(numberPeople).fill({ name: '' })
-    setPeople(arr)
+    let newPeople: Person[] =
+      numberPeople > people.length
+        ? people.concat(Array(numberPeople - people.length).fill({ name: '' }))
+        : people.slice(0, numberPeople - people.length)
+
+    setPeople(newPeople)
   }
 
   const changeName = (e: ChangeEvent<HTMLInputElement>, i: number) => {
@@ -26,7 +35,7 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
   const [number, setNumber] = useState('0')
 
   return (
-    <div>
+    <Box>
       <Heading as="h2">{title}</Heading>
       <Box>
         <form onSubmit={handleSubmit}>
@@ -36,16 +45,13 @@ const Information = ({ title, people, setPeople }: InformationProps) => {
             onChange={(e: ChangeEvent<HTMLInputElement>) => setNumber(e.target.value)}
           />
         </form>
-        <Wrap>
+        <SimpleGrid minChildWidth="250px" spacing="2" marginTop="4">
           {people.map((p, i) => (
-            <WrapItem key={i}>
-              <label htmlFor=""></label>
-              <Input type="text" value={p.name} onChange={(e: ChangeEvent<HTMLInputElement>) => changeName(e, i)} />
-            </WrapItem>
+            <Card key={i} person={p} index={i} handleName={changeName}></Card>
           ))}
-        </Wrap>
+        </SimpleGrid>
       </Box>
-    </div>
+    </Box>
   )
 }
 

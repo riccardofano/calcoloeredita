@@ -1,4 +1,4 @@
-import { Box, Code, Container, Heading } from '@chakra-ui/react'
+import { Box, Center, Code, Container, Heading } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useState } from 'react'
@@ -11,7 +11,7 @@ const Home: NextPage = () => {
   const [children, setChilden] = useState<Person[]>([])
 
   return (
-    <Container>
+    <Container maxWidth="container.lg" padding="8">
       <Head>
         <title>Calcolo eredità</title>
         <meta name="description" content="Calcola l'eredità per successione legittima." />
@@ -19,7 +19,9 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <Heading as="h1">Calcola eredità</Heading>
+        <Center>
+          <Heading as="h1">Calcola eredità</Heading>
+        </Center>
         <Box>
           <Information title={'Ha figli?'} people={children} setPeople={setChilden} />
         </Box>
