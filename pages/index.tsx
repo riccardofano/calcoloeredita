@@ -24,24 +24,24 @@ import { Categories, CategoryContext, categoryNames, defaultState } from '../con
 import { PeopleContext } from '../context/People'
 
 const Home: NextPage = () => {
-  const [name, setName] = useState<string | undefined>()
-  const [children, setChildren] = useState<Person[]>([])
-  const [spouse, setSpouse] = useState<Person[]>([])
-  const [parents, setParents] = useState<Person[]>([])
-  const [siblings, setSiblings] = useState<Person[]>([])
+  const [deceased, setDeceased] = useState<Person>({ name: '' })
+  // const [children, setChildren] = useState<Person[]>([])
+  // const [spouse, setSpouse] = useState<Person[]>([])
+  // const [parents, setParents] = useState<Person[]>([])
+  // const [siblings, setSiblings] = useState<Person[]>([])
 
   const [categories, setCategories] = useState<Categories>(defaultState)
 
   const showInhertance = () => {
-    if (name) {
-      const deceased = calculateInheritance({ name, children, spouse, parents, siblings })
-      if (deceased) {
-        setChildren(deceased.children ?? children)
-        setSpouse(deceased.spouse ?? spouse)
-        setParents(deceased.parents ?? parents)
-        setSiblings((deceased?.siblings ?? []).concat(deceased?.unilateral ?? []) ?? siblings)
-      }
-    }
+    // if (name) {
+    //   const deceased = calculateInheritance({ name, children, spouse, parents, siblings })
+    //   if (deceased) {
+    //     setChildren(deceased.children ?? children)
+    //     setSpouse(deceased.spouse ?? spouse)
+    //     setParents(deceased.parents ?? parents)
+    //     setSiblings((deceased?.siblings ?? []).concat(deceased?.unilateral ?? []) ?? siblings)
+    //   }
+    // }
   }
 
   return (
@@ -58,9 +58,14 @@ const Home: NextPage = () => {
             Calcola eredità
           </Heading>
         </Center>
-        <FormControl isInvalid={name === ''} isRequired>
+        <FormControl isInvalid={deceased.name === ''} isRequired>
           <FormLabel htmlFor="name">Nome del defunto</FormLabel>
-          <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)}></Input>
+          <Input
+            id="name"
+            type="text"
+            value={deceased.name}
+            onChange={(e) => setDeceased((state) => ({ ...state, name: e.target.value }))}
+          ></Input>
         </FormControl>
 
         <CategoryContext.Provider value={{ categories, setCategories }}>
@@ -70,30 +75,29 @@ const Home: NextPage = () => {
             ))}
           </SimpleGrid>
 
-          <PeopleContext.Provider
-            value={{
-              children: [children, setChildren],
-              spouse: [spouse, setSpouse],
-              parents: [parents, setParents],
-              siblings: [siblings, setSiblings],
-            }}
-          >
-            <List></List>
-          </PeopleContext.Provider>
+          <List person={deceased} updatePerson={setDeceased}></List>
         </CategoryContext.Provider>
 
         <Box>
           <Button
             type="submit"
             colorScheme="green"
-            isDisabled={!(name && (children.length || spouse.length || parents.length || siblings.length))}
+            isDisabled={
+              !(
+                deceased.name &&
+                (deceased.children?.length ||
+                  deceased.spouse?.length ||
+                  deceased.parents?.length ||
+                  deceased.siblings?.length)
+              )
+            }
             onClick={showInhertance}
           >
             Calcola
           </Button>
         </Box>
 
-        <Code>{`${JSON.stringify({ deceased: name, children, spouse, parents, siblings })}`}</Code>
+        <Code>{`${JSON.stringify({ deceased })}`}</Code>
       </SimpleGrid>
     </Container>
   )

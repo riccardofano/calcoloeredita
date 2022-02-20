@@ -1,23 +1,30 @@
 import { UnorderedList } from '@chakra-ui/react'
+import { Dispatch, SetStateAction } from 'react'
 import { CategoryName, useCategories } from '../context/Category'
-import { usePeople } from '../context/People'
+import { Person } from '../utils/person'
 import ListItem from './listItem'
 
-interface ListProps {}
+interface ListProps {
+  person: Person
+  updatePerson: Dispatch<SetStateAction<Person>>
+}
 
-const List = ({}: ListProps) => {
+const List = ({ person, updatePerson }: ListProps) => {
   const categories = useCategories()
   const entries = Object.entries(categories) as [CategoryName, boolean][]
-  const allPeople = usePeople()
+
+  const updatePeople = (category: CategoryName, people: Person[]) => {
+    const updatedCategory = { ...person, [category]: people }
+    updatePerson(updatedCategory)
+  }
 
   return (
     <UnorderedList styleType="none" marginInlineStart="none">
-      {allPeople &&
-        entries
-          .filter(([_, allowed]) => allowed)
-          .map(([category, _]) => {
-            return <ListItem category={category} peopleDispatch={allPeople[category]}></ListItem>
-          })}
+      {entries
+        .filter(([_, allowed]) => allowed)
+        .map(([category, _]) => {
+          return <ListItem category={category} people={person[category]} setPeople={updatePeople}></ListItem>
+        })}
     </UnorderedList>
   )
 }

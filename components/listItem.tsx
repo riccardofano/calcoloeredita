@@ -8,7 +8,8 @@ import Card from './card'
 
 interface ListItemProps {
   category: CategoryName
-  peopleDispatch: [Person[], Dispatch<SetStateAction<Person[]>>]
+  people?: Person[]
+  setPeople: (category: CategoryName, people: Person[]) => void
 }
 
 const title: Record<CategoryName, string> = {
@@ -25,37 +26,30 @@ const maxPeople: Record<CategoryName, number> = {
   siblings: 20,
 }
 
-const ListItem = ({ category, peopleDispatch: [people, setPeople] }: ListItemProps) => {
-  const updateValue = (index: number, key: string, value: unknown) => {
-    const newPeople = [...people]
-    newPeople[index] = { ...newPeople[index], [key]: value }
-    setPeople(newPeople)
-  }
-
-  const handleName = (e: ChangeEvent<HTMLInputElement>, i: number) => {
-    updateValue(i, 'name', e.target.value)
-  }
-
-  const handleDeath = (e: ChangeEvent<HTMLInputElement>, i: number) => {
-    updateValue(i, 'predead', e.target.checked)
-  }
-
-  const handleRemove = (i: number) => {
-    const newPeople = [...people]
-    newPeople.splice(i, 1)
-    setPeople(newPeople)
+const ListItem = ({ category, people, setPeople }: ListItemProps) => {
+  const updatePerson = (index: number, person: Person) => {
+    const updatedPeople = [...(people || [])]
+    updatedPeople[index] = person
+    setPeople(category, updatedPeople)
   }
 
   const addPerson = () => {
-    const newPeople = [...people]
-    newPeople.push({ name: '' })
-    setPeople(newPeople)
+    const updatedPeople = [...(people || [])]
+    updatedPeople.push({ name: '' })
+    setPeople(category, updatedPeople)
+  }
+
+  const removePerson = (index: number) => {
+    if (!people) return
+    const updatedPeople = [...people]
+    updatedPeople.splice(index, 1)
+    setPeople(category, updatedPeople)
   }
 
   return (
     <Li>
       <Flex alignItems="center" gap="4">
-        {people.length < maxPeople[category] && (
+        {(people?.length || 0) < maxPeople[category] && (
           <IconButton aria-label="aggiungi" icon={<AddIcon />} onClick={addPerson} />
         )}
         <Heading as="h3" size="md" paddingBlock="4">
@@ -63,14 +57,14 @@ const ListItem = ({ category, peopleDispatch: [people, setPeople] }: ListItemPro
         </Heading>
       </Flex>
       <SimpleGrid column={1} spacing="2" rowGap="4">
-        {people.map((person, index) => (
+        {people?.map((person, index) => (
           <Card
             key={index}
             person={person}
             index={index}
-            onNameChange={handleName}
-            onDeadChange={handleDeath}
-            onRemove={handleRemove}
+            category={category}
+            removePerson={removePerson}
+            updatePerson={updatePerson}
           ></Card>
         ))}
       </SimpleGrid>
