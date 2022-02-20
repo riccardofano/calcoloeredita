@@ -1,4 +1,5 @@
-import { Box, Checkbox, FormControl, FormLabel, Input } from '@chakra-ui/react'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { Checkbox, Flex, IconButton, Input } from '@chakra-ui/react'
 import { ChangeEvent } from 'react'
 import { Person } from '../utils/person'
 
@@ -7,24 +8,35 @@ interface CardProps {
   index: number
   onNameChange: (e: ChangeEvent<HTMLInputElement>, i: number) => void
   onDeadChange: (e: ChangeEvent<HTMLInputElement>, i: number) => void
+  onRemove: (i: number) => void
 }
 
-const Card = ({ person, index, onNameChange, onDeadChange }: CardProps) => {
+const Card = ({ person, index, onNameChange, onDeadChange, onRemove }: CardProps) => {
   return (
-    <Box maxWidth="md" borderWidth="1px" borderRadius="lg" p="6" color="gray.500">
-      <FormControl>
-        <FormLabel htmlFor="name">Nome</FormLabel>
-        <Input id="name" value={person.name} type="text" onChange={(e) => onNameChange(e, index)} />
-        <Checkbox marginTop="4" isChecked={person.predead} onChange={(e) => onDeadChange(e, index)}>
-          Premorto?
-        </Checkbox>
-        {person.predead && (
-          <Box>
-            <a href="#">Fammi sapere di più</a>
-          </Box>
-        )}
-      </FormControl>
-    </Box>
+    <Flex gap="8" alignItems="center" justifyContent="space-between">
+      <Input
+        id="name"
+        value={person.name}
+        type="text"
+        placeholder="Nome e cognome"
+        onChange={(e) => onNameChange(e, index)}
+      />
+
+      <Checkbox size="lg" isChecked={person.predead} onChange={(e) => onDeadChange(e, index)}>
+        Premorto?
+      </Checkbox>
+      <IconButton
+        colorScheme="red"
+        aria-label="Rimuovi persona"
+        onClick={() => onRemove(index)}
+        icon={<DeleteIcon />}
+      ></IconButton>
+      {/* {person.predead && (
+        <Box>
+          <a href="#">Fammi sapere di più</a>
+        </Box>
+      )} */}
+    </Flex>
   )
 }
 

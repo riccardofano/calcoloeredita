@@ -12,7 +12,7 @@ const removeDeadEnds = (current: Node): boolean => {
   }
 
   current.visited = true
-  const queue = [children, spouse, siblings, unilateral, parents].flatMap((p) => p ?? [])
+  const queue = [children, spouse, siblings, unilateral, parents].flatMap((p) => p)
   while (queue.length > 0) {
     let person = queue.shift()
     if (!person) continue
@@ -23,8 +23,8 @@ const removeDeadEnds = (current: Node): boolean => {
     }
   }
 
-  if (current.spouse?.inheritance === 0) delete current.spouse
   current.children = current.children?.filter(removeNoInheritance) || []
+  current.spouse = current.spouse?.filter(removeNoInheritance) || []
   current.parents = current.parents?.filter(removeNoInheritance) || []
   current.siblings = current.siblings?.filter(removeNoInheritance) || []
   current.unilateral = current.unilateral?.filter(removeNoInheritance) || []
@@ -47,17 +47,17 @@ const findInheritance = (total: number, current?: Person) => {
   if (children?.length) {
     // multiple children and spouse:    2/3/children and 1/3
     // multiple children and no spouse: 1/children   and 0
-    let forChildren = spouse ? ((total / 3) * 2) / children.length : total / children.length
-    let forSpouse = spouse ? total / 3 : 0
+    let forChildren = spouse?.[0] ? ((total / 3) * 2) / children.length : total / children.length
+    let forSpouse = spouse?.[0] ? total / 3 : 0
 
     if (children.length === 1) {
       // single child and spouse:    1/2 and 1/2
       // single child and no spouse: 1   and 0
-      forChildren = spouse ? total / 2 : total
-      forSpouse = spouse ? total / 2 : 0
+      forChildren = spouse?.[0] ? total / 2 : total
+      forSpouse = spouse?.[0] ? total / 2 : 0
     }
     children.forEach((child) => findInheritance(forChildren, child))
-    findInheritance(forSpouse, spouse)
+    findInheritance(forSpouse, spouse?.[0])
     return
   }
 
@@ -74,13 +74,13 @@ const findInheritance = (total: number, current?: Person) => {
     unilateral: 0,
   }
 
-  if (spouse) {
+  if (spouse?.length) {
     // only spouse:                 1
     // spouse and other relatives : 2/3
     let forSpouse = numberRelatives > 0 ? (total / 3) * 2 : total
     // if there's a spouse the other relatives get 1/3
     inheritance.relatives = total / 3
-    findInheritance(forSpouse, spouse)
+    findInheritance(forSpouse, spouse[0])
   }
 
   if (numberParents) {
