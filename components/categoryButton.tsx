@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/react'
+import { Checkbox, Heading, Box, FormLabel } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useCategory, CategoryName } from '../context/Category'
 
@@ -23,20 +23,35 @@ const Button = ({ category }: ButtonProps) => {
   }, [isDisabled])
 
   return (
-    <>
-      <input
+    <Box position="relative">
+      <Checkbox
+        left="4"
+        top="4"
+        borderRadius="20"
+        position="absolute"
+        size="lg"
         type="checkbox"
         id={category}
-        checked={checked}
+        isChecked={checked}
         onChange={(e) => setChecked(e.target.checked)}
-        disabled={isDisabled}
+        isDisabled={isDisabled}
       />
-      <label htmlFor={category}>
-        <Heading as="h2" size="lg">
+      <FormLabel
+        htmlFor={category}
+        padding="10"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="10"
+        border={'2px'}
+        borderColor={checked ? 'blue.500' : 'inherit'}
+        opacity={isDisabled ? 0.5 : 1}
+        textAlign="center"
+      >
+        <Heading as="h2" size="lg" userSelect="none" cursor="pointer">
           {text[category]}
         </Heading>
-      </label>
-    </>
+      </FormLabel>
+    </Box>
   )
 }
 

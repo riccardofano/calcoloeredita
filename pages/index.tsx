@@ -21,10 +21,10 @@ import { Person } from '../utils/person'
 import List from '../components/list'
 import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
-import { PeopleContext } from '../context/People'
 
 const Home: NextPage = () => {
   const [deceased, setDeceased] = useState<Person>({ name: '' })
+
   const [categories, setCategories] = useState<Categories>(defaultState)
 
   const showInhertance = () => {
@@ -57,7 +57,7 @@ const Home: NextPage = () => {
         </FormControl>
 
         <CategoryContext.Provider value={{ categories, setCategories }}>
-          <SimpleGrid spacing="4" columns={2}>
+          <SimpleGrid spacing="4" columns={{ sm: 1, md: 2 }}>
             {categoryNames.map((c) => (
               <CategoryButton key={c} category={c}></CategoryButton>
             ))}
