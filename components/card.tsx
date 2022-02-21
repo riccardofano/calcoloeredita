@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons'
-import { Checkbox, Flex, IconButton, Input } from '@chakra-ui/react'
+import { Box, Checkbox, CircularProgress, Text, Flex, IconButton, Input } from '@chakra-ui/react'
 import { ChangeEvent } from 'react'
 import { CategoryName } from '../context/Category'
 import { Person } from '../utils/person'
@@ -29,21 +29,31 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
     updatePerson(index, updatedPerson)
   }
 
-  return (
-    <Flex gap="8" alignItems="center" justifyContent="space-between">
-      <Input id="name" value={person.name} type="text" placeholder="Nome e cognome" onChange={changeName} />
+  const inheritance = Math.round(person.inheritance ?? 0)
 
-      <Checkbox size="lg" isChecked={person.predead} onChange={changeStatus}>
-        Premorto?
-      </Checkbox>
-      <IconButton
-        colorScheme="red"
-        aria-label="Rimuovi persona"
-        onClick={() => removePerson(index)}
-        icon={<DeleteIcon />}
-      ></IconButton>
+  return (
+    <Box>
+      <Flex gap="8" alignItems="center" justifyContent="space-between">
+        {person.inheritance && (
+          <Flex gap="2" alignItems="center">
+            <Text>{inheritance}%</Text>
+            <CircularProgress size="1.5em" value={inheritance}></CircularProgress>
+          </Flex>
+        )}
+        <Input id="name" value={person.name} type="text" placeholder="Nome e cognome" onChange={changeName} />
+
+        <Checkbox size="lg" isChecked={person.predead} onChange={changeStatus}>
+          Premorto?
+        </Checkbox>
+        <IconButton
+          colorScheme="red"
+          aria-label="Rimuovi persona"
+          onClick={() => removePerson(index)}
+          icon={<DeleteIcon />}
+        ></IconButton>
+      </Flex>
       {person.predead && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
-    </Flex>
+    </Box>
   )
 }
 

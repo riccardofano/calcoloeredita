@@ -23,9 +23,16 @@ const SubList = ({ person, category, updatePerson }: SubListProps) => {
   }
 
   return (
-    <UnorderedList>
+    <UnorderedList
+      listStyleType="none"
+      margin="0"
+      paddingLeft="4"
+      borderLeft="1px"
+      borderStyle="dashed"
+      borderColor="gray.300"
+    >
       {allowedCategories[category].map((c, i) => (
-        <ListItem key={i} category={c} people={person[category]} setPeople={updatePeople} />
+        <ListItem key={i} category={c} people={person[c]} setPeople={updatePeople} />
       ))}
     </UnorderedList>
   )

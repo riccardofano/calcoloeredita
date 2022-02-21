@@ -1,6 +1,5 @@
 import { AddIcon } from '@chakra-ui/icons'
-import { ListItem as Li, Button, Heading, SimpleGrid, Box, Flex, IconButton } from '@chakra-ui/react'
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import { ListItem as Li, Heading, SimpleGrid, Flex, IconButton } from '@chakra-ui/react'
 import { CategoryName } from '../context/Category'
 import { Person } from '../utils/person'
 

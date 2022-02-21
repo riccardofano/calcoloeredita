@@ -25,23 +25,11 @@ import { PeopleContext } from '../context/People'
 
 const Home: NextPage = () => {
   const [deceased, setDeceased] = useState<Person>({ name: '' })
-  // const [children, setChildren] = useState<Person[]>([])
-  // const [spouse, setSpouse] = useState<Person[]>([])
-  // const [parents, setParents] = useState<Person[]>([])
-  // const [siblings, setSiblings] = useState<Person[]>([])
-
   const [categories, setCategories] = useState<Categories>(defaultState)
 
   const showInhertance = () => {
-    // if (name) {
-    //   const deceased = calculateInheritance({ name, children, spouse, parents, siblings })
-    //   if (deceased) {
-    //     setChildren(deceased.children ?? children)
-    //     setSpouse(deceased.spouse ?? spouse)
-    //     setParents(deceased.parents ?? parents)
-    //     setSiblings((deceased?.siblings ?? []).concat(deceased?.unilateral ?? []) ?? siblings)
-    //   }
-    // }
+    const updated = calculateInheritance(deceased)
+    setDeceased(updated)
   }
 
   return (
