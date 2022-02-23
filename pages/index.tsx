@@ -1,18 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useState } from 'react'
-import {
-  Box,
-  Button,
-  Center,
-  Code,
-  Container,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  SimpleGrid,
-} from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { Box, Button, Center, Container, FormControl, FormLabel, Heading, Input, SimpleGrid } from '@chakra-ui/react'
 
 import CategoryButton from '../components/categoryButton'
 
@@ -23,8 +12,18 @@ import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
 
 const Home: NextPage = () => {
-  const [deceased, setDeceased] = useState<Person>({ name: 'Defunto', alive: false })
+  const [deceased, setDeceased] = useState<Person>({ name: 'Defunto', alive: false, id: '1' })
   const [categories, setCategories] = useState<Categories>(defaultState)
+  const [disabled, setDisabled] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    setDisabled(
+      !(
+        deceased.name &&
+        (deceased.children?.length || deceased.spouse?.length || deceased.parents?.length || deceased.siblings?.length)
+      )
+    )
+  }, [deceased])
 
   const showInhertance = () => {
     const updated = calculateInheritance(deceased)
@@ -66,20 +65,7 @@ const Home: NextPage = () => {
         </CategoryContext.Provider>
 
         <Box>
-          <Button
-            type="submit"
-            colorScheme="green"
-            isDisabled={
-              !(
-                deceased.name &&
-                (deceased.children?.length ||
-                  deceased.spouse?.length ||
-                  deceased.parents?.length ||
-                  deceased.siblings?.length)
-              )
-            }
-            onClick={showInhertance}
-          >
+          <Button type="submit" colorScheme="green" disabled={disabled === true} onClick={showInhertance}>
             Calcola
           </Button>
         </Box>
