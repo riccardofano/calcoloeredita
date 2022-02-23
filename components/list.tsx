@@ -1,5 +1,6 @@
 import { UnorderedList } from '@chakra-ui/react'
 import { Dispatch, SetStateAction } from 'react'
+
 import { CategoryName, useCategories } from '../context/Category'
 import { Person } from '../utils/person'
 import ListItem from './listItem'
@@ -22,8 +23,10 @@ const List = ({ person, updatePerson }: ListProps) => {
     <UnorderedList styleType="none" marginInlineStart="none">
       {entries
         .filter(([_, allowed]) => allowed)
-        .map(([category], i) => {
-          return <ListItem key={i} category={category} people={person[category]} setPeople={updatePeople}></ListItem>
+        .map(([category]) => {
+          return (
+            <ListItem key={category} category={category} people={person[category]} setPeople={updatePeople}></ListItem>
+          )
         })}
     </UnorderedList>
   )
