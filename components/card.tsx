@@ -20,7 +20,7 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
   }
 
   const changeStatus = (e: ChangeEvent<HTMLInputElement>) => {
-    const updatedPerson = { ...person, predead: e.target.checked }
+    const updatedPerson = { ...person, alive: !e.target.checked }
     updatePerson(index, updatedPerson)
   }
 
@@ -42,7 +42,7 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
         )}
         <Input id="name" value={person.name} type="text" placeholder="Nome e cognome" onChange={changeName} />
 
-        <Checkbox size="lg" isChecked={person.predead} onChange={changeStatus}>
+        <Checkbox size="lg" isChecked={!person.alive} onChange={changeStatus}>
           Premorto?
         </Checkbox>
         <IconButton
@@ -52,7 +52,7 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
           icon={<DeleteIcon />}
         ></IconButton>
       </Flex>
-      {person.predead && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
+      {!person.alive && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
     </Box>
   )
 }

@@ -34,7 +34,7 @@ const ListItem = ({ category, people, setPeople }: ListItemProps) => {
 
   const addPerson = () => {
     const updatedPeople = [...(people || [])]
-    updatedPeople.push({ name: '' })
+    updatedPeople.push({ name: '', alive: true })
     setPeople(category, updatedPeople)
   }
 

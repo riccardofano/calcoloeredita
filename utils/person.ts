@@ -5,6 +5,6 @@ export interface Person {
   siblings?: Person[]
   unilateral?: Person[]
   parents?: Person[]
-  predead?: boolean
+  alive: boolean
   inheritance?: number
 }

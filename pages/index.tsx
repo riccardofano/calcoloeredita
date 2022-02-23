@@ -23,8 +23,7 @@ import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
 
 const Home: NextPage = () => {
-  const [deceased, setDeceased] = useState<Person>({ name: '' })
-
+  const [deceased, setDeceased] = useState<Person>({ name: 'Defunto', alive: false })
   const [categories, setCategories] = useState<Categories>(defaultState)
 
   const showInhertance = () => {
@@ -85,7 +84,7 @@ const Home: NextPage = () => {
           </Button>
         </Box>
 
-        <Code>{`${JSON.stringify({ deceased })}`}</Code>
+        <pre>{`${JSON.stringify({ deceased }, null, 4)}`}</pre>
       </SimpleGrid>
     </Container>
   )

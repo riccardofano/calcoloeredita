@@ -22,8 +22,8 @@ const List = ({ person, updatePerson }: ListProps) => {
     <UnorderedList styleType="none" marginInlineStart="none">
       {entries
         .filter(([_, allowed]) => allowed)
-        .map(([category, _]) => {
-          return <ListItem category={category} people={person[category]} setPeople={updatePeople}></ListItem>
+        .map(([category], i) => {
+          return <ListItem key={i} category={category} people={person[category]} setPeople={updatePeople}></ListItem>
         })}
     </UnorderedList>
   )

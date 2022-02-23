@@ -4,43 +4,46 @@ interface Node extends Person {
   visited?: boolean
 }
 
-const removeDeadEnds = (current: Node): boolean => {
-  const { predead, children, spouse, siblings, unilateral, parents } = current
+const removeDeadEnds = (c: Node): boolean => {
+  const { alive, children, spouse, siblings, unilateral, parents } = c
+  c.inheritance = undefined
+
   // can claim inheritance
-  if (predead !== true && !current.visited) {
+  if (alive && !c.visited) {
     return true
   }
 
-  current.visited = true
+  c.visited = true
   const queue = [children, spouse, siblings, unilateral, parents].flatMap((p) => p)
   while (queue.length > 0) {
     let person = queue.shift()
     if (!person) continue
 
-    const eleggibile = removeDeadEnds(person)
-    if (!eleggibile) {
+    const elegible = removeDeadEnds(person)
+    if (!elegible) {
       person.inheritance = 0
     }
   }
 
-  current.children = current.children?.filter(removeNoInheritance) || []
-  current.spouse = current.spouse?.filter(removeNoInheritance) || []
-  current.parents = current.parents?.filter(removeNoInheritance) || []
-  current.siblings = current.siblings?.filter(removeNoInheritance) || []
-  current.unilateral = current.unilateral?.filter(removeNoInheritance) || []
+  c.children = c.children?.filter(removeNoInheritance) || []
+  c.spouse = c.spouse?.filter(removeNoInheritance) || []
+  c.parents = c.parents?.filter(removeNoInheritance) || []
+  c.siblings = c.siblings?.filter(removeNoInheritance) || []
+  c.unilateral = c.unilateral?.filter(removeNoInheritance) || []
 
-  return false
+  return [...c.children, ...c.spouse, ...c.parents, ...c.siblings, ...c.unilateral].length > 0
 }
 
-const removeNoInheritance = (person: Person): boolean => {
+const removeNoInheritance = (person: Node): boolean => {
+  if (person.visited) delete person.visited
   return person.inheritance !== 0
 }
 
 const findInheritance = (total: number, current?: Person) => {
   if (total === 0 || !current) return total
 
-  const { predead, children, spouse, parents, siblings, unilateral } = current
-  if (predead !== true) {
+  const { alive, children, spouse, parents, siblings, unilateral } = current
+  if (alive) {
     current.inheritance = total
   }
 
@@ -90,7 +93,7 @@ const findInheritance = (total: number, current?: Person) => {
       inheritance.parents = inheritance.relatives / 2 / numberParents
     }
 
-    const parentsAlive = parents?.filter((p) => !p.predead)
+    const parentsAlive = parents?.filter((p) => p.alive)
     // If there's only one parent alive, all the inheritance goes to them
     if (parentsAlive?.length === 1) {
       findInheritance(inheritance.parents * numberParents, parentsAlive[0])
@@ -128,5 +131,5 @@ export const calculateInheritance = (person: Person): Person => {
   const graph = { ...person }
   removeDeadEnds(graph)
   findInheritance(100, graph)
-  return graph
+  return { ...graph, ...person }
 }
