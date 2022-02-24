@@ -13,10 +13,11 @@ interface ListItemProps {
 }
 
 const title: Record<CategoryName, string> = {
-  children: 'Figli:',
-  spouse: 'Coniuge:',
-  parents: 'Ascendenti:',
-  siblings: 'Fratelli e sorelle:',
+  children: 'Figli',
+  spouse: 'Coniuge',
+  parents: 'Ascendenti',
+  siblings: 'Fratelli e sorelle',
+  unilateral: 'Fratelli e sorelle unilaterali',
 }
 
 const maxPeople: Record<CategoryName, number> = {
@@ -24,6 +25,7 @@ const maxPeople: Record<CategoryName, number> = {
   spouse: 1,
   parents: 2,
   siblings: 20,
+  unilateral: 20,
 }
 
 const ListItem = ({ category, people, setPeople }: ListItemProps) => {
@@ -53,7 +55,7 @@ const ListItem = ({ category, people, setPeople }: ListItemProps) => {
           <IconButton aria-label="aggiungi" icon={<AddIcon />} onClick={addPerson} />
         )}
         <Heading as="h3" size="md" paddingBlock="4">
-          {title[category]}
+          {title[category]}:
         </Heading>
       </Flex>
       <SimpleGrid column={1} spacing="2" rowGap="4">

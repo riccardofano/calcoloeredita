@@ -1,6 +1,6 @@
-import { ChangeEvent, createContext, Dispatch, SetStateAction, useContext } from 'react'
+import { createContext, Dispatch, SetStateAction, useContext } from 'react'
 
-export const categoryNames = ['children', 'spouse', 'parents', 'siblings'] as const
+export const categoryNames = ['children', 'spouse', 'parents', 'siblings', 'unilateral'] as const
 export type CategoryName = typeof categoryNames[number]
 export type Categories = Record<CategoryName, boolean>
 
@@ -14,6 +14,7 @@ export const defaultState = {
   spouse: false,
   parents: false,
   siblings: false,
+  unilateral: false,
 }
 export const CategoryContext = createContext<ICategoryContext>({ categories: defaultState })
 

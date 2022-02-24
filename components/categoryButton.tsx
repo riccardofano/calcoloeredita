@@ -11,12 +11,13 @@ const text: Record<CategoryName, string> = {
   spouse: 'Ha coniuge?',
   parents: 'Ha ascendenti?',
   siblings: 'Ha fratelli o sorelle?',
+  unilateral: 'Ha fratelli o sorelle unilaterali?',
 }
 
 const Button = ({ category }: ButtonProps) => {
   const [checked, setChecked] = useCategory(category)
   const [childrenChecked] = useCategory('children')
-  const isDisabled = (category === 'siblings' || category === 'parents') && childrenChecked
+  const isDisabled = (category === 'parents' || category === 'siblings' || category === 'unilateral') && childrenChecked
 
   useEffect(() => {
     setChecked(checked && !isDisabled)
