@@ -12,7 +12,17 @@ import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
 
 const Home: NextPage = () => {
-  const [deceased, setDeceased] = useState<Person>({ name: 'Defunto', alive: false, id: '1' })
+  const [deceased, setDeceased] = useState<Person>({
+    name: 'Defunto',
+    alive: false,
+    id: '1',
+    category: 'children',
+    children: [],
+    spouse: [],
+    parents: [],
+    siblings: [],
+    unilateral: [],
+  })
   const [categories, setCategories] = useState<Categories>(defaultState)
   const [disabled, setDisabled] = useState<boolean | null>(null)
 
@@ -20,7 +30,11 @@ const Home: NextPage = () => {
     setDisabled(
       !(
         deceased.name &&
-        (deceased.children?.length || deceased.spouse?.length || deceased.parents?.length || deceased.siblings?.length)
+        (deceased.children?.length ||
+          deceased.spouse?.length ||
+          deceased.parents?.length ||
+          deceased.siblings?.length ||
+          deceased.unilateral?.length)
       )
     )
   }, [deceased])

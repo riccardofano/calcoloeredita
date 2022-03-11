@@ -10,11 +10,11 @@ interface SubListProps {
 }
 
 const allowedCategories: Record<CategoryName, CategoryName[]> = {
-  children: ['children', 'spouse', 'unilateral'],
-  spouse: ['children', 'parents', 'siblings'],
-  parents: ['parents', 'siblings'],
+  children: ['children'],
+  spouse: [],
+  parents: ['parents', 'children'],
   siblings: ['children'],
-  unilateral: ['children'],
+  unilateral: [],
 }
 
 const SubList = ({ person, category, updatePerson }: SubListProps) => {

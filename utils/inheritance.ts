@@ -1,41 +1,105 @@
+import { merge } from 'lodash'
+import { CategoryName } from '../context/Category'
 import { Person } from './person'
 
-interface Node extends Person {
-  visited?: boolean
-}
+const MAX_DEGREE = 999
 
-const removeDeadEnds = (c: Node): boolean => {
-  const { alive, children, spouse, siblings, unilateral, parents } = c
-  c.inheritance = undefined
-
-  // can claim inheritance
-  if (alive && !c.visited) {
-    return true
+const markInheritanceless = (deceased: Person) => {
+  deceased.degree = 0
+  let maxDegree: Record<CategoryName, number> = {
+    children: MAX_DEGREE,
+    spouse: MAX_DEGREE,
+    parents: MAX_DEGREE,
+    siblings: MAX_DEGREE,
+    unilateral: MAX_DEGREE,
   }
 
-  c.visited = true
-  const queue = [children, spouse, siblings, unilateral, parents].flatMap((p) => p)
-  while (queue.length > 0) {
-    let person = queue.shift()
-    if (!person) continue
+  const visited: Record<string, boolean> = {}
+  let queue = [deceased]
+  visited[deceased.id] = true
 
-    const elegible = removeDeadEnds(person)
-    if (!elegible) {
+  while (queue.length !== 0) {
+    const person = queue.shift() as Person
+    // reset inheritance from previous calculations
+    delete person.inheritance
+
+    console.log(person.name, person.degree, maxDegree[person.category])
+
+    const relatives = findRelatives(person)
+    if (person.alive) {
+      // person is elegible for receiving the inheritance
+      if (person.degree! < 7 && person.degree! <= maxDegree[person.category]) {
+        maxDegree[person.category] = person.degree!
+        // out of the degree range
+      } else {
+        person.inheritance = 0
+      }
+      continue
+    }
+
+    // person has no heirs
+    if (relatives.length === 0) {
       person.inheritance = 0
+      continue
+    }
+
+    // add every relative to the queue
+    for (const relative of relatives) {
+      if (!visited[relative.id]) {
+        relative.degree = findDegree(relative, person)
+
+        // children go in front of the queue because they have priority
+        if (relative.category === 'children') {
+          queue.unshift(relative)
+        } else {
+          queue.push(relative)
+        }
+      }
+    }
+  }
+}
+
+const findRelatives = (person: Person): Person[] => {
+  // Id '1' is always the deceased
+  if (person.id === '1') {
+    return [...person.children, ...person.spouse, ...person.parents, ...person.siblings, ...person.unilateral]
+  } else if (person.category === 'parents') {
+    return [...person.children, ...person.parents]
+  } else {
+    return [...person.children]
+  }
+}
+
+const findDegree = (relative: Person, current: Person): number => {
+  if (relative.category === 'siblings' || relative.category === 'unilateral') {
+    return (current.degree ?? 0) + 2
+  } else {
+    return (current.degree ?? 0) + 1
+  }
+}
+
+const removeInheritanceless = (person: Person): boolean => {
+  if (person.inheritance === 0) {
+    return false
+  }
+
+  for (const relative of findRelatives(person)) {
+    const elegible = removeInheritanceless(relative)
+    if (!elegible) {
+      relative.inheritance = 0
     }
   }
 
-  c.children = c.children?.filter(removeNoInheritance) || []
-  c.spouse = c.spouse?.filter(removeNoInheritance) || []
-  c.parents = c.parents?.filter(removeNoInheritance) || []
-  c.siblings = c.siblings?.filter(removeNoInheritance) || []
-  c.unilateral = c.unilateral?.filter(removeNoInheritance) || []
+  person.children = person.children.filter(hasNoInheritance)
+  person.spouse = person.spouse.filter(hasNoInheritance)
+  person.parents = person.parents.filter(hasNoInheritance)
+  person.siblings = person.siblings.filter(hasNoInheritance)
+  person.unilateral = person.unilateral.filter(hasNoInheritance)
 
-  return [...c.children, ...c.spouse, ...c.parents, ...c.siblings, ...c.unilateral].length > 0
+  return person.alive || findRelatives(person).length > 0
 }
 
-const removeNoInheritance = (person: Node): boolean => {
-  if (person.visited) delete person.visited
+const hasNoInheritance = (person: Person): boolean => {
   return person.inheritance !== 0
 }
 
@@ -107,19 +171,19 @@ const findInheritance = (total: number, current?: Person) => {
   }
 
   if (numberSiblings + numberUnilateral) {
-    inheritance.siblingsTotal =
-      (inheritance.relatives - inheritance.parents * numberParents) / (numberSiblings + numberUnilateral)
+    console.log(inheritance)
+    inheritance.siblingsTotal = inheritance.relatives - inheritance.parents * numberParents
 
     if (numberUnilateral === 0) {
       // If there are no unilateral siblings all goes the bilaterals
-      inheritance.siblings = inheritance.siblingsTotal
+      inheritance.siblings = inheritance.siblingsTotal / numberSiblings
     } else if (numberSiblings === 0) {
       // If there are no bilateral siblings all goes to the unilaterals
-      inheritance.unilateral = inheritance.siblingsTotal
+      inheritance.unilateral = inheritance.siblingsTotal / numberUnilateral
     } else {
       // Otherwise it's split 2/3 bilateral and 1/3 unilateral
       inheritance.siblings = (inheritance.siblingsTotal * 2) / 3 / numberSiblings
-      inheritance.unilateral = inheritance.siblings / 2
+      inheritance.unilateral = inheritance.siblingsTotal / 3 / numberUnilateral
     }
 
     siblings?.forEach((sibling) => findInheritance(inheritance.siblings, sibling))
@@ -128,8 +192,13 @@ const findInheritance = (total: number, current?: Person) => {
 }
 
 export const calculateInheritance = (person: Person): Person => {
-  const graph = { ...person }
-  removeDeadEnds(graph)
+  markInheritanceless(person)
+  // Deep copy initial state after removing old inheritance
+  // so the relatives are copied too and aren't just references to the same object
+  // and the old inheritance calculation isn't preserved
+  const graph = JSON.parse(JSON.stringify(person))
+  removeInheritanceless(graph)
   findInheritance(100, graph)
-  return { ...graph, ...person }
+
+  return merge(graph, person)
 }

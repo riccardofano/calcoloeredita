@@ -1,6 +1,8 @@
 import { DeleteIcon } from '@chakra-ui/icons'
 import { Box, Checkbox, CircularProgress, Text, Flex, IconButton, Input } from '@chakra-ui/react'
 import { ChangeEvent } from 'react'
+import Fraction from 'fraction.js'
+
 import { CategoryName } from '../context/Category'
 import { Person } from '../utils/person'
 import SubList from './subList'
@@ -29,17 +31,11 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
     updatePerson(index, updatedPerson)
   }
 
-  const inheritance = Math.round(person.inheritance ?? 0)
+  const inheritance = person.inheritance ?? 0
 
   return (
     <Box>
       <Flex gap="8" alignItems="center" justifyContent="space-between">
-        {person.inheritance && (
-          <Flex gap="2" alignItems="center">
-            <Text>{inheritance}%</Text>
-            <CircularProgress size="1.5em" value={inheritance}></CircularProgress>
-          </Flex>
-        )}
         <Input id="name" value={person.name} type="text" placeholder="Nome e cognome" onChange={changeName} />
 
         <Checkbox size="lg" isChecked={!person.alive} onChange={changeStatus}>
@@ -51,6 +47,12 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
           onClick={() => removePerson(index)}
           icon={<DeleteIcon />}
         ></IconButton>
+        {
+          <Flex gap="2" alignItems="center">
+            <Text>{new Fraction(inheritance / 100).toFraction(true)}</Text>
+            <CircularProgress size="1.5em" value={inheritance}></CircularProgress>
+          </Flex>
+        }
       </Flex>
       {!person.alive && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
     </Box>
