@@ -1,18 +1,11 @@
 import { merge } from 'lodash'
-import { CategoryName } from '../context/Category'
 import { Person } from './person'
 
 const MAX_DEGREE = 999
 
-const markInheritanceless = (deceased: Person) => {
+const markWithoutInheritance = (deceased: Person) => {
   deceased.degree = 0
-  let maxDegree: Record<CategoryName, number> = {
-    children: MAX_DEGREE,
-    spouse: MAX_DEGREE,
-    parents: MAX_DEGREE,
-    siblings: MAX_DEGREE,
-    unilateral: MAX_DEGREE,
-  }
+  let maxDegree = MAX_DEGREE
 
   const visited: Record<string, boolean> = {}
   let queue = [deceased]
@@ -23,21 +16,24 @@ const markInheritanceless = (deceased: Person) => {
     // reset inheritance from previous calculations
     delete person.inheritance
 
-    console.log(person.name, person.degree, maxDegree[person.category])
-
-    const relatives = findRelatives(person)
     if (person.alive) {
-      // person is elegible for receiving the inheritance
-      if (person.degree! < 7 && person.degree! <= maxDegree[person.category]) {
-        maxDegree[person.category] = person.degree!
-        // out of the degree range
-      } else {
+      if (
+        person.degree! > 6 ||
+        // a person only gets excluded if
+        // they aren't a person with the representation right (direct children or bilateral siblings)
+        // they aren't an unilateral sibling (degree 2) (otherwise they would get excluded by the parents (degree 1))
+        // a person with a lower degree of kinship is already available to take the inheritance
+        (!person.representationRight && person.category !== 'unilateral' && person.degree! > maxDegree)
+      ) {
         person.inheritance = 0
+      } else {
+        maxDegree = person.degree!
       }
       continue
     }
 
-    // person has no heirs
+    const relatives = findRelatives(person)
+    // person is dead and has no heirs
     if (relatives.length === 0) {
       person.inheritance = 0
       continue
@@ -47,9 +43,9 @@ const markInheritanceless = (deceased: Person) => {
     for (const relative of relatives) {
       if (!visited[relative.id]) {
         relative.degree = findDegree(relative, person)
+        relative.representationRight = hasRepresentationRight(relative, person)
 
-        // children go in front of the queue because they have priority
-        if (relative.category === 'children') {
+        if (relative.representationRight) {
           queue.unshift(relative)
         } else {
           queue.push(relative)
@@ -60,17 +56,31 @@ const markInheritanceless = (deceased: Person) => {
 }
 
 const findRelatives = (person: Person): Person[] => {
-  // Id '1' is always the deceased
+  // The deceased can have all possible relatives
   if (person.id === '1') {
     return [...person.children, ...person.spouse, ...person.parents, ...person.siblings, ...person.unilateral]
   } else if (person.category === 'parents') {
+    // The deceased parents' only relevant relatives their own parents
+    // because we already accounted for their children, they are the siblings
+    if (person.degree === 1) {
+      return [...person.parents]
+    }
+    // Other ascendants have their children also (uncles and aunts)
     return [...person.children, ...person.parents]
-  } else {
+  } else if (person.category === 'siblings') {
+    // Only the children of bilateral siblings are eligible
     return [...person.children]
+  } else {
+    // Everyone else's heirs aren't eligible
+    return []
   }
 }
 
 const findDegree = (relative: Person, current: Person): number => {
+  // Return the relative's degree of kinship
+  // siblings (unilateral and bilateral) have a difference of 2 degrees of kinship
+  // because it's calculated by doing `current -> parent -> sibling`
+  // everyone else has just one degree of difference
   if (relative.category === 'siblings' || relative.category === 'unilateral') {
     return (current.degree ?? 0) + 2
   } else {
@@ -78,14 +88,25 @@ const findDegree = (relative: Person, current: Person): number => {
   }
 }
 
-const removeInheritanceless = (person: Person): boolean => {
+const hasRepresentationRight = (relative: Person, current: Person): boolean => {
+  // Descendants and siblings' descendence follow the representation right
+  // this means they can take over their parents' part of the inheritance
+  return (
+    ((current.id === '1' && relative.category === 'children') ||
+      current.category === 'siblings' ||
+      current.representationRight) ??
+    false
+  )
+}
+
+const removeWithoutInheritance = (person: Person): boolean => {
   if (person.inheritance === 0) {
     return false
   }
 
   for (const relative of findRelatives(person)) {
-    const elegible = removeInheritanceless(relative)
-    if (!elegible) {
+    const eligible = removeWithoutInheritance(relative)
+    if (!eligible) {
       relative.inheritance = 0
     }
   }
@@ -175,10 +196,10 @@ const findInheritance = (total: number, current?: Person) => {
     inheritance.siblingsTotal = inheritance.relatives - inheritance.parents * numberParents
 
     if (numberUnilateral === 0) {
-      // If there are no unilateral siblings all goes the bilaterals
+      // If there are no unilateral siblings all goes the bilateral siblings
       inheritance.siblings = inheritance.siblingsTotal / numberSiblings
     } else if (numberSiblings === 0) {
-      // If there are no bilateral siblings all goes to the unilaterals
+      // If there are no bilateral siblings all goes to the unilateral siblings
       inheritance.unilateral = inheritance.siblingsTotal / numberUnilateral
     } else {
       // Otherwise it's split 2/3 bilateral and 1/3 unilateral
@@ -192,12 +213,12 @@ const findInheritance = (total: number, current?: Person) => {
 }
 
 export const calculateInheritance = (person: Person): Person => {
-  markInheritanceless(person)
+  markWithoutInheritance(person)
   // Deep copy initial state after removing old inheritance
   // so the relatives are copied too and aren't just references to the same object
   // and the old inheritance calculation isn't preserved
   const graph = JSON.parse(JSON.stringify(person))
-  removeInheritanceless(graph)
+  removeWithoutInheritance(graph)
   findInheritance(100, graph)
 
   return merge(graph, person)
