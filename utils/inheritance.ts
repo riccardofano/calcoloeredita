@@ -67,8 +67,8 @@ const findRelatives = (person: Person): Person[] => {
     }
     // Other ascendants have their children also (uncles and aunts)
     return [...person.children, ...person.parents]
-  } else if (person.category === 'siblings') {
-    // Only the children of bilateral siblings are eligible
+  } else if (person.category === 'siblings' || person.category === 'children') {
+    // Only direct children and the children of bilateral siblings are eligible
     return [...person.children]
   } else {
     // Everyone else's heirs aren't eligible
