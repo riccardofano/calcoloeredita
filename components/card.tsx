@@ -13,9 +13,10 @@ interface CardProps {
   category: CategoryName
   removePerson: (index: number) => void
   updatePerson: (index: number, person: Person) => void
+  directRelative?: boolean
 }
 
-const Card = ({ person, index, category, removePerson, updatePerson }: CardProps) => {
+const Card = ({ person, index, category, removePerson, updatePerson, directRelative }: CardProps) => {
   const changeName = (e: ChangeEvent<HTMLInputElement>) => {
     const updatedPerson = { ...person, name: e.target.value }
     updatePerson(index, updatedPerson)
@@ -54,7 +55,9 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
           </Flex>
         }
       </Flex>
-      {!person.alive && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
+      {!person.alive && (
+        <SubList category={category} person={person} updatePerson={setPerson} directRelative={directRelative}></SubList>
+      )}
     </Box>
   )
 }

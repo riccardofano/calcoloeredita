@@ -7,17 +7,22 @@ interface SubListProps {
   person: Person
   updatePerson: (person: Person) => void
   category: CategoryName
+  directRelative?: boolean
 }
 
-const allowedCategories: Record<CategoryName, CategoryName[]> = {
-  children: ['children'],
-  spouse: [],
-  parents: ['parents', 'children'],
-  siblings: ['children'],
-  unilateral: [],
+const allowedCategories = (category: CategoryName, directRelative: boolean = false): CategoryName[] => {
+  switch (category) {
+    case 'children':
+    case 'siblings':
+      return ['children']
+    case 'parents':
+      return directRelative ? ['parents'] : ['parents', 'children']
+    default:
+      return []
+  }
 }
 
-const SubList = ({ person, category, updatePerson }: SubListProps) => {
+const SubList = ({ person, category, updatePerson, directRelative }: SubListProps) => {
   const updatePeople = (category: CategoryName, people: Person[]) => {
     const updatedCategory = { ...person, [category]: people }
     updatePerson(updatedCategory)
@@ -32,7 +37,7 @@ const SubList = ({ person, category, updatePerson }: SubListProps) => {
       borderStyle="dashed"
       borderColor="gray.300"
     >
-      {allowedCategories[category].map((c, i) => (
+      {allowedCategories(category, directRelative).map((c, i) => (
         <ListItem key={i} category={c} people={person[c]} setPeople={updatePeople} />
       ))}
     </UnorderedList>
