@@ -26,10 +26,6 @@ const Button = ({ category }: ButtonProps) => {
   return (
     <Box>
       <Checkbox
-        // left="4"
-        // top="4"
-        // borderRadius="20"
-        // position="absolute"
         size="lg"
         type="checkbox"
         id={category}
