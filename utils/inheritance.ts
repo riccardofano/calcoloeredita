@@ -93,7 +93,7 @@ const hasRepresentationRight = (relative: Person, current: Person): boolean => {
   // this means they can take over their parents' part of the inheritance
   return (
     ((current.id === '1' && relative.category === 'children') ||
-      current.category === 'siblings' ||
+      relative.category === 'siblings' ||
       current.representationRight) ??
     false
   )
