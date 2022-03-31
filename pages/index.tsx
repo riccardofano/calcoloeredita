@@ -24,7 +24,7 @@ const Home: NextPage = () => {
     unilateral: [],
   })
   const [categories, setCategories] = useState<Categories>(defaultState)
-  const [disabled, setDisabled] = useState<boolean | null>(null)
+  const [disabled, setDisabled] = useState<boolean>(true)
 
   useEffect(() => {
     setDisabled(
@@ -77,7 +77,7 @@ const Home: NextPage = () => {
         </CategoryContext.Provider>
 
         <Box marginBlockEnd="48">
-          <Button type="submit" colorScheme="green" disabled={disabled === true} onClick={showInhertance}>
+          <Button type="submit" colorScheme="green" disabled={disabled} onClick={showInhertance}>
             Calcola
           </Button>
         </Box>

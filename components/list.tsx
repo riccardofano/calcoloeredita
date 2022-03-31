@@ -1,7 +1,7 @@
 import { UnorderedList } from '@chakra-ui/react'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 
-import { CategoryName, useCategories } from '../context/Category'
+import { CategoryName, categoryNames, useCategories } from '../context/Category'
 import { Person } from '../utils/person'
 import ListItem from './listItem'
 
@@ -18,6 +18,19 @@ const List = ({ person, updatePerson }: ListProps) => {
     const updatedCategory = { ...person, [category]: people }
     updatePerson(updatedCategory)
   }
+
+  useEffect(() => {
+    // Set every disabled category to an empty array
+    const categoriesDisabled = categoryNames.filter((c) => categories[c] === false)
+    const updatedPerson = {
+      ...person,
+      ...categoriesDisabled.reduce<Record<string, Person[]>>((acc, category) => {
+        acc[category] = []
+        return acc
+      }, {}),
+    }
+    updatePerson(updatedPerson)
+  }, [categories])
 
   return (
     <UnorderedList styleType="none" marginInlineStart="none">
