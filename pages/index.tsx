@@ -69,22 +69,18 @@ const Home: NextPage = () => {
         </FormControl>
 
         <CategoryContext.Provider value={{ categories, setCategories }}>
-          <SimpleGrid spacing="4" columns={{ sm: 1, md: 2 }}>
-            {categoryNames.map((c) => (
-              <CategoryButton key={c} category={c}></CategoryButton>
-            ))}
-          </SimpleGrid>
+          {categoryNames.map((c) => (
+            <CategoryButton key={c} category={c}></CategoryButton>
+          ))}
 
           <List person={deceased} updatePerson={setDeceased}></List>
         </CategoryContext.Provider>
 
-        <Box>
+        <Box marginBlockEnd="48">
           <Button type="submit" colorScheme="green" disabled={disabled === true} onClick={showInhertance}>
             Calcola
           </Button>
         </Box>
-
-        <pre>{`${JSON.stringify({ deceased }, null, 4)}`}</pre>
       </SimpleGrid>
     </Container>
   )

@@ -28,19 +28,28 @@ const SubList = ({ person, category, updatePerson, directRelative }: SubListProp
     updatePerson(updatedCategory)
   }
 
+  const relatives = allowedCategories(category, directRelative)
+
   return (
-    <UnorderedList
-      listStyleType="none"
-      margin="0"
-      paddingLeft="4"
-      borderLeft="1px"
-      borderStyle="dashed"
-      borderColor="gray.300"
-    >
-      {allowedCategories(category, directRelative).map((c, i) => (
-        <ListItem key={i} category={c} people={person[c]} setPeople={updatePeople} />
-      ))}
-    </UnorderedList>
+    <>
+      {relatives.length > 0 && (
+        <UnorderedList
+          listStyleType="none"
+          margin="0"
+          paddingLeft="4"
+          paddingBottom="2"
+          borderLeft="1px"
+          borderBottom="1px"
+          borderStyle="dashed"
+          borderColor="gray.400"
+          borderBottomStartRadius="1rem"
+        >
+          {relatives.map((c, i) => (
+            <ListItem key={i} category={c} people={person[c]} setPeople={updatePeople} />
+          ))}
+        </UnorderedList>
+      )}
+    </>
   )
 }
 
