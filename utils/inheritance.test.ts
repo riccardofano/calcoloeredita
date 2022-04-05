@@ -140,3 +140,64 @@ test('One child and parents, bilateral, or unilateral siblings ', () => {
   expect(result.unilateral[0].inheritance).toBeFalsy()
 })
 
+test('Spouse and two parents', () => {
+  // Spouse gets 2/3
+  // Parents divide the rest evenly between each other
+  const deceased = newDeceased({
+    spouse: [newPerson({ id: '2', name: 'Coniuge', alive: true, category: 'spouse' })],
+    parents: [
+      newPerson({ id: '3', name: 'Mamma', alive: true, category: 'parents' }),
+      newPerson({ id: '4', name: 'Papà', alive: true, category: 'parents' }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
+  expect(asFraction(result.parents[0].inheritance)).toBe('1/6')
+  expect(asFraction(result.parents[1].inheritance)).toBe('1/6')
+})
+
+test('Spouse and one bilateral sibling', () => {
+  // Spouse gets 2/3
+  // Sibling gets 1/3
+  const deceased = newDeceased({
+    spouse: [newPerson({ id: '2', name: 'Coniuge', alive: true, category: 'spouse' })],
+    siblings: [newPerson({ id: '3', name: 'Sorella', alive: true, category: 'siblings' })],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1/3')
+})
+
+test('Spouse and one unilateral sibling', () => {
+  // Spouse gets 2/3
+  // Sibling gets 1/3
+  const deceased = newDeceased({
+    spouse: [newPerson({ id: '2', name: 'Coniuge', alive: true, category: 'spouse' })],
+    unilateral: [newPerson({ id: '3', name: 'Sorella', alive: true, category: 'unilateral' })],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
+  expect(asFraction(result.unilateral[0].inheritance)).toBe('1/3')
+})
+
+test('Spouse, parents, bilateral, and unilateral siblings ', () => {
+  // The spouse gets 2/3
+  // Parents 1/2 of the remainder (1/6)
+  // Bilateral siblings 2/3 of the remainder (1/9)
+  // Unilateral siblings half a the bilateral siblings (1/18)
+  const deceased = newDeceased({
+    spouse: [newPerson({ id: '2', name: 'Coniuge', alive: true, category: 'spouse' })],
+    parents: [newPerson({ id: '3', name: 'Mamma', alive: true, category: 'parents' })],
+    siblings: [newPerson({ id: '4', name: 'Sorella', alive: true, category: 'siblings' })],
+    unilateral: [newPerson({ id: '5', name: 'Fratello', alive: true, category: 'unilateral' })],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
+  expect(asFraction(result.parents[0].inheritance)).toBe('1/6')
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1/9')
+  expect(asFraction(result.unilateral[0].inheritance)).toBe('1/18')
+})
