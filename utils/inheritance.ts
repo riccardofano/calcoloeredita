@@ -224,31 +224,29 @@ export const calculateInheritance = (person: Person): Person => {
 }
 
 // Merge people if their id is the same
-const mergePerson = (source: Person, target: Person) => {
-  for (const sourceChild of source.children) {
-    for (const targetChild of target.children) {
-      mergePerson(sourceChild, targetChild)
-    }
-  }
-  for (const sourceParent of source.parents) {
-    for (const targetParent of target.parents) {
-      mergePerson(sourceParent, targetParent)
-    }
-  }
-  for (const sourceBilateral of source.siblings) {
-    for (const targetBilateral of target.siblings) {
-      mergePerson(sourceBilateral, targetBilateral)
-    }
-  }
-  for (const sourceUnilateral of source.unilateral) {
-    for (const targetUnilateral of target.unilateral) {
-      mergePerson(sourceUnilateral, targetUnilateral)
-    }
-  }
-
+const mergePerson = (source: Person, target: Person): boolean => {
   if (source.id === target.id) {
     // there can only be one spouse
     source.spouse = target.spouse
     source.inheritance = target.inheritance
+
+    mergeInCategory(source.children, target.children)
+    mergeInCategory(source.parents, target.parents)
+    mergeInCategory(source.siblings, target.siblings)
+    mergeInCategory(source.unilateral, target.unilateral)
+
+    return true
+  }
+  return false
+}
+
+const mergeInCategory = (sourceCategory: Person[], targetCategory: Person[]) => {
+  for (const sourcePerson of sourceCategory) {
+    for (const targetPerson of targetCategory) {
+      const found = mergePerson(sourcePerson, targetPerson)
+      if (found) {
+        break
+      }
+    }
   }
 }
