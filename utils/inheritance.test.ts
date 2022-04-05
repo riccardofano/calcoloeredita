@@ -201,3 +201,97 @@ test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   expect(asFraction(result.siblings[0].inheritance)).toBe('1/9')
   expect(asFraction(result.unilateral[0].inheritance)).toBe('1/18')
 })
+
+test('Two parents', () => {
+  // Inheritance gets evenly divided between the two
+  const deceased = newDeceased({
+    parents: [
+      newPerson({ id: '2', name: 'Mamma', alive: true, category: 'parents' }),
+      newPerson({ id: '3', name: 'Papà', alive: true, category: 'parents' }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(result.parents[0].inheritance).toBe(50)
+  expect(result.parents[1].inheritance).toBe(50)
+})
+
+test('One alive parent, one grandparent', () => {
+  // All inheritance goes to the alive parent
+  const deceased = newDeceased({
+    parents: [
+      newPerson({ id: '2', name: 'Mamma', alive: true, category: 'parents' }),
+      newPerson({
+        id: '3',
+        name: 'Papà',
+        alive: false,
+        category: 'parents',
+        parents: [newPerson({ id: '4', name: 'Nonno', alive: true, category: 'parents' })],
+      }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(result.parents[0].inheritance).toBe(100)
+  expect(result.parents[1].parents[0].inheritance).toBe(0)
+})
+
+test('Two grandparents of different lineage but same degree of kinship', () => {
+  // All inheritance goes to the alive parent
+  const deceased = newDeceased({
+    parents: [
+      newPerson({
+        id: '2',
+        name: 'Mamma',
+        alive: false,
+        category: 'parents',
+        parents: [newPerson({ id: '5', name: 'Nonna', alive: true, category: 'parents' })],
+      }),
+      newPerson({
+        id: '3',
+        name: 'Papà',
+        alive: false,
+        category: 'parents',
+        parents: [newPerson({ id: '4', name: 'Nonno', alive: true, category: 'parents' })],
+      }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(result.parents[0].parents[0].inheritance).toBe(50)
+  expect(result.parents[1].parents[0].inheritance).toBe(50)
+})
+
+test('Two grandparents of different lineage and different degree of kinship', () => {
+  // All inheritance goes to the alive parent
+  const deceased = newDeceased({
+    parents: [
+      newPerson({
+        id: '2',
+        name: 'Mamma',
+        alive: false,
+        category: 'parents',
+        parents: [
+          newPerson({
+            id: '3',
+            name: 'Nonna',
+            alive: false,
+            category: 'parents',
+            parents: [newPerson({ id: '4', name: 'Bisnonna', alive: true, category: 'parents' })],
+          }),
+        ],
+      }),
+      newPerson({
+        id: '5',
+        name: 'Papà',
+        alive: false,
+        category: 'parents',
+        parents: [newPerson({ id: '6', name: 'Nonno', alive: true, category: 'parents' })],
+      }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(result.parents[0].parents[0].parents[0].inheritance).toBeFalsy()
+  expect(result.parents[1].parents[0].inheritance).toBe(100)
+})
