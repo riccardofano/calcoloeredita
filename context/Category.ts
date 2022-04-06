@@ -38,3 +38,10 @@ export const useCategories = () => {
   const { categories } = useContext(CategoryContext)
   return categories
 }
+
+export const nonOtherCategories = () => {
+  const {
+    categories: { children, spouse, parents, siblings, unilateral },
+  } = useContext(CategoryContext)
+  return [children, spouse, parents, siblings, unilateral]
+}

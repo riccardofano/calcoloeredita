@@ -12,6 +12,8 @@ import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
 
 const Home: NextPage = () => {
+  const [categories, setCategories] = useState<Categories>(defaultState)
+  const [disabled, setDisabled] = useState<boolean>(false)
   const [deceased, setDeceased] = useState<Person>({
     name: 'Defunto',
     alive: false,
@@ -24,8 +26,6 @@ const Home: NextPage = () => {
     unilateral: [],
     others: [],
   })
-  const [categories, setCategories] = useState<Categories>(defaultState)
-  const [disabled, setDisabled] = useState<boolean>(true)
 
   useEffect(() => {
     const relatives = [
@@ -36,8 +36,12 @@ const Home: NextPage = () => {
       deceased.unilateral,
       deceased.others,
     ]
-    setDisabled(!(deceased.name && relatives.some((c) => c.length)))
+    setDisabled(!(deceased.name && relatives.some((c) => c.length > 0)))
   }, [deceased])
+
+  useEffect(() => {
+    setDisabled(true)
+  }, [])
 
   const showInhertance = () => {
     const updated = calculateInheritance(deceased)
@@ -77,7 +81,7 @@ const Home: NextPage = () => {
         </CategoryContext.Provider>
 
         <Box marginBlockEnd="48">
-          <Button type="submit" colorScheme="green" disabled={disabled} onClick={showInhertance}>
+          <Button type="submit" colorScheme="green" isDisabled={disabled} onClick={showInhertance}>
             Calcola
           </Button>
         </Box>
