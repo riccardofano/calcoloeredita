@@ -144,7 +144,7 @@ const findInheritance = (total: number, current?: Person) => {
     current.inheritance = total
   }
 
-  if (children?.length) {
+  if (children?.length > 0) {
     // multiple children and spouse:    2/3/children and 1/3
     // multiple children and no spouse: 1/children   and 0
     let forChildren = spouse?.[0] ? ((total / 3) * 2) / children.length : total / children.length
@@ -169,12 +169,11 @@ const findInheritance = (total: number, current?: Person) => {
   let inheritance = {
     relatives: total,
     parents: 0,
-    siblingsTotal: 0,
     siblings: 0,
     unilateral: 0,
   }
 
-  if (spouse?.length) {
+  if (spouse?.length > 0) {
     // only spouse:                 1
     // spouse and other relatives : 2/3
     let forSpouse = numberRelatives > 0 ? (total / 3) * 2 : total
@@ -183,7 +182,7 @@ const findInheritance = (total: number, current?: Person) => {
     findInheritance(forSpouse, spouse[0])
   }
 
-  if (numberParents) {
+  if (numberParents > 0) {
     inheritance.parents = inheritance.relatives / numberRelatives
     // The parents receive at least half of the remaining inheritance
     if (inheritance.parents * numberParents < inheritance.relatives / 2) {
@@ -198,23 +197,25 @@ const findInheritance = (total: number, current?: Person) => {
       // If neither parents is alive but the grandparents are, they receive only 1 parent's worth
       if (parentsAlive?.length === 0) {
         inheritance.parents = inheritance.relatives / (1 + numberSiblings + numberUnilateral) / numberParents
+        if (inheritance.parents * numberParents < inheritance.relatives / 4) {
+          inheritance.parents = inheritance.relatives / 4 / numberParents
+        }
       }
       parents?.forEach((parent) => findInheritance(inheritance.parents, parent))
     }
+    inheritance.relatives -= inheritance.parents * numberParents
   }
 
-  if (numberSiblings + numberUnilateral) {
-    inheritance.siblingsTotal = inheritance.relatives - inheritance.parents * numberParents
-
+  if (numberSiblings + numberUnilateral > 0) {
     if (numberUnilateral === 0) {
       // If there are no unilateral siblings all goes the bilateral siblings
-      inheritance.siblings = inheritance.siblingsTotal / numberSiblings
+      inheritance.siblings = inheritance.relatives / numberSiblings
     } else if (numberSiblings === 0) {
       // If there are no bilateral siblings all goes to the unilateral siblings
-      inheritance.unilateral = inheritance.siblingsTotal / numberUnilateral
+      inheritance.unilateral = inheritance.relatives / numberUnilateral
     } else {
       // Otherwise an unilateral sibling gets 1/2 of what a bilateral one would get
-      inheritance.siblings = inheritance.siblingsTotal / (numberSiblings + numberUnilateral / 2)
+      inheritance.siblings = inheritance.relatives / (numberSiblings + numberUnilateral / 2)
       inheritance.unilateral = inheritance.siblings / 2
     }
 
