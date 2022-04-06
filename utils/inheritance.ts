@@ -1,4 +1,3 @@
-import { merge } from 'lodash'
 import { Person } from './person'
 
 const MAX_DEGREE = 999
@@ -192,7 +191,6 @@ const findInheritance = (total: number, current?: Person) => {
   }
 
   if (numberSiblings + numberUnilateral) {
-    console.log(inheritance)
     inheritance.siblingsTotal = inheritance.relatives - inheritance.parents * numberParents
 
     if (numberUnilateral === 0) {
@@ -217,9 +215,38 @@ export const calculateInheritance = (person: Person): Person => {
   // Deep copy initial state after removing old inheritance
   // so the relatives are copied too and aren't just references to the same object
   // and the old inheritance calculation isn't preserved
-  const graph = JSON.parse(JSON.stringify(person))
+  const graph: Person = JSON.parse(JSON.stringify(person))
   removeWithoutInheritance(graph)
   findInheritance(100, graph)
 
-  return merge(graph, person)
+  mergePerson(person, graph)
+  return person
+}
+
+// Merge people if their id is the same
+const mergePerson = (source: Person, target: Person): boolean => {
+  if (source.id === target.id) {
+    // there can only be one spouse
+    source.spouse = target.spouse
+    source.inheritance = target.inheritance
+
+    mergeInCategory(source.children, target.children)
+    mergeInCategory(source.parents, target.parents)
+    mergeInCategory(source.siblings, target.siblings)
+    mergeInCategory(source.unilateral, target.unilateral)
+
+    return true
+  }
+  return false
+}
+
+const mergeInCategory = (sourceCategory: Person[], targetCategory: Person[]) => {
+  for (const sourcePerson of sourceCategory) {
+    for (const targetPerson of targetCategory) {
+      const found = mergePerson(sourcePerson, targetPerson)
+      if (found) {
+        break
+      }
+    }
+  }
 }
