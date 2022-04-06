@@ -12,6 +12,7 @@ const text: Record<CategoryName, string> = {
   parents: 'Ha ascendenti?',
   siblings: 'Ha fratelli o sorelle?',
   unilateral: 'Ha fratelli o sorelle unilaterali?',
+  others: 'Ha altri parenti fino al sesto grado di parentela?',
 }
 
 const Button = ({ category }: ButtonProps) => {

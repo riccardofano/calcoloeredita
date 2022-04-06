@@ -19,6 +19,7 @@ const title: Record<CategoryName, string> = {
   parents: 'Genitori',
   siblings: 'Fratelli e sorelle germani',
   unilateral: 'Fratelli e sorelle unilaterali',
+  others: 'Altri parenti',
 }
 
 const maxPeople: Record<CategoryName, number> = {
@@ -27,6 +28,7 @@ const maxPeople: Record<CategoryName, number> = {
   parents: 2,
   siblings: 20,
   unilateral: 20,
+  others: 50,
 }
 
 const ListItem = ({ category, people, setPeople, directRelative }: ListItemProps) => {
@@ -48,6 +50,7 @@ const ListItem = ({ category, people, setPeople, directRelative }: ListItemProps
       parents: [],
       siblings: [],
       unilateral: [],
+      others: [],
     })
     setPeople(category, updatedPeople)
   }

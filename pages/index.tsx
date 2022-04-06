@@ -22,21 +22,21 @@ const Home: NextPage = () => {
     parents: [],
     siblings: [],
     unilateral: [],
+    others: [],
   })
   const [categories, setCategories] = useState<Categories>(defaultState)
   const [disabled, setDisabled] = useState<boolean>(true)
 
   useEffect(() => {
-    setDisabled(
-      !(
-        deceased.name &&
-        (deceased.children?.length ||
-          deceased.spouse?.length ||
-          deceased.parents?.length ||
-          deceased.siblings?.length ||
-          deceased.unilateral?.length)
-      )
-    )
+    const relatives = [
+      deceased.children,
+      deceased.spouse,
+      deceased.parents,
+      deceased.siblings,
+      deceased.unilateral,
+      deceased.others,
+    ]
+    setDisabled(!(deceased.name && relatives.some((c) => c.length)))
   }, [deceased])
 
   const showInhertance = () => {
