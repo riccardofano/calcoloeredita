@@ -200,9 +200,9 @@ const findInheritance = (total: number, current?: Person) => {
       // If there are no bilateral siblings all goes to the unilateral siblings
       inheritance.unilateral = inheritance.siblingsTotal / numberUnilateral
     } else {
-      // Otherwise it's split 2/3 bilateral and 1/3 unilateral
-      inheritance.siblings = (inheritance.siblingsTotal * 2) / 3 / numberSiblings
-      inheritance.unilateral = inheritance.siblingsTotal / 3 / numberUnilateral
+      // Otherwise an unilateral sibling gets 1/2 of what a bilateral one would get
+      inheritance.siblings = inheritance.siblingsTotal / (numberSiblings + numberUnilateral / 2)
+      inheritance.unilateral = inheritance.siblings / 2
     }
 
     siblings?.forEach((sibling) => findInheritance(inheritance.siblings, sibling))
