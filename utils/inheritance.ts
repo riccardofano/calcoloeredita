@@ -5,6 +5,7 @@ const MAX_DEGREE = 999
 const markWithoutInheritance = (deceased: Person) => {
   deceased.degree = 0
   let maxDegree = MAX_DEGREE
+  let maxAscendantDegree = MAX_DEGREE
 
   const visited: Record<string, boolean> = {}
   let queue = [deceased]
@@ -22,10 +23,15 @@ const markWithoutInheritance = (deceased: Person) => {
         // they aren't a person with the representation right (direct children or bilateral siblings)
         // they aren't an unilateral sibling (degree 2) (otherwise they would get excluded by the parents (degree 1))
         // a person with a lower degree of kinship is already available to take the inheritance
-        (!person.representationRight && person.category !== 'unilateral' && person.degree! > maxDegree)
+        (!person.representationRight &&
+          person.category !== 'unilateral' &&
+          isDegreeTooHigh(person, maxDegree, maxAscendantDegree))
       ) {
         person.inheritance = 0
       } else {
+        if (person.category === 'parents') {
+          maxAscendantDegree = person.degree!
+        }
         maxDegree = person.degree!
       }
       continue
@@ -52,6 +58,13 @@ const markWithoutInheritance = (deceased: Person) => {
       }
     }
   }
+}
+
+const isDegreeTooHigh = (person: Person, maxDegree: number, maxAscendantsDegree: number) => {
+  if (person.category === 'parents') {
+    return person.degree! > maxAscendantsDegree
+  }
+  return person.degree! > maxDegree
 }
 
 const findRelatives = (person: Person): Person[] => {
