@@ -251,7 +251,9 @@ export const calculateInheritance = (person: Person): Person => {
   findInheritance(100, graph)
 
   mergePerson(person, graph)
-  return person
+  // Create a copy otherwise react won't trigger a re-render
+  const copy = { ...person }
+  return copy
 }
 
 // Merge people if their id is the same
