@@ -4,7 +4,7 @@ import { calculateInheritance } from './inheritance'
 import { Person } from './person'
 
 const newPerson = (
-  options: { id: string; name: string; alive: boolean; category: CategoryName } & Partial<
+  options: { id: string; name: string; alive: boolean; category: CategoryName; degree?: number } & Partial<
     Record<CategoryName, Person[]>
   >
 ): Person => {
@@ -14,6 +14,7 @@ const newPerson = (
     parents: [],
     siblings: [],
     unilateral: [],
+    others: [],
     ...options,
   }
 }
@@ -553,4 +554,173 @@ test('One parent, one grandparent, one bilateral sibling and one unilateral sibl
   expect(asFraction(result.siblings[1].children[0].inheritance)).toBe('1/10')
   expect(asFraction(result.siblings[1].children[1].inheritance)).toBe('1/10')
   expect(asFraction(result.unilateral[0].inheritance)).toBe('1/10')
+})
+
+test('One other relative within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    others: [newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 })],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(result.others[0].inheritance).toBe(100)
+})
+
+test('Three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.others[0].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[1].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[2].inheritance)).toBe('1/3')
+})
+
+test('One child and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    children: [newPerson({ id: '5', alive: true, name: 'Figlia', category: 'children' })],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.children[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('Spouse and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    spouse: [newPerson({ id: '5', alive: true, name: 'Coniuge', category: 'spouse' })],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.spouse[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('One parent and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    parents: [newPerson({ id: '5', alive: true, name: 'Mamma', category: 'parents' })],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.parents[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('One grandparent and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    parents: [
+      newPerson({
+        id: '5',
+        alive: false,
+        name: 'Mamma',
+        category: 'parents',
+        parents: [newPerson({ id: '6', alive: true, name: 'Nonno', category: 'parents' })],
+      }),
+    ],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.parents[0].parents[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('One siblings and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    siblings: [newPerson({ id: '5', alive: true, name: 'Fratello', category: 'siblings' })],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('One siblings and three other relatives within six degrees of kinship', () => {
+  const deceased = newDeceased({
+    unilateral: [newPerson({ id: '5', alive: true, name: 'Fratello', category: 'unilateral' })],
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.unilateral[0].inheritance)).toBe('1')
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('0')
+  expect(asFraction(result.others[2].inheritance)).toBe('0')
+})
+
+test('Three other relatives of the same degree and one with an higher one', () => {
+  const deceased = newDeceased({
+    others: [
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '5', alive: true, name: 'Cugino', category: 'others', degree: 4 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+
+  expect(asFraction(result.others[0].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[1].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[2].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[3].inheritance)).toBe('0')
+})
+
+test('One relative with an higher degree and three other relatives with a lower one', () => {
+  const deceased = newDeceased({
+    others: [
+      newPerson({ id: '5', alive: true, name: 'Cugino', category: 'others', degree: 4 }),
+      newPerson({ id: '2', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+      newPerson({ id: '3', alive: true, name: 'Zio', category: 'others', degree: 3 }),
+      newPerson({ id: '4', alive: true, name: 'Zia', category: 'others', degree: 3 }),
+    ],
+  })
+  const result = calculateInheritance(deceased)
+  console.log(result)
+
+  expect(asFraction(result.others[0].inheritance)).toBe('0')
+  expect(asFraction(result.others[1].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[2].inheritance)).toBe('1/3')
+  expect(asFraction(result.others[3].inheritance)).toBe('1/3')
 })
