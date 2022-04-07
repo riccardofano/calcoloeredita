@@ -13,10 +13,9 @@ interface CardProps {
   category: CategoryName
   removePerson: (index: number) => void
   updatePerson: (index: number, person: Person) => void
-  directRelative?: boolean
 }
 
-const Card = ({ person, index, category, removePerson, updatePerson, directRelative }: CardProps) => {
+const Card = ({ person, index, category, removePerson, updatePerson }: CardProps) => {
   const changeName = (e: ChangeEvent<HTMLInputElement>) => {
     const updatedPerson = { ...person, name: e.target.value }
     updatePerson(index, updatedPerson)
@@ -44,7 +43,7 @@ const Card = ({ person, index, category, removePerson, updatePerson, directRelat
       <Flex gap="8" alignItems="center" justifyContent="space-between">
         <Input id="name" value={person.name} type="text" placeholder="Nome e cognome" onChange={changeName} />
         {category === 'others' && (
-          <Select placeholder="Grado di parentela" onChange={(e) => changeDegree(e)} required>
+          <Select placeholder="Parente (grado di parentela)" onChange={(e) => changeDegree(e)} required>
             <option value={3}>Zio/a (3)</option>
             <option value={4}>Cugino/a (4)</option>
             <option value={5}>Figlio/a di cugino/a (5)</option>
