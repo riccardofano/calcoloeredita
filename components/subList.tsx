@@ -7,28 +7,27 @@ interface SubListProps {
   person: Person
   updatePerson: (person: Person) => void
   category: CategoryName
-  directRelative?: boolean
 }
 
-const allowedCategories = (category: CategoryName, directRelative: boolean = false): CategoryName[] => {
+const allowedCategories = (category: CategoryName): CategoryName[] => {
   switch (category) {
     case 'children':
     case 'siblings':
       return ['children']
     case 'parents':
-      return directRelative ? ['parents'] : ['parents', 'children']
+      return ['parents']
     default:
       return []
   }
 }
 
-const SubList = ({ person, category, updatePerson, directRelative }: SubListProps) => {
+const SubList = ({ person, category, updatePerson }: SubListProps) => {
   const updatePeople = (category: CategoryName, people: Person[]) => {
     const updatedCategory = { ...person, [category]: people }
     updatePerson(updatedCategory)
   }
 
-  const relatives = allowedCategories(category, directRelative)
+  const relatives = allowedCategories(category)
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useContext } from 'react'
 
-export const categoryNames = ['children', 'spouse', 'parents', 'siblings', 'unilateral'] as const
+export const categoryNames = ['children', 'spouse', 'parents', 'siblings', 'unilateral', 'others'] as const
 export type CategoryName = typeof categoryNames[number]
 export type Categories = Record<CategoryName, boolean>
 
@@ -15,6 +15,7 @@ export const defaultState = {
   parents: false,
   siblings: false,
   unilateral: false,
+  others: false,
 }
 export const CategoryContext = createContext<ICategoryContext>({ categories: defaultState })
 
@@ -36,4 +37,11 @@ export const useCategory = (category: CategoryName): [boolean, (c: boolean) => v
 export const useCategories = () => {
   const { categories } = useContext(CategoryContext)
   return categories
+}
+
+export const nonOtherCategories = () => {
+  const {
+    categories: { children, spouse, parents, siblings, unilateral },
+  } = useContext(CategoryContext)
+  return [children, spouse, parents, siblings, unilateral]
 }

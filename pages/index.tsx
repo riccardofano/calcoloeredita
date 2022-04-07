@@ -12,6 +12,8 @@ import React from 'react'
 import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
 
 const Home: NextPage = () => {
+  const [categories, setCategories] = useState<Categories>(defaultState)
+  const [disabled, setDisabled] = useState<boolean>(false)
   const [deceased, setDeceased] = useState<Person>({
     name: 'Defunto',
     alive: false,
@@ -22,22 +24,24 @@ const Home: NextPage = () => {
     parents: [],
     siblings: [],
     unilateral: [],
+    others: [],
   })
-  const [categories, setCategories] = useState<Categories>(defaultState)
-  const [disabled, setDisabled] = useState<boolean>(true)
 
   useEffect(() => {
-    setDisabled(
-      !(
-        deceased.name &&
-        (deceased.children?.length ||
-          deceased.spouse?.length ||
-          deceased.parents?.length ||
-          deceased.siblings?.length ||
-          deceased.unilateral?.length)
-      )
-    )
+    const relatives = [
+      deceased.children,
+      deceased.spouse,
+      deceased.parents,
+      deceased.siblings,
+      deceased.unilateral,
+      deceased.others,
+    ]
+    setDisabled(!(deceased.name && relatives.some((c) => c.length > 0)))
   }, [deceased])
+
+  useEffect(() => {
+    setDisabled(true)
+  }, [])
 
   const showInhertance = () => {
     const updated = calculateInheritance(deceased)
@@ -77,7 +81,7 @@ const Home: NextPage = () => {
         </CategoryContext.Provider>
 
         <Box marginBlockEnd="48">
-          <Button type="submit" colorScheme="green" disabled={disabled} onClick={showInhertance}>
+          <Button type="submit" colorScheme="green" isDisabled={disabled} onClick={showInhertance}>
             Calcola
           </Button>
         </Box>

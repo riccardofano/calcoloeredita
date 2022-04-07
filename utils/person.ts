@@ -9,6 +9,7 @@ export interface Person {
   siblings: Person[]
   unilateral: Person[]
   parents: Person[]
+  others: Person[]
   alive: boolean
   inheritance?: number
   degree?: number

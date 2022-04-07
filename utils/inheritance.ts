@@ -39,7 +39,7 @@ const markWithoutInheritance = (deceased: Person) => {
 
     const relatives = findRelatives(person)
     // person is dead and has no heirs
-    if (relatives.length === 0) {
+    if (relatives.length === 0 && person?.others.length === 0) {
       person.inheritance = 0
       continue
     }
@@ -56,6 +56,16 @@ const markWithoutInheritance = (deceased: Person) => {
           queue.push(relative)
         }
       }
+    }
+
+    // Couldn't find someone in the close relatives
+    // Look at the other relatives
+    if (person.id === '1' && maxDegree === MAX_DEGREE && person.others?.length > 0) {
+      const copy = [...person.others]
+      copy.sort((a, b) => (a.degree ?? MAX_DEGREE) - (b.degree ?? MAX_DEGREE))
+      queue.push(...copy)
+    } else {
+      person.others = []
     }
   }
 }
@@ -128,6 +138,7 @@ const removeWithoutInheritance = (person: Person): boolean => {
   person.parents = person.parents.filter(hasNoInheritance)
   person.siblings = person.siblings.filter(hasNoInheritance)
   person.unilateral = person.unilateral.filter(hasNoInheritance)
+  person.others = person.others.filter(hasNoInheritance)
 
   return person.alive || findRelatives(person).length > 0
 }
@@ -139,7 +150,7 @@ const hasNoInheritance = (person: Person): boolean => {
 const findInheritance = (total: number, current?: Person) => {
   if (total === 0 || !current) return total
 
-  const { alive, children, spouse, parents, siblings, unilateral } = current
+  const { alive, children, spouse, parents, siblings, unilateral, others } = current
   if (alive) {
     current.inheritance = total
   }
@@ -165,6 +176,7 @@ const findInheritance = (total: number, current?: Person) => {
   const numberSiblings = siblings?.length ?? 0
   const numberUnilateral = unilateral?.length ?? 0
   const numberRelatives = numberParents + numberSiblings + numberUnilateral
+  const spousePresent = spouse?.length
 
   let inheritance = {
     relatives: total,
@@ -173,54 +185,59 @@ const findInheritance = (total: number, current?: Person) => {
     unilateral: 0,
   }
 
-  if (spouse?.length > 0) {
-    // only spouse:                 1
-    // spouse and other relatives : 2/3
-    let forSpouse = numberRelatives > 0 ? (total / 3) * 2 : total
-    // if there's a spouse the other relatives get 1/3
-    inheritance.relatives = total / 3
-    findInheritance(forSpouse, spouse[0])
-  }
-
-  if (numberParents > 0) {
-    inheritance.parents = inheritance.relatives / numberRelatives
-    // The parents receive at least half of the remaining inheritance
-    if (inheritance.parents * numberParents < inheritance.relatives / 2) {
-      inheritance.parents = inheritance.relatives / 2 / numberParents
+  if (spousePresent + numberRelatives > 0) {
+    if (spousePresent) {
+      // only spouse:                 1
+      // spouse and other relatives : 2/3
+      let forSpouse = numberRelatives > 0 ? (total / 3) * 2 : total
+      // if there's a spouse the other relatives get 1/3
+      inheritance.relatives = total / 3
+      findInheritance(forSpouse, spouse[0])
     }
 
-    const parentsAlive = parents?.filter((p) => p.alive)
-    // If there's only one parent alive, all the inheritance goes to them
-    if (parentsAlive?.length === 1) {
-      findInheritance(inheritance.parents * numberParents, parentsAlive[0])
-    } else {
-      // If neither parents is alive but the grandparents are, they receive only 1 parent's worth
-      if (parentsAlive?.length === 0) {
-        inheritance.parents = inheritance.relatives / (1 + numberSiblings + numberUnilateral) / numberParents
-        if (inheritance.parents * numberParents < inheritance.relatives / 4) {
-          inheritance.parents = inheritance.relatives / 4 / numberParents
-        }
+    if (numberParents > 0) {
+      inheritance.parents = inheritance.relatives / numberRelatives
+      // The parents receive at least half of the remaining inheritance
+      if (inheritance.parents * numberParents < inheritance.relatives / 2) {
+        inheritance.parents = inheritance.relatives / 2 / numberParents
       }
-      parents?.forEach((parent) => findInheritance(inheritance.parents, parent))
-    }
-    inheritance.relatives -= inheritance.parents * numberParents
-  }
 
-  if (numberSiblings + numberUnilateral > 0) {
-    if (numberUnilateral === 0) {
-      // If there are no unilateral siblings all goes the bilateral siblings
-      inheritance.siblings = inheritance.relatives / numberSiblings
-    } else if (numberSiblings === 0) {
-      // If there are no bilateral siblings all goes to the unilateral siblings
-      inheritance.unilateral = inheritance.relatives / numberUnilateral
-    } else {
-      // Otherwise an unilateral sibling gets 1/2 of what a bilateral one would get
-      inheritance.siblings = inheritance.relatives / (numberSiblings + numberUnilateral / 2)
-      inheritance.unilateral = inheritance.siblings / 2
+      const parentsAlive = parents?.filter((p) => p.alive)
+      // If there's only one parent alive, all the inheritance goes to them
+      if (parentsAlive?.length === 1) {
+        findInheritance(inheritance.parents * numberParents, parentsAlive[0])
+      } else {
+        // If neither parents is alive but the grandparents are, they receive only 1 parent's worth
+        if (parentsAlive?.length === 0) {
+          inheritance.parents = inheritance.relatives / (1 + numberSiblings + numberUnilateral) / numberParents
+          if (inheritance.parents * numberParents < inheritance.relatives / 4) {
+            inheritance.parents = inheritance.relatives / 4 / numberParents
+          }
+        }
+        parents?.forEach((parent) => findInheritance(inheritance.parents, parent))
+      }
+      inheritance.relatives -= inheritance.parents * numberParents
     }
 
-    siblings?.forEach((sibling) => findInheritance(inheritance.siblings, sibling))
-    unilateral?.forEach((sibling) => findInheritance(inheritance.unilateral, sibling))
+    if (numberSiblings + numberUnilateral > 0) {
+      if (numberUnilateral === 0) {
+        // If there are no unilateral siblings all goes the bilateral siblings
+        inheritance.siblings = inheritance.relatives / numberSiblings
+      } else if (numberSiblings === 0) {
+        // If there are no bilateral siblings all goes to the unilateral siblings
+        inheritance.unilateral = inheritance.relatives / numberUnilateral
+      } else {
+        // Otherwise an unilateral sibling gets 1/2 of what a bilateral one would get
+        inheritance.siblings = inheritance.relatives / (numberSiblings + numberUnilateral / 2)
+        inheritance.unilateral = inheritance.siblings / 2
+      }
+      siblings?.forEach((sibling) => findInheritance(inheritance.siblings, sibling))
+      unilateral?.forEach((sibling) => findInheritance(inheritance.unilateral, sibling))
+    }
+  } else if (others?.length > 0) {
+    // If there are people in others, they must be the only ones that can inherit
+    const inheritanceOneOther = inheritance.relatives / others.length
+    others?.forEach((relative) => findInheritance(inheritanceOneOther, relative))
   }
 }
 
@@ -234,7 +251,9 @@ export const calculateInheritance = (person: Person): Person => {
   findInheritance(100, graph)
 
   mergePerson(person, graph)
-  return person
+  // Create a copy otherwise react won't trigger a re-render
+  const copy = { ...person }
+  return copy
 }
 
 // Merge people if their id is the same
@@ -248,6 +267,7 @@ const mergePerson = (source: Person, target: Person): boolean => {
     mergeInCategory(source.parents, target.parents)
     mergeInCategory(source.siblings, target.siblings)
     mergeInCategory(source.unilateral, target.unilateral)
+    mergeInCategory(source.others, target.others)
 
     return true
   }
