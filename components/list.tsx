@@ -38,13 +38,7 @@ const List = ({ person, updatePerson }: ListProps) => {
         .filter(([_, allowed]) => allowed)
         .map(([category]) => {
           return (
-            <ListItem
-              key={category}
-              category={category}
-              people={person[category]}
-              setPeople={updatePeople}
-              directRelative
-            ></ListItem>
+            <ListItem key={category} category={category} people={person[category]} setPeople={updatePeople}></ListItem>
           )
         })}
     </UnorderedList>

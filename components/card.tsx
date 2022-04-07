@@ -55,9 +55,7 @@ const Card = ({ person, index, category, removePerson, updatePerson, directRelat
           </Flex>
         }
       </Flex>
-      {!person.alive && (
-        <SubList category={category} person={person} updatePerson={setPerson} directRelative={directRelative}></SubList>
-      )}
+      {!person.alive && <SubList category={category} person={person} updatePerson={setPerson}></SubList>}
     </Box>
   )
 }

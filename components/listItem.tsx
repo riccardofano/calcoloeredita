@@ -10,7 +10,6 @@ interface ListItemProps {
   category: CategoryName
   people?: Person[]
   setPeople: (category: CategoryName, people: Person[]) => void
-  directRelative?: boolean
 }
 
 const title: Record<CategoryName, string> = {
@@ -31,7 +30,7 @@ const maxPeople: Record<CategoryName, number> = {
   others: 50,
 }
 
-const ListItem = ({ category, people, setPeople, directRelative }: ListItemProps) => {
+const ListItem = ({ category, people, setPeople }: ListItemProps) => {
   const updatePerson = (index: number, person: Person) => {
     const updatedPeople = [...(people || [])]
     updatedPeople[index] = person
@@ -79,7 +78,6 @@ const ListItem = ({ category, people, setPeople, directRelative }: ListItemProps
             person={person}
             index={index}
             category={category}
-            directRelative={directRelative}
             removePerson={removePerson}
             updatePerson={updatePerson}
           ></Card>

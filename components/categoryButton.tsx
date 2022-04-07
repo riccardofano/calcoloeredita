@@ -1,4 +1,4 @@
-import { Checkbox, Text, Box, FormLabel } from '@chakra-ui/react'
+import { Checkbox, Box } from '@chakra-ui/react'
 import { useContext, useEffect } from 'react'
 import { useCategory, CategoryName, CategoryContext, nonOtherCategories } from '../context/Category'
 
