@@ -186,9 +186,9 @@ test('Spouse and one unilateral sibling', () => {
 
 test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   // The spouse gets 2/3
-  // Parents 1/2 of the remainder (1/6)
-  // Bilateral siblings 2/3 of the remainder (1/9)
-  // Unilateral siblings half a the bilateral siblings (1/18)
+  // Parents at least 1/4 of the total
+  // Bilateral siblings 1/18
+  // Unilateral siblings half a the bilateral siblings (1/36)
   const deceased = newDeceased({
     spouse: [newPerson({ id: '2', name: 'Coniuge', alive: true, category: 'spouse' })],
     parents: [newPerson({ id: '3', name: 'Mamma', alive: true, category: 'parents' })],
@@ -198,9 +198,9 @@ test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   const result = calculateInheritance(deceased)
 
   expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
-  expect(asFraction(result.parents[0].inheritance)).toBe('1/6')
-  expect(asFraction(result.siblings[0].inheritance)).toBe('1/9')
-  expect(asFraction(result.unilateral[0].inheritance)).toBe('1/18')
+  expect(asFraction(result.parents[0].inheritance)).toBe('1/4')
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1/18')
+  expect(asFraction(result.unilateral[0].inheritance)).toBe('1/36')
 })
 
 test('Spouse, two grandparents and one sibling', () => {
@@ -223,14 +223,14 @@ test('Spouse, two grandparents and one sibling', () => {
   const result = calculateInheritance(deceased)
 
   expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
-  expect(asFraction(result.siblings[0].inheritance)).toBe('1/6')
-  expect(asFraction(result.parents[0].parents[0].inheritance)).toBe('1/12')
-  expect(asFraction(result.parents[0].parents[1].inheritance)).toBe('1/12')
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1/12')
+  expect(asFraction(result.parents[0].parents[0].inheritance)).toBe('1/8')
+  expect(asFraction(result.parents[0].parents[1].inheritance)).toBe('1/8')
 })
 
 test('Spouse, one grandparent and four siblings', () => {
   // The spouse takes 2/3
-  // The grandparent has to have at least 1/4 of the remaning inheritance
+  // The grandparent has to have at least 1/4 of the inheritance
   // The rest goes to the siblings
   const deceased = newDeceased({
     spouse: [newPerson({ id: '3', name: 'Coniuge', alive: true, category: 'spouse' })],
@@ -253,11 +253,11 @@ test('Spouse, one grandparent and four siblings', () => {
   const result = calculateInheritance(deceased)
 
   expect(asFraction(result.spouse[0].inheritance)).toBe('2/3')
-  expect(asFraction(result.siblings[0].inheritance)).toBe('1/16')
-  expect(asFraction(result.siblings[1].inheritance)).toBe('1/16')
-  expect(asFraction(result.siblings[2].inheritance)).toBe('1/16')
-  expect(asFraction(result.siblings[3].inheritance)).toBe('1/16')
-  expect(asFraction(result.parents[0].parents[0].inheritance)).toBe('1/12')
+  expect(asFraction(result.siblings[0].inheritance)).toBe('1/48')
+  expect(asFraction(result.siblings[1].inheritance)).toBe('1/48')
+  expect(asFraction(result.siblings[2].inheritance)).toBe('1/48')
+  expect(asFraction(result.siblings[3].inheritance)).toBe('1/48')
+  expect(asFraction(result.parents[0].parents[0].inheritance)).toBe('1/4')
 })
 
 test('Two parents', () => {
@@ -717,7 +717,6 @@ test('One relative with an higher degree and three other relatives with a lower 
     ],
   })
   const result = calculateInheritance(deceased)
-  console.log(result)
 
   expect(asFraction(result.others[0].inheritance)).toBe('0')
   expect(asFraction(result.others[1].inheritance)).toBe('1/3')

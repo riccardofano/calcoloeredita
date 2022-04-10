@@ -198,7 +198,10 @@ const findInheritance = (total: number, current?: Person) => {
     if (numberParents > 0) {
       inheritance.parents = inheritance.relatives / numberRelatives
       // The parents receive at least half of the remaining inheritance
-      if (inheritance.parents * numberParents < inheritance.relatives / 2) {
+      const totalParentsInheritance = inheritance.parents * numberParents
+      if (spousePresent && totalParentsInheritance < total / 4) {
+        inheritance.parents = total / 4
+      } else if (totalParentsInheritance < inheritance.relatives / 2) {
         inheritance.parents = inheritance.relatives / 2 / numberParents
       }
 
@@ -208,11 +211,9 @@ const findInheritance = (total: number, current?: Person) => {
         findInheritance(inheritance.parents * numberParents, parentsAlive[0])
       } else {
         // If neither parents is alive but the grandparents are, they receive only 1 parent's worth
-        if (parentsAlive?.length === 0) {
+        // When the spouse is present all ascendants get at least 1/4 of the total
+        if (!spousePresent && parentsAlive?.length === 0) {
           inheritance.parents = inheritance.relatives / (1 + numberSiblings + numberUnilateral) / numberParents
-          if (inheritance.parents * numberParents < inheritance.relatives / 4) {
-            inheritance.parents = inheritance.relatives / 4 / numberParents
-          }
         }
         parents?.forEach((parent) => findInheritance(inheritance.parents, parent))
       }
