@@ -5,6 +5,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405)
   if (req.headers['content-type'] !== 'application/json') return res.status(400)
 
-  let result = calculateInheritance(req.body)
+  const result = calculateInheritance(req.body)
   return res.json(result)
 }
