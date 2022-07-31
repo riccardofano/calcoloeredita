@@ -5,7 +5,6 @@ import { Box, Button, Center, Container, FormControl, FormLabel, Heading, Input,
 
 import CategoryButton from '../components/categoryButton'
 
-import { calculateInheritance } from '../utils/inheritance'
 import { Person } from '../utils/person'
 import List from '../components/list'
 import React from 'react'
@@ -43,8 +42,13 @@ const Home: NextPage = () => {
     setDisabled(true)
   }, [])
 
-  const showInhertance = () => {
-    const updated = calculateInheritance(deceased)
+  const showInhertance = async () => {
+    const result = await fetch('/api/inheritance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deceased),
+    })
+    const updated = await result.json()
     setDeceased(updated)
   }
 
