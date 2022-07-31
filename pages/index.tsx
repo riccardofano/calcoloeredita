@@ -43,8 +43,13 @@ const Home: NextPage = () => {
     setDisabled(true)
   }, [])
 
-  const showInhertance = () => {
-    const updated = calculateInheritance(deceased)
+  const showInhertance = async () => {
+    const result = await fetch('/api/inheritance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deceased),
+    })
+    const updated = await result.json()
     setDeceased(updated)
   }
 
