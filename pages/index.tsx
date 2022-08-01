@@ -13,7 +13,9 @@ import { CategoryContext, defaultState } from '../context/Category'
 import { InheritanceContext } from '../context/Inheritance'
 
 const Home: NextPage = () => {
-  const [categories, setCategories] = useState<Categories>(defaultState)
+  const [allChecked, setAllChecked] = useState<Categories>(defaultState)
+  const [allDisabled, setAllDisabled] = useState<Categories>(defaultState)
+
   const [disabled, setDisabled] = useState<boolean>(true)
   const [inheritanceList, setInheritanceList] = useState<Record<string, number>>({})
   const [deceased, setDeceased] = useState<Person>({
@@ -79,7 +81,7 @@ const Home: NextPage = () => {
         </FormControl>
 
         <InheritanceContext.Provider value={{ inheritanceList }}>
-          <CategoryContext.Provider value={{ categories, setCategories }}>
+          <CategoryContext.Provider value={{ allChecked, allDisabled, setAllChecked, setAllDisabled }}>
             {categoryNames.map((c) => (
               <CategoryButton key={c} category={c}></CategoryButton>
             ))}

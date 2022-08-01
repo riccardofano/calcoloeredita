@@ -21,11 +21,11 @@ const List = ({ person, updatePerson }: ListProps) => {
   }
 
   useEffect(() => {
-    // Set every disabled category to an empty array
-    const categoriesDisabled = categoryNames.filter((c) => categories[c] === false)
+    // Set every unchecked category to an empty array
+    const uncheckedCategories = categoryNames.filter((c) => categories[c] === false)
 
     updatePerson((state) => {
-      return categoriesDisabled.reduce(
+      return uncheckedCategories.reduce(
         (s, category) => {
           s[category] = []
           return s
