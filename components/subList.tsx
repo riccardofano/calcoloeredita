@@ -1,6 +1,6 @@
 import { UnorderedList } from '@chakra-ui/react'
-import { CategoryName } from '../context/Category'
-import { Person } from '../utils/person'
+import { CategoryName } from '../utils/types/Category'
+import { Person } from '../utils/types/Person'
 import ListItem from './listItem'
 
 interface SubListProps {
@@ -27,11 +27,11 @@ const SubList = ({ person, category, updatePerson }: SubListProps) => {
     updatePerson(updatedCategory)
   }
 
-  const relatives = allowedCategories(category)
+  const possibleRelatives = allowedCategories(category)
 
   return (
     <>
-      {relatives.length > 0 && (
+      {possibleRelatives.length > 0 && (
         <UnorderedList
           listStyleType="none"
           margin="0"
@@ -43,7 +43,7 @@ const SubList = ({ person, category, updatePerson }: SubListProps) => {
           borderColor="gray.400"
           borderBottomStartRadius="1rem"
         >
-          {relatives.map((c, i) => (
+          {possibleRelatives.map((c, i) => (
             <ListItem key={i} category={c} people={person[c]} setPeople={updatePeople} />
           ))}
         </UnorderedList>

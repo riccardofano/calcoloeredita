@@ -5,14 +5,17 @@ import { Box, Button, Center, Container, FormControl, FormLabel, Heading, Input,
 
 import CategoryButton from '../components/categoryButton'
 
-import { Person } from '../utils/person'
+import { Categories, categoryNames } from '../utils/types/Category'
+import { Person } from '../utils/types/Person'
 import List from '../components/list'
 import React from 'react'
-import { Categories, CategoryContext, categoryNames, defaultState } from '../context/Category'
+import { CategoryContext, defaultState } from '../context/Category'
+import { InheritanceContext } from '../context/Inheritance'
 
 const Home: NextPage = () => {
   const [categories, setCategories] = useState<Categories>(defaultState)
-  const [disabled, setDisabled] = useState<boolean>(false)
+  const [disabled, setDisabled] = useState<boolean>(true)
+  const [inheritanceList, setInheritanceList] = useState<Record<string, number>>({})
   const [deceased, setDeceased] = useState<Person>({
     name: 'Defunto',
     alive: false,
@@ -38,18 +41,17 @@ const Home: NextPage = () => {
     setDisabled(!(deceased.name && relatives.some((c) => c.length > 0)))
   }, [deceased])
 
-  useEffect(() => {
-    setDisabled(true)
-  }, [])
-
   const showInhertance = async () => {
     const result = await fetch('/api/inheritance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(deceased),
     })
+
     const updated = await result.json()
-    setDeceased(updated)
+    if (updated !== null) {
+      setInheritanceList(updated)
+    }
   }
 
   return (
@@ -76,13 +78,15 @@ const Home: NextPage = () => {
           ></Input>
         </FormControl>
 
-        <CategoryContext.Provider value={{ categories, setCategories }}>
-          {categoryNames.map((c) => (
-            <CategoryButton key={c} category={c}></CategoryButton>
-          ))}
+        <InheritanceContext.Provider value={{ inheritanceList }}>
+          <CategoryContext.Provider value={{ categories, setCategories }}>
+            {categoryNames.map((c) => (
+              <CategoryButton key={c} category={c}></CategoryButton>
+            ))}
 
-          <List person={deceased} updatePerson={setDeceased}></List>
-        </CategoryContext.Provider>
+            <List person={deceased} updatePerson={setDeceased}></List>
+          </CategoryContext.Provider>
+        </InheritanceContext.Provider>
 
         <Box marginBlockEnd="48">
           <Button type="submit" colorScheme="green" isDisabled={disabled} onClick={showInhertance}>

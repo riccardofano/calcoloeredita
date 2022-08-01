@@ -20,12 +20,33 @@ export const useCategory = (category: CategoryName): [boolean, (c: boolean) => v
   const { categories, setCategories } = useContext(CategoryContext)
   const checked = categories[category]
 
-  const setChecked = (c: boolean) => {
+  const setChecked = (shouldEnable: boolean) => {
     if (!setCategories) return
-    setCategories((categories) => ({
-      ...categories,
-      [category]: c,
-    }))
+
+    // User wants to enable children
+    // disable everyone but the spouse from the enabled list
+    if (shouldEnable && category === 'children') {
+      setCategories((state) => ({
+        ...state,
+        others: false,
+        siblings: false,
+        unilateral: false,
+        parents: false,
+        children: true,
+      }))
+      // Enabling a category that isn't 'others' should disabled 'others'
+    } else if (shouldEnable && category !== 'others') {
+      setCategories((state) => ({
+        ...state,
+        others: false,
+        [category]: true,
+      }))
+    } else {
+      setCategories((categories) => ({
+        ...categories,
+        [category]: shouldEnable,
+      }))
+    }
   }
 
   return [checked, setChecked]

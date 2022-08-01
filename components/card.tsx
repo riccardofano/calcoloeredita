@@ -1,11 +1,12 @@
 import { DeleteIcon } from '@chakra-ui/icons'
 import { Box, Checkbox, CircularProgress, Text, Flex, IconButton, Input, Select } from '@chakra-ui/react'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useContext } from 'react'
 import Fraction from 'fraction.js'
 
-import { CategoryName } from '../context/Category'
-import { Person } from '../utils/person'
+import { CategoryName } from '../utils/types/Category'
+import { Person } from '../utils/types/Person'
 import SubList from './subList'
+import { InheritanceContext } from '../context/Inheritance'
 
 interface CardProps {
   person: Person
@@ -36,7 +37,8 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
     updatePerson(index, updatedPerson)
   }
 
-  const inheritance = person.inheritance ?? 0
+  const { inheritanceList } = useContext(InheritanceContext)
+  const inheritance = inheritanceList[person.id] ?? 0
 
   return (
     <Box>

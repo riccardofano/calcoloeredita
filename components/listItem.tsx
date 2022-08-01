@@ -1,14 +1,15 @@
 import { AddIcon } from '@chakra-ui/icons'
 import { ListItem as Li, Heading, SimpleGrid, Flex, IconButton } from '@chakra-ui/react'
+
 import { v4 as uuid } from 'uuid'
-import { CategoryName } from '../context/Category'
-import { Person } from '../utils/person'
+import { CategoryName } from '../utils/types/Category'
+import { Person } from '../utils/types/Person'
 
 import Card from './card'
 
 interface ListItemProps {
   category: CategoryName
-  people?: Person[]
+  people: Person[]
   setPeople: (category: CategoryName, people: Person[]) => void
 }
 
@@ -64,7 +65,7 @@ const ListItem = ({ category, people, setPeople }: ListItemProps) => {
   return (
     <Li>
       <Flex alignItems="center" gap="4">
-        {(people?.length || 0) < maxPeople[category] && (
+        {(people.length || 0) < maxPeople[category] && (
           <IconButton aria-label="aggiungi" icon={<AddIcon />} onClick={addPerson} />
         )}
         <Heading as="h3" size="md" paddingBlock="4">
@@ -72,7 +73,7 @@ const ListItem = ({ category, people, setPeople }: ListItemProps) => {
         </Heading>
       </Flex>
       <SimpleGrid column={1} spacing="2" rowGap="4">
-        {people?.map((person, index) => (
+        {people.map((person, index) => (
           <Card
             key={person.id}
             person={person}

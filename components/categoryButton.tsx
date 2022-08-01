@@ -1,6 +1,6 @@
 import { Checkbox, Box } from '@chakra-ui/react'
-import { useContext, useEffect } from 'react'
-import { useCategory, CategoryName, CategoryContext, nonOtherCategories } from '../context/Category'
+import { useCategory } from '../context/Category'
+import { CategoryName } from '../utils/types/Category'
 
 interface ButtonProps {
   category: CategoryName
@@ -17,26 +17,10 @@ const text: Record<CategoryName, string> = {
 
 const Button = ({ category }: ButtonProps) => {
   const [checked, setChecked] = useCategory(category)
-  const { categories } = useContext(CategoryContext)
-  const notOthers = nonOtherCategories()
-  const isDisabled =
-    ((category === 'parents' || category === 'siblings' || category === 'unilateral') && categories.children) ||
-    (category === 'others' && notOthers.some((c) => c))
-
-  useEffect(() => {
-    setChecked(checked && !isDisabled)
-  }, [isDisabled])
 
   return (
     <Box>
-      <Checkbox
-        size="lg"
-        type="checkbox"
-        id={category}
-        isChecked={checked}
-        onChange={(e) => setChecked(e.target.checked)}
-        isDisabled={isDisabled}
-      >
+      <Checkbox size="lg" type="checkbox" id={category} isChecked={checked} onChange={() => setChecked(!checked)}>
         {text[category]}
       </Checkbox>
     </Box>
