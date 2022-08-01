@@ -1,8 +1,5 @@
 import { createContext, Dispatch, SetStateAction, useContext } from 'react'
-
-export const categoryNames = ['children', 'spouse', 'parents', 'siblings', 'unilateral', 'others'] as const
-export type CategoryName = typeof categoryNames[number]
-export type Categories = Record<CategoryName, boolean>
+import { Categories, CategoryName } from '../utils/types/Category'
 
 interface ICategoryContext {
   categories: Categories
@@ -39,7 +36,7 @@ export const useCategories = () => {
   return categories
 }
 
-export const nonOtherCategories = () => {
+export const useNonOtherCategories = () => {
   const {
     categories: { children, spouse, parents, siblings, unilateral },
   } = useContext(CategoryContext)
