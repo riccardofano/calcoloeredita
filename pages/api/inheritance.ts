@@ -6,5 +6,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.headers['content-type'] !== 'application/json') return res.status(400)
 
   const result = calculateInheritance(req.body)
+  if (result === null) {
+    return res.status(500)
+  }
   return res.json(result)
 }
