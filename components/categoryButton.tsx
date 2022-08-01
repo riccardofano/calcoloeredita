@@ -16,11 +16,18 @@ const text: Record<CategoryName, string> = {
 }
 
 const Button = ({ category }: ButtonProps) => {
-  const [checked, setChecked] = useCategory(category)
+  const { checked, disabled, setChecked } = useCategory(category)
 
   return (
     <Box>
-      <Checkbox size="lg" type="checkbox" id={category} isChecked={checked} onChange={() => setChecked(!checked)}>
+      <Checkbox
+        size="lg"
+        type="checkbox"
+        id={category}
+        isChecked={checked}
+        isDisabled={disabled}
+        onChange={() => setChecked(!checked)}
+      >
         {text[category]}
       </Checkbox>
     </Box>
