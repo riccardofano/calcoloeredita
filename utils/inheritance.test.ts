@@ -1,43 +1,5 @@
-import Fraction from 'fraction.js'
+import { asFraction, newDeceased, newOther, newPerson } from './common'
 import { calculateInheritance } from './inheritance'
-import { CategoryName, CategoryPeople } from './types/Category'
-import { Person, PersonDegree } from './types/Person'
-
-interface TestPerson extends Partial<CategoryPeople<Person>> {
-  id: string
-  name?: string
-  alive: boolean
-  category: CategoryName
-  others?: PersonDegree[]
-}
-
-const newPerson = (options: TestPerson): Person => {
-  return {
-    name: 'does not matter',
-    children: [],
-    spouse: [],
-    parents: [],
-    siblings: [],
-    unilateral: [],
-    others: [],
-    ...options,
-  }
-}
-
-const newOther = (options: TestPerson & { degree: number }): PersonDegree => {
-  return { ...newPerson(options), degree: options.degree }
-}
-
-type AllButOthers = Exclude<CategoryName, 'others'>
-type MaybeAllRelatives = Partial<{ [key in AllButOthers]: Person[] } & { others?: PersonDegree[] }>
-
-const newDeceased = (relatives: MaybeAllRelatives) => {
-  return newPerson({ id: '1', name: 'Defunto', alive: false, category: 'children', ...relatives })
-}
-
-const asFraction = (inheritance?: number): string => {
-  return new Fraction((inheritance ?? 0) / 100).toFraction(true)
-}
 
 test('Only one child', () => {
   // If there's only one child, they get all the inheritance
