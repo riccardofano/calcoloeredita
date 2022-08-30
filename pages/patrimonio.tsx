@@ -41,7 +41,7 @@ const Home: NextPage = () => {
   const isDisabled = !(deceased.name && relatives.some((c) => c.length > 0))
 
   const showInhertance = async () => {
-    const result = await fetch('/api/inheritance', {
+    const result = await fetch('/api/patrimony', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(deceased),
@@ -56,21 +56,21 @@ const Home: NextPage = () => {
   return (
     <Container maxWidth="container.lg" minHeight="100vh" padding="8">
       <Head>
-        <title>Calcolo eredità</title>
+        <title>Calcolo patrimonio</title>
         <meta name="description" content="Calcola l'eredità per successione legittima." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Link href="/patrimonio">
-          <a style={{ textDecoration: 'underline', color: 'blue' }}>Calcolo patrimonio ➡</a>
+      <nav>
+        <Link href="/">
+          <a style={{ textDecoration: 'underline', color: 'blue' }}>⬅ Calcolo eredità</a>
         </Link>
       </nav>
 
       <SimpleGrid as="main" spacing="4">
         <Center>
           <Heading as="h1" size="2xl">
-            Calcola eredità
+            Calcolo patrimonio wip
           </Heading>
         </Center>
         <FormControl isInvalid={deceased.name === ''} isRequired>
@@ -88,6 +88,12 @@ const Home: NextPage = () => {
             {categoryNames.map((c) => (
               <CategoryButton key={c} category={c}></CategoryButton>
             ))}
+
+            {inheritanceList.available && !isDisabled && (
+              <h2 style={{ fontSize: '2rem', textAlign: 'center' }}>
+                Patrimonio disponibile: {inheritanceList.available}
+              </h2>
+            )}
 
             <List person={deceased} updatePerson={setDeceased}></List>
           </CategoryContext.Provider>

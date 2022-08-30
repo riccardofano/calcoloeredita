@@ -40,31 +40,6 @@ function addEligibleRelativeToRoot(relative: StrippedPerson) {
   }
 }
 
-function getRelatives(isRoot: boolean, person: MaybeEligible): Person[] {
-  if (isRoot) {
-    // The deceased can have all possible relatives
-    return [...person.children, ...person.spouse, ...person.parents, ...person.siblings, ...person.unilateral]
-  }
-
-  if (person.category === 'parents') {
-    // The deceased parents' only relevant relatives their own parents
-    // because we already accounted for their children, they are the siblings
-    if (person.degree === 1) {
-      return [...person.parents]
-    }
-    // Other ascendants have their children also (uncles and aunts)
-    return [...person.children, ...person.parents]
-  }
-
-  if (person.category === 'siblings' || person.category === 'children') {
-    // Only direct children and the children of bilateral siblings are eligible
-    return [...person.children]
-  }
-
-  // Everyone else's heirs aren't eligible
-  return []
-}
-
 function getDegree(relative: MaybeEligible, current: MaybeEligible): number {
   // Return the relative's degree of kinship
   // siblings (unilateral and bilateral) have a difference of 2 degrees of kinship
@@ -88,7 +63,10 @@ function hasRepresentationRight(relative: MaybeEligible, current: MaybeEligible,
 }
 
 // Build a graph with only the people who can receive the inheritance
-export function stripGraph(root: Person): StrippedPerson | null {
+export function stripGraph(
+  root: Person,
+  getRelatives: (isRoot: boolean, person: MaybeEligible) => Person[]
+): StrippedPerson | null {
   const ROOT_ID = root.id
   const strippedRoot: StrippedPerson = {
     id: ROOT_ID,

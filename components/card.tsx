@@ -39,6 +39,7 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
 
   const { inheritanceList } = useContext(InheritanceContext)
   const inheritance = inheritanceList[person.id] ?? 0
+  const decimalInheritance = new Fraction(inheritance).valueOf() * 100
 
   return (
     <Box>
@@ -69,8 +70,8 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
         ></IconButton>
         {
           <Flex gap="2" alignItems="center">
-            <Text>{new Fraction(inheritance / 100).toFraction(true)}</Text>
-            <CircularProgress size="1.5em" value={inheritance}></CircularProgress>
+            <Text>{inheritance}</Text>
+            <CircularProgress size="1.5em" value={decimalInheritance}></CircularProgress>
           </Flex>
         }
       </Flex>
