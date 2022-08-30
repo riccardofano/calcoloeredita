@@ -1,5 +1,5 @@
 import { newDeceased, newOther, newPerson } from './common'
-import { calculateInheritance } from './inheritance'
+import { calculateInheritance } from '../inheritance'
 
 test('Only one child', () => {
   // If there's only one child, they get all the inheritance

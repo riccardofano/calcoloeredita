@@ -1,6 +1,6 @@
 import Fraction from 'fraction.js'
-import { CategoryName, CategoryPeople } from './types/Category'
-import { Person, PersonDegree } from './types/Person'
+import { CategoryName, CategoryPeople } from '../types/Category'
+import { Person, PersonDegree } from '../types/Person'
 
 export interface TestPerson extends Partial<CategoryPeople<Person>> {
   id: string
