@@ -43,9 +43,6 @@ export function calculatePatrimony(root: Person, total = 100): Record<string, st
         : ((remaining / 3) * 2) / current.children.length
       let remains = spousePresent ? remaining / 4 : remaining / 3
 
-      console.log(current.children.length)
-      console.log(remaining, forChildren)
-
       if (current.children.length === 1) {
         forChildren = spousePresent ? remaining / 3 : remaining / 2
         remains = spousePresent ? remaining / 3 : remaining / 2

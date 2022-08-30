@@ -40,7 +40,6 @@ const Card = ({ person, index, category, removePerson, updatePerson }: CardProps
   const { inheritanceList } = useContext(InheritanceContext)
   const inheritance = inheritanceList[person.id] ?? 0
   const decimalInheritance = new Fraction(inheritance).valueOf() * 100
-  console.log(decimalInheritance)
 
   return (
     <Box>
