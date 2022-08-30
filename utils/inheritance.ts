@@ -1,15 +1,17 @@
 import Fraction from 'fraction.js'
 import { stripGraph } from './graph'
-import { Person, StrippedPerson } from './types/Person'
+import { MaybeEligible, Person, StrippedPerson } from './types/Person'
 
 export function calculateInheritance(root: Person, total = 100): Record<string, string> {
-  const stripped = stripGraph(root)
+  const stripped = stripGraph(root, getRelatives)
   if (stripped === null) {
     throw new Error('Could not strip graph')
   }
 
   const inheritanceList: Record<string, string> = {}
   findInheritance(total, stripped)
+
+  return inheritanceList
 
   function findInheritance(remaning: number, current?: StrippedPerson) {
     if (remaning === 0 || !current) return remaning
@@ -18,30 +20,31 @@ export function calculateInheritance(root: Person, total = 100): Record<string, 
       inheritanceList[current.id] = new Fraction(remaning / total).toFraction(true)
     }
 
+    const spousePresent = current.spouse?.length ?? 0
+
     if (current.children && current?.children?.length > 0) {
       // multiple children and spouse:    2/3/children and 1/3
       // multiple children and no spouse: 1/children   and 0
-      let forChildren = current?.spouse?.[0]
+      let forChildren = spousePresent
         ? ((remaning / 3) * 2) / current.children.length
         : remaning / current.children.length
-      let forSpouse = current?.spouse?.[0] ? remaning / 3 : 0
+      let forSpouse = spousePresent ? remaning / 3 : 0
 
-      if (current.children && current.children.length === 1) {
+      if (current.children.length === 1) {
         // single child and spouse:    1/2 and 1/2
         // single child and no spouse: 1   and 0
-        forChildren = current.spouse?.[0] ? remaning / 2 : remaning
-        forSpouse = current.spouse?.[0] ? remaning / 2 : 0
+        forChildren = spousePresent ? remaning / 2 : remaning
+        forSpouse = spousePresent ? remaning / 2 : 0
       }
       current?.children?.forEach((child) => findInheritance(forChildren, child))
       findInheritance(forSpouse, current.spouse?.[0])
-      return
+      return 0
     }
 
     const numberParents = current.parents?.length ?? 0
     const numberSiblings = current.siblings?.length ?? 0
     const numberUnilateral = current.unilateral?.length ?? 0
     const numberRelatives = numberParents + numberSiblings + numberUnilateral
-    const spousePresent = current.spouse?.length ?? 0
 
     const inheritance = {
       relatives: remaning,
@@ -105,7 +108,32 @@ export function calculateInheritance(root: Person, total = 100): Record<string, 
       const inheritanceOneOther = inheritance.relatives / current.others.length
       current.others?.forEach((relative) => findInheritance(inheritanceOneOther, relative))
     }
+
+    return remaning
+  }
+}
+
+function getRelatives(isRoot: boolean, person: MaybeEligible): Person[] {
+  if (isRoot) {
+    // The deceased can have all possible relatives
+    return [...person.children, ...person.spouse, ...person.parents, ...person.siblings, ...person.unilateral]
   }
 
-  return inheritanceList
+  if (person.category === 'parents') {
+    // The deceased parents' only relevant relatives their own parents
+    // because we already accounted for their children, they are the siblings
+    if (person.degree === 1) {
+      return [...person.parents]
+    }
+    // Other ascendants have their children also (uncles and aunts)
+    return [...person.children, ...person.parents]
+  }
+
+  if (person.category === 'siblings' || person.category === 'children') {
+    // Only direct children and the children of bilateral siblings are eligible
+    return [...person.children]
+  }
+
+  // Everyone else's heirs aren't eligible
+  return []
 }
