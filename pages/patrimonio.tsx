@@ -11,10 +11,14 @@ import List from '../components/list'
 import { CategoryContext, defaultState } from '../context/Category'
 import { InheritanceContext } from '../context/Inheritance'
 import Link from 'next/link'
+import PatrimonyForm from '../components/patrimonyForm'
+import Fraction from 'fraction.js'
 
 const Home: NextPage = () => {
   const [allChecked, setAllChecked] = useState<Categories>(defaultState)
   const [allDisabled, setAllDisabled] = useState<Categories>(defaultState)
+
+  const [patrimony, setPatrimony] = useState<number>(0)
 
   const [inheritanceList, setInheritanceList] = useState<Record<string, string>>({})
   const [deceased, setDeceased] = useState<Person>({
@@ -83,6 +87,8 @@ const Home: NextPage = () => {
           ></Input>
         </FormControl>
 
+        <PatrimonyForm updatePatrimony={setPatrimony}></PatrimonyForm>
+
         <InheritanceContext.Provider value={{ inheritanceList }}>
           <CategoryContext.Provider value={{ allChecked, allDisabled, setAllChecked, setAllDisabled }}>
             {categoryNames.map((c) => (
@@ -91,7 +97,8 @@ const Home: NextPage = () => {
 
             {inheritanceList.available && !isDisabled && (
               <h2 style={{ fontSize: '2rem', textAlign: 'center' }}>
-                Patrimonio disponibile: {inheritanceList.available}
+                Patrimonio disponibile:{' '}
+                {`~${(new Fraction(inheritanceList.available).valueOf() * patrimony).toFixed(2)}€`}
               </h2>
             )}
 
