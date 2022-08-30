@@ -1,35 +1,36 @@
+import Fraction from 'fraction.js'
 import { stripGraph } from './graph'
 import { Person, StrippedPerson } from './types/Person'
 
-export function calculateInheritance(root: Person, total = 100): Record<string, number> | null {
+export function calculateInheritance(root: Person, total = 100): Record<string, string> {
   const stripped = stripGraph(root)
   if (stripped === null) {
-    return null
+    throw new Error('Could not strip graph')
   }
 
-  const inheritanceList: Record<string, number> = {}
+  const inheritanceList: Record<string, string> = {}
   findInheritance(total, stripped)
 
-  function findInheritance(total: number, current?: StrippedPerson) {
-    if (total === 0 || !current) return total
+  function findInheritance(remaning: number, current?: StrippedPerson) {
+    if (remaning === 0 || !current) return remaning
 
     if (current.wantsInheritance) {
-      inheritanceList[current.id] = total
+      inheritanceList[current.id] = new Fraction(remaning / total).toFraction(true)
     }
 
     if (current.children && current?.children?.length > 0) {
       // multiple children and spouse:    2/3/children and 1/3
       // multiple children and no spouse: 1/children   and 0
       let forChildren = current?.spouse?.[0]
-        ? ((total / 3) * 2) / current.children.length
-        : total / current.children.length
-      let forSpouse = current?.spouse?.[0] ? total / 3 : 0
+        ? ((remaning / 3) * 2) / current.children.length
+        : remaning / current.children.length
+      let forSpouse = current?.spouse?.[0] ? remaning / 3 : 0
 
       if (current.children && current.children.length === 1) {
         // single child and spouse:    1/2 and 1/2
         // single child and no spouse: 1   and 0
-        forChildren = current.spouse?.[0] ? total / 2 : total
-        forSpouse = current.spouse?.[0] ? total / 2 : 0
+        forChildren = current.spouse?.[0] ? remaning / 2 : remaning
+        forSpouse = current.spouse?.[0] ? remaning / 2 : 0
       }
       current?.children?.forEach((child) => findInheritance(forChildren, child))
       findInheritance(forSpouse, current.spouse?.[0])
@@ -43,7 +44,7 @@ export function calculateInheritance(root: Person, total = 100): Record<string, 
     const spousePresent = current.spouse?.length ?? 0
 
     const inheritance = {
-      relatives: total,
+      relatives: remaning,
       parents: 0,
       siblings: 0,
       unilateral: 0,
@@ -53,9 +54,9 @@ export function calculateInheritance(root: Person, total = 100): Record<string, 
       if (spousePresent) {
         // only spouse:                 1
         // spouse and other relatives : 2/3
-        const forSpouse = numberRelatives > 0 ? (total / 3) * 2 : total
+        const forSpouse = numberRelatives > 0 ? (remaning / 3) * 2 : remaning
         // if there's a spouse the other relatives get 1/3
-        inheritance.relatives = total / 3
+        inheritance.relatives = remaning / 3
         findInheritance(forSpouse, current?.spouse?.[0])
       }
 
@@ -63,8 +64,8 @@ export function calculateInheritance(root: Person, total = 100): Record<string, 
         inheritance.parents = inheritance.relatives / numberRelatives
         // The parents receive at least half of the remaining inheritance
         const totalParentsInheritance = inheritance.parents * numberParents
-        if (spousePresent && totalParentsInheritance < total / 4) {
-          inheritance.parents = total / 4
+        if (spousePresent && totalParentsInheritance < remaning / 4) {
+          inheritance.parents = remaning / 4
         } else if (totalParentsInheritance < inheritance.relatives / 2) {
           inheritance.parents = inheritance.relatives / 2 / numberParents
         }

@@ -1,4 +1,4 @@
-import { asFraction, newDeceased, newOther, newPerson } from './common'
+import { newDeceased, newOther, newPerson } from './common'
 import { calculateInheritance } from './inheritance'
 
 test('Only one child', () => {
@@ -8,7 +8,7 @@ test('Only one child', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.children[0].id]).toBe(100)
+  expect(result[deceased.children[0].id]).toBe('1')
 })
 
 test('Two children', () => {
@@ -21,8 +21,8 @@ test('Two children', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.children[0].id]).toBe(50)
-  expect(result?.[deceased.children[1].id]).toBe(50)
+  expect(result[deceased.children[0].id]).toBe('1/2')
+  expect(result[deceased.children[1].id]).toBe('1/2')
 })
 
 test('Two children, one has died but has two children', () => {
@@ -45,10 +45,10 @@ test('Two children, one has died but has two children', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.children[0].id]).toBe(50)
-  expect(result?.[deceased.children[1].id]).toBeFalsy()
-  expect(result?.[deceased.children[1].children[0].id]).toBe(25)
-  expect(result?.[deceased.children[1].children[1].id]).toBe(25)
+  expect(result[deceased.children[0].id]).toBe('1/2')
+  expect(result[deceased.children[1].id]).toBeFalsy()
+  expect(result[deceased.children[1].children[0].id]).toBe('1/4')
+  expect(result[deceased.children[1].children[1].id]).toBe('1/4')
 })
 
 test('One child and one spouse', () => {
@@ -59,8 +59,8 @@ test('One child and one spouse', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.children[0].id]).toBe(50)
-  expect(result?.[deceased.spouse[0].id]).toBe(50)
+  expect(result[deceased.children[0].id]).toBe('1/2')
+  expect(result[deceased.spouse[0].id]).toBe('1/2')
 })
 
 test('Two children and one spouse', () => {
@@ -74,9 +74,9 @@ test('Two children and one spouse', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.children[0].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.children[1].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('1/3')
+  expect(result[deceased.children[0].id]).toBe('1/3')
+  expect(result[deceased.children[1].id]).toBe('1/3')
+  expect(result[deceased.spouse[0].id]).toBe('1/3')
 })
 
 test('Three children and one spouse', () => {
@@ -93,10 +93,10 @@ test('Three children and one spouse', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.children[0].id])).toBe('2/9')
-  expect(asFraction(result?.[deceased.children[1].id])).toBe('2/9')
-  expect(asFraction(result?.[deceased.children[1].id])).toBe('2/9')
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('1/3')
+  expect(result[deceased.children[0].id]).toBe('2/9')
+  expect(result[deceased.children[1].id]).toBe('2/9')
+  expect(result[deceased.children[1].id]).toBe('2/9')
+  expect(result[deceased.spouse[0].id]).toBe('1/3')
 })
 
 test('One child and parents, bilateral, or unilateral siblings ', () => {
@@ -109,10 +109,10 @@ test('One child and parents, bilateral, or unilateral siblings ', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.children[0].id]).toBe(100)
-  expect(result?.[deceased.parents[0].id]).toBeFalsy()
-  expect(result?.[deceased.siblings[0].id]).toBeFalsy()
-  expect(result?.[deceased.unilateral[0].id]).toBeFalsy()
+  expect(result[deceased.children[0].id]).toBe('1')
+  expect(result[deceased.parents[0].id]).toBeFalsy()
+  expect(result[deceased.siblings[0].id]).toBeFalsy()
+  expect(result[deceased.unilateral[0].id]).toBeFalsy()
 })
 
 test('Spouse and two parents', () => {
@@ -127,9 +127,9 @@ test('Spouse and two parents', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/6')
-  expect(asFraction(result?.[deceased.parents[1].id])).toBe('1/6')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.parents[0].id]).toBe('1/6')
+  expect(result[deceased.parents[1].id]).toBe('1/6')
 })
 
 test('Spouse and one bilateral sibling', () => {
@@ -141,8 +141,8 @@ test('Spouse and one bilateral sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/3')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.siblings[0].id]).toBe('1/3')
 })
 
 test('Spouse and one unilateral sibling', () => {
@@ -154,8 +154,8 @@ test('Spouse and one unilateral sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.unilateral[0].id])).toBe('1/3')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.unilateral[0].id]).toBe('1/3')
 })
 
 test('Spouse, parents, bilateral, and unilateral siblings ', () => {
@@ -171,10 +171,10 @@ test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/18')
-  expect(asFraction(result?.[deceased.unilateral[0].id])).toBe('1/36')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.parents[0].id]).toBe('1/4')
+  expect(result[deceased.siblings[0].id]).toBe('1/18')
+  expect(result[deceased.unilateral[0].id]).toBe('1/36')
 })
 
 test('Spouse, two grandparents and one sibling', () => {
@@ -196,10 +196,10 @@ test('Spouse, two grandparents and one sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/12')
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1/8')
-  expect(asFraction(result?.[deceased.parents[0].parents[1].id])).toBe('1/8')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.siblings[0].id]).toBe('1/12')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/8')
+  expect(result[deceased.parents[0].parents[1].id]).toBe('1/8')
 })
 
 test('Spouse, one grandparent and four siblings', () => {
@@ -226,12 +226,12 @@ test('Spouse, one grandparent and four siblings', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('2/3')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/48')
-  expect(asFraction(result?.[deceased.siblings[1].id])).toBe('1/48')
-  expect(asFraction(result?.[deceased.siblings[2].id])).toBe('1/48')
-  expect(asFraction(result?.[deceased.siblings[3].id])).toBe('1/48')
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1/4')
+  expect(result[deceased.spouse[0].id]).toBe('2/3')
+  expect(result[deceased.siblings[0].id]).toBe('1/48')
+  expect(result[deceased.siblings[1].id]).toBe('1/48')
+  expect(result[deceased.siblings[2].id]).toBe('1/48')
+  expect(result[deceased.siblings[3].id]).toBe('1/48')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/4')
 })
 
 test('Two parents', () => {
@@ -244,8 +244,8 @@ test('Two parents', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.parents[0].id]).toBe(50)
-  expect(result?.[deceased.parents[1].id]).toBe(50)
+  expect(result[deceased.parents[0].id]).toBe('1/2')
+  expect(result[deceased.parents[1].id]).toBe('1/2')
 })
 
 test('One alive parent, one grandparent', () => {
@@ -264,8 +264,8 @@ test('One alive parent, one grandparent', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.parents[0].id]).toBe(100)
-  expect(result?.[deceased.parents[1].parents[0].id]).toBeFalsy()
+  expect(result[deceased.parents[0].id]).toBe('1')
+  expect(result[deceased.parents[1].parents[0].id]).toBeFalsy()
 })
 
 test("Two grandparents on the father's side and one from the mother's", () => {
@@ -294,9 +294,9 @@ test("Two grandparents on the father's side and one from the mother's", () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1/2')
-  expect(asFraction(result?.[deceased.parents[1].parents[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.parents[1].parents[1].id])).toBe('1/4')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/2')
+  expect(result[deceased.parents[1].parents[0].id]).toBe('1/4')
+  expect(result[deceased.parents[1].parents[1].id]).toBe('1/4')
 })
 
 test('Two grandparents of different lineage but same degree of kinship', () => {
@@ -321,8 +321,8 @@ test('Two grandparents of different lineage but same degree of kinship', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.parents[0].parents[0].id]).toBe(50)
-  expect(result?.[deceased.parents[1].parents[0].id]).toBe(50)
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/2')
+  expect(result[deceased.parents[1].parents[0].id]).toBe('1/2')
 })
 
 test('Two grandparents of different lineage and different degree of kinship', () => {
@@ -355,8 +355,8 @@ test('Two grandparents of different lineage and different degree of kinship', ()
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.parents[0].parents[0].parents[0].id]).toBeFalsy()
-  expect(result?.[deceased.parents[1].parents[0].id]).toBe(100)
+  expect(result[deceased.parents[0].parents[0].parents[0].id]).toBeFalsy()
+  expect(result[deceased.parents[1].parents[0].id]).toBe('1')
 })
 
 test('One parent and one sibling', () => {
@@ -366,8 +366,8 @@ test('One parent and one sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/2')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/2')
+  expect(result[deceased.parents[0].id]).toBe('1/2')
+  expect(result[deceased.siblings[0].id]).toBe('1/2')
 })
 
 test('One grandparent and one sibling', () => {
@@ -385,8 +385,8 @@ test('One grandparent and one sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1/2')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/2')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/2')
+  expect(result[deceased.siblings[0].id]).toBe('1/2')
 })
 
 test('Two parents and one sibling', () => {
@@ -399,9 +399,9 @@ test('Two parents and one sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.parents[1].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/3')
+  expect(result[deceased.parents[0].id]).toBe('1/3')
+  expect(result[deceased.parents[1].id]).toBe('1/3')
+  expect(result[deceased.siblings[0].id]).toBe('1/3')
 })
 
 test('One parent and two siblings', () => {
@@ -415,9 +415,9 @@ test('One parent and two siblings', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/2')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.siblings[1].id])).toBe('1/4')
+  expect(result[deceased.parents[0].id]).toBe('1/2')
+  expect(result[deceased.siblings[0].id]).toBe('1/4')
+  expect(result[deceased.siblings[1].id]).toBe('1/4')
 })
 
 test('Two parents and three siblings', () => {
@@ -435,11 +435,11 @@ test('Two parents and three siblings', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.parents[1].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/6')
-  expect(asFraction(result?.[deceased.siblings[1].id])).toBe('1/6')
-  expect(asFraction(result?.[deceased.siblings[2].id])).toBe('1/6')
+  expect(result[deceased.parents[0].id]).toBe('1/4')
+  expect(result[deceased.parents[1].id]).toBe('1/4')
+  expect(result[deceased.siblings[0].id]).toBe('1/6')
+  expect(result[deceased.siblings[1].id]).toBe('1/6')
+  expect(result[deceased.siblings[2].id]).toBe('1/6')
 })
 
 test('Two grandparents and one sibling', () => {
@@ -468,9 +468,9 @@ test('Two grandparents and one sibling', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.parents[1].parents[0].id])).toBe('1/4')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/2')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1/4')
+  expect(result[deceased.parents[1].parents[0].id]).toBe('1/4')
+  expect(result[deceased.siblings[0].id]).toBe('1/2')
 })
 
 test('Two bilateral siblings and one unilateral one', () => {
@@ -483,9 +483,9 @@ test('Two bilateral siblings and one unilateral one', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('2/5')
-  expect(asFraction(result?.[deceased.siblings[1].id])).toBe('2/5')
-  expect(asFraction(result?.[deceased.unilateral[0].id])).toBe('1/5')
+  expect(result[deceased.siblings[0].id]).toBe('2/5')
+  expect(result[deceased.siblings[1].id]).toBe('2/5')
+  expect(result[deceased.unilateral[0].id]).toBe('1/5')
 })
 
 test('One parent, one grandparent, one bilateral sibling and one unilateral sibling', () => {
@@ -522,12 +522,12 @@ test('One parent, one grandparent, one bilateral sibling and one unilateral sibl
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[1].id])).toBe('1/2')
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1/5')
-  expect(asFraction(result?.[deceased.siblings[1].children[0].id])).toBe('1/10')
-  expect(asFraction(result?.[deceased.siblings[1].children[1].id])).toBe('1/10')
-  expect(asFraction(result?.[deceased.unilateral[0].id])).toBe('1/10')
+  expect(result[deceased.parents[1].id]).toBe('1/2')
+  expect(result[deceased.parents[0].parents[0].id]).toBeFalsy()
+  expect(result[deceased.siblings[0].id]).toBe('1/5')
+  expect(result[deceased.siblings[1].children[0].id]).toBe('1/10')
+  expect(result[deceased.siblings[1].children[1].id]).toBe('1/10')
+  expect(result[deceased.unilateral[0].id]).toBe('1/10')
 })
 
 test('One other relative within six degrees of kinship', () => {
@@ -536,7 +536,7 @@ test('One other relative within six degrees of kinship', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(result?.[deceased.others[0].id]).toBe(100)
+  expect(result[deceased.others[0].id]).toBe('1')
 })
 
 test('Three other relatives within six degrees of kinship', () => {
@@ -549,9 +549,9 @@ test('Three other relatives within six degrees of kinship', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('1/3')
+  expect(result[deceased.others[0].id]).toBe('1/3')
+  expect(result[deceased.others[1].id]).toBe('1/3')
+  expect(result[deceased.others[2].id]).toBe('1/3')
 })
 
 test('One child and three other relatives within six degrees of kinship', () => {
@@ -565,10 +565,10 @@ test('One child and three other relatives within six degrees of kinship', () => 
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.children[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.children[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('Spouse and three other relatives within six degrees of kinship', () => {
@@ -582,10 +582,10 @@ test('Spouse and three other relatives within six degrees of kinship', () => {
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.spouse[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.spouse[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('One parent and three other relatives within six degrees of kinship', () => {
@@ -599,10 +599,10 @@ test('One parent and three other relatives within six degrees of kinship', () =>
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.parents[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('One grandparent and three other relatives within six degrees of kinship', () => {
@@ -624,10 +624,10 @@ test('One grandparent and three other relatives within six degrees of kinship', 
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.parents[0].parents[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.parents[0].parents[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('One siblings and three other relatives within six degrees of kinship', () => {
@@ -641,10 +641,10 @@ test('One siblings and three other relatives within six degrees of kinship', () 
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.siblings[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.siblings[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('One siblings and three other relatives within six degrees of kinship', () => {
@@ -658,10 +658,10 @@ test('One siblings and three other relatives within six degrees of kinship', () 
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.unilateral[0].id])).toBe('1')
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('0')
+  expect(result[deceased.unilateral[0].id]).toBe('1')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBeFalsy()
+  expect(result[deceased.others[2].id]).toBeFalsy()
 })
 
 test('Three other relatives of the same degree and one with an higher one', () => {
@@ -675,10 +675,10 @@ test('Three other relatives of the same degree and one with an higher one', () =
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[3].id])).toBe('0')
+  expect(result[deceased.others[0].id]).toBe('1/3')
+  expect(result[deceased.others[1].id]).toBe('1/3')
+  expect(result[deceased.others[2].id]).toBe('1/3')
+  expect(result[deceased.others[3].id]).toBeFalsy()
 })
 
 test('One relative with an higher degree and three other relatives with a lower one', () => {
@@ -692,8 +692,8 @@ test('One relative with an higher degree and three other relatives with a lower 
   })
   const result = calculateInheritance(deceased)
 
-  expect(asFraction(result?.[deceased.others[0].id])).toBe('0')
-  expect(asFraction(result?.[deceased.others[1].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[2].id])).toBe('1/3')
-  expect(asFraction(result?.[deceased.others[3].id])).toBe('1/3')
+  expect(result[deceased.others[0].id]).toBeFalsy()
+  expect(result[deceased.others[1].id]).toBe('1/3')
+  expect(result[deceased.others[2].id]).toBe('1/3')
+  expect(result[deceased.others[3].id]).toBe('1/3')
 })

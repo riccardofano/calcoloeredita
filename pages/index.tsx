@@ -8,7 +8,6 @@ import CategoryButton from '../components/categoryButton'
 import { Categories, categoryNames } from '../utils/types/Category'
 import { Person } from '../utils/types/Person'
 import List from '../components/list'
-import React from 'react'
 import { CategoryContext, defaultState } from '../context/Category'
 import { InheritanceContext } from '../context/Inheritance'
 
@@ -17,7 +16,7 @@ const Home: NextPage = () => {
   const [allDisabled, setAllDisabled] = useState<Categories>(defaultState)
 
   const [disabled, setDisabled] = useState<boolean>(true)
-  const [inheritanceList, setInheritanceList] = useState<Record<string, number>>({})
+  const [inheritanceList, setInheritanceList] = useState<Record<string, string>>({})
   const [deceased, setDeceased] = useState<Person>({
     name: 'Defunto',
     alive: false,

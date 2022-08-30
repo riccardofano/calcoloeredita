@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 
 interface IInheritanceContext {
-  inheritanceList: Record<string, number>
+  inheritanceList: Record<string, string>
 }
 
 const initialState: IInheritanceContext = {
