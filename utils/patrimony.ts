@@ -1,68 +1,56 @@
 import Fraction from 'fraction.js'
 import { stripGraph } from './graph'
-import { MaybeEligible, Person, StrippedPerson } from './types/Person'
+import { CategoryName } from './types/Category'
+import { getAllRelatives, getRoot, Person, PersonList } from './types/Person'
 
-function getRelatives(isRoot: boolean, person: MaybeEligible): Person[] {
-  if (isRoot) {
-    // The deceased can have all possible relatives
-    return [...person.children, ...person.spouse, ...person.parents]
-  }
-
-  if (person.category === 'children') {
-    // Children can defer to their children
-    return [...person.children]
-  }
-
-  // Everyone else's heirs aren't eligible
-  return []
-}
-
-export function calculatePatrimony(root: Person, total = 100): Record<string, string> {
-  const stripped = stripGraph(root, getRelatives)
-  if (stripped === null) {
-    throw new Error('Could not strip graph')
+export function calculatePatrimony(list: PersonList, total = 100): Record<string, string> {
+  try {
+    list = stripGraph({ ...list }, getRoot(list), getRelevantCategories)
+  } catch (error) {
+    throw new Error(`Could not strip graph because of: ${error}`)
   }
 
   const patrimonyList: Record<string, string> = {}
-  const availableAmount = findPatrimony(total, stripped)
+  const root = getRoot(list)
+  const availableAmount = findPatrimony(total, root)
   const available = new Fraction(availableAmount / total).toFraction(true) ?? '0'
   return { available, ...patrimonyList }
 
-  function findPatrimony(remaining: number, current?: StrippedPerson): number {
+  function findPatrimony(remaining: number, current?: Person): number {
     if (remaining === 0 || !current) return remaining
 
-    if (current.wantsInheritance) {
+    if (current.available) {
       patrimonyList[current.id] = new Fraction(remaining / 100).toFraction(true)
     }
 
-    const spousePresent = current.spouse?.length ?? 0
+    const { children, spouse, ascendants } = getAllRelatives(list, current)
 
-    if (current.children && current.children.length > 0) {
-      let forChildren = spousePresent
-        ? remaining / 2 / current.children.length
-        : ((remaining / 3) * 2) / current.children.length
+    const spousePresent = spouse.length
+    if (children.length > 0) {
+      let forChildren = spousePresent ? remaining / 2 / children.length : ((remaining / 3) * 2) / children.length
       let remains = spousePresent ? remaining / 4 : remaining / 3
 
-      if (current.children.length === 1) {
+      if (children.length === 1) {
         forChildren = spousePresent ? remaining / 3 : remaining / 2
         remains = spousePresent ? remaining / 3 : remaining / 2
       }
 
       // If current is not root, 100% of the remainder should go to the children
+      // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
       if (current.id !== root.id) {
-        forChildren = remaining / current.children.length
+        forChildren = remaining / children.length
         remains = 0
       }
 
-      current.children.forEach((child) => findPatrimony(forChildren, child))
+      children.forEach((child) => findPatrimony(forChildren, list[child]))
       if (spousePresent) {
-        findPatrimony(remaining / 3, current.spouse?.[0])
+        findPatrimony(remaining / 3, list[spouse[0]])
       }
 
       return remains
     }
 
-    const numberAscendantsPresent = current.parents?.length ?? 0
+    const numberAscendantsPresent = ascendants.length
     if (spousePresent + numberAscendantsPresent > 0) {
       let ascendantsPatrimony = remaining / 3
       let remains = (remaining / 3) * 2
@@ -70,12 +58,12 @@ export function calculatePatrimony(root: Person, total = 100): Record<string, st
         remains = numberAscendantsPresent > 0 ? remaining / 4 : remaining / 2
         ascendantsPatrimony = remaining / 4
 
-        findPatrimony(remaining / 2, current.spouse?.[0])
+        findPatrimony(remaining / 2, list[spouse[0]])
       }
 
       if (numberAscendantsPresent > 0) {
-        current.parents?.forEach((ascendant) => {
-          findPatrimony(ascendantsPatrimony / numberAscendantsPresent, ascendant)
+        ascendants.forEach((ascendant) => {
+          findPatrimony(ascendantsPatrimony / numberAscendantsPresent, list[ascendant])
         })
       }
 
@@ -84,4 +72,19 @@ export function calculatePatrimony(root: Person, total = 100): Record<string, st
 
     return remaining
   }
+}
+
+function getRelevantCategories(isRoot: boolean, person: Person): CategoryName[] {
+  if (isRoot) {
+    // The deceased can have all possible relatives
+    return ['children', 'spouse', 'ascendants']
+  }
+
+  if (person.category === 'children') {
+    // Children can defer to their children
+    return ['children']
+  }
+
+  // Everyone else's heirs aren't eligible
+  return []
 }

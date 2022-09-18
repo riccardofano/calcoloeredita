@@ -1,27 +1,39 @@
-import { CategoryName, CategoryPeople } from './Category'
+import { CategoryName } from './Category'
 
-export interface Person extends CategoryPeople<Person> {
+export interface PersonList {
+  [id: string]: Person
+}
+
+export interface Person {
   id: string
   name: string
-  alive: boolean
-  category: CategoryName
-  // 'others' must have a degree
-  others: PersonDegree[]
-}
-
-export interface PersonDegree extends Person {
+  available: boolean
   degree: number
-}
-
-export interface MaybeEligible extends PersonDegree {
-  // if someone has the `Diritto di rappresentazione (Cod. Civ. artt. 467-469)`
-  representationRight: boolean
-  root: StrippedPerson | null
-}
-
-export interface StrippedPerson extends Partial<CategoryPeople<StrippedPerson>> {
-  id: string
+  root: string | null
   category: CategoryName
-  wantsInheritance: boolean
-  root: StrippedPerson | null
+  relatives: string[]
+}
+
+export function getRoot(list: PersonList): Person {
+  return list['0']
+}
+
+export function getAllRelatives(list: PersonList, person: Person) {
+  return person.relatives.reduce(
+    (acc, id) => {
+      const current = list[id]
+      if (current) {
+        acc[current.category].push(id)
+      }
+      return acc
+    },
+    {
+      children: [] as string[],
+      spouse: [] as string[],
+      ascendants: [] as string[],
+      bilateral: [] as string[],
+      unilateral: [] as string[],
+      others: [] as string[],
+    }
+  )
 }
