@@ -585,3 +585,44 @@ test('One relative with an higher degree and three other relatives with a lower 
   expect(result['second-aunt']).toBe('1/3')
   expect(result['uncle']).toBe('1/3')
 })
+
+test('Relatives with a degree of kinship greater than 6 are ignored', () => {
+  const list = {
+    ...newDeceased(['child']),
+    ...newPerson({ id: 'child', category: 'children', available: false, relatives: ['grandchild'] }),
+    ...newPerson({ id: 'grandchild', category: 'children', available: false, relatives: ['grand-grandchild'] }),
+    ...newPerson({
+      id: 'grand-grandchild',
+      category: 'children',
+      available: false,
+      relatives: ['grand-grand-grandchild'],
+    }),
+    ...newPerson({
+      id: 'grand-grand-grandchild',
+      category: 'children',
+      available: false,
+      relatives: ['grand-grand-grand-grandchild'],
+    }),
+    ...newPerson({
+      id: 'grand-grand-grand-grandchild',
+      category: 'children',
+      available: false,
+      relatives: ['grand-grand-grand-grand-grandchild'],
+    }),
+    ...newPerson({
+      id: 'grand-grand-grand-grand-grandchild',
+      category: 'children',
+      available: false,
+      relatives: ['grand-grand-grand-grand-grand-grandchild'],
+    }),
+    ...newPerson({
+      id: 'grand-grand-grand-grand-grand-grandchild',
+      category: 'children',
+      available: true,
+    }),
+  }
+
+  const result = calculateInheritance(list)
+
+  expect(result['grand-grand-grand-grand-grand-grandchild']).toBeFalsy()
+})
