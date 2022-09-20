@@ -80,6 +80,19 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
           {categoriesChecked[category] && <button onClick={() => onAdd(category)}>+ Aggiungi discendente</button>}
         </div>
       ))}
+
+      {isRoot ? (
+        <button type="submit">Calcola eredità</button>
+      ) : (
+        <button
+          onClick={() => {
+            if (!me.root) return
+            setSelectedId(me.root)
+          }}
+        >
+          Indietro
+        </button>
+      )}
     </form>
   )
 }

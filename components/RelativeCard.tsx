@@ -33,8 +33,8 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
       <label>
         <input type="text" value={me.name} onChange={onNameChange} />
       </label>
-      <br />
       <button onClick={onDelete}>Rimuovi</button>
+      <br />
       <label>
         <input type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
         Disponibile a ricevere l&apos;eredità
