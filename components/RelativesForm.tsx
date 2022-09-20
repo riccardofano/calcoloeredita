@@ -1,13 +1,15 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction } from 'react'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
+import RelativeCard from './RelativeCard'
 
 interface RelativesFormProps {
   id: string
+  setSelectedId: Dispatch<SetStateAction<string>>
 }
 
-function RelativesForm({ id }: RelativesFormProps) {
+function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
   const people = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
   if (!people) return null
@@ -54,9 +56,9 @@ function RelativesForm({ id }: RelativesFormProps) {
             {category}
           </label>
           {me.relatives
-            .filter((id) => people[id].category === category)
-            .map((id) => (
-              <p key={id}>{people[id].name}</p>
+            .filter((relativeId) => people[relativeId].category === category)
+            .map((relativeId) => (
+              <RelativeCard key={relativeId} id={relativeId} setSelectedId={setSelectedId} />
             ))}
         </div>
       ))}

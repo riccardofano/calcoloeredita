@@ -43,6 +43,13 @@ export type PeopleAction =
         checked: boolean
       }
     }
+  | {
+      type: 'TOGGLE_AVAILABILITY'
+      payload: {
+        id: string
+        checked: boolean
+      }
+    }
 
 export function peopleReducer(state: PersonList, action: PeopleAction): PersonList {
   const { type, payload } = action
@@ -63,6 +70,10 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       const filteredRelatives = person.relatives.filter((id) => state[id].category !== payload.category)
       person.relatives = filteredRelatives
       return { ...state, [person.id]: person }
+    }
+    case 'TOGGLE_AVAILABILITY': {
+      const person = { ...state[payload.id] }
+      return { ...state, [person.id]: { ...person, available: payload.checked } }
     }
     default: {
       throw new Error(`Unknown action: ${type}`)
