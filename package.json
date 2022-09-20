@@ -10,10 +10,6 @@
     "watch": "jest --watch"
   },
   "dependencies": {
-    "@chakra-ui/icons": "2.0.9",
-    "@chakra-ui/react": "2.3.2",
-    "@emotion/react": "11.7.1",
-    "@emotion/styled": "11.6.0",
     "fraction.js": "4.2.0",
     "framer-motion": "7.3.5",
     "next": "12.3.0",
@@ -27,11 +23,14 @@
     "@types/react": "18.0.20",
     "@types/uuid": "8.3.4",
     "@typescript-eslint/eslint-plugin": "5.31.0",
+    "autoprefixer": "^10.4.11",
     "eslint": "8.9.0",
     "eslint-config-next": "12.3.0",
     "eslint-config-prettier": "8.5.0",
     "jest": "27.5.1",
+    "postcss": "^8.4.16",
     "prettier": "2.5.1",
+    "tailwindcss": "^3.1.8",
     "typescript": "4.8.3"
   }
 }
