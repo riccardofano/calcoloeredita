@@ -38,7 +38,7 @@ export type PeopleAction =
   | {
       type: 'TOGGLE_CATEGORY'
       payload: {
-        id: string
+        parentId: string
         category: CategoryName
         checked: boolean
       }
@@ -48,6 +48,19 @@ export type PeopleAction =
       payload: {
         id: string
         checked: boolean
+      }
+    }
+  | {
+      type: 'ADD_RELATIVE'
+      payload: {
+        parentId: string
+        category: CategoryName
+      }
+    }
+  | {
+      type: 'REMOVE_RELATIVE'
+      payload: {
+        id: string
       }
     }
 
@@ -61,19 +74,38 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       return { ...state, [person.id]: person }
     }
     case 'TOGGLE_CATEGORY': {
-      const person = { ...state[payload.id] }
+      const parent = { ...state[payload.parentId] }
       if (payload.checked) {
-        const relative = createPerson(payload.category, person)
-        person.relatives = [...person.relatives, relative.id]
-        return { ...state, [person.id]: person, [relative.id]: relative }
+        const newRelative = createPerson(payload.category, parent)
+        parent.relatives = [...parent.relatives, newRelative.id]
+        return { ...state, [parent.id]: parent, [newRelative.id]: newRelative }
       }
-      const filteredRelatives = person.relatives.filter((id) => state[id].category !== payload.category)
-      person.relatives = filteredRelatives
-      return { ...state, [person.id]: person }
+      const filteredRelatives = parent.relatives.filter((id) => state[id].category !== payload.category)
+      parent.relatives = filteredRelatives
+      return { ...state, [parent.id]: parent }
     }
     case 'TOGGLE_AVAILABILITY': {
       const person = { ...state[payload.id] }
       return { ...state, [person.id]: { ...person, available: payload.checked } }
+    }
+    case 'ADD_RELATIVE': {
+      const parent = { ...state[payload.parentId] }
+      // TODO: maybe createPerson should throw an error if the max degree is
+      // reacted so we can return the state as is
+      const newRelative = createPerson(payload.category, parent)
+      parent.relatives = [...parent.relatives, newRelative.id]
+      return { ...state, [parent.id]: parent, [newRelative.id]: newRelative }
+    }
+    case 'REMOVE_RELATIVE': {
+      const relative = { ...state[payload.id] }
+      if (!relative.root) return state
+      // remove self from parent relative
+      const parent = { ...state[relative.root] }
+      const nextParent = { ...parent, relatives: parent.relatives.filter((id) => id !== relative.id) }
+
+      // remove every own relative
+      const nextState = deleteAllRelatives(state, relative.id)
+      return { ...nextState, [nextParent.id]: nextParent }
     }
     default: {
       throw new Error(`Unknown action: ${type}`)
@@ -93,6 +125,19 @@ function createPerson(category: CategoryName, parent: Person): Person {
     category,
     relatives: [] as string[],
   }
+}
+
+function deleteAllRelatives(state: PersonList, id: string): PersonList {
+  const relative = { ...state[id] }
+  const nextRelatives = [...relative.relatives]
+
+  let nextState = { ...state }
+  for (const r of nextRelatives) {
+    nextState = deleteAllRelatives(nextState, r)
+  }
+  delete nextState[id]
+
+  return nextState
 }
 
 // TODO: this should be a setState variable to make it idempotent

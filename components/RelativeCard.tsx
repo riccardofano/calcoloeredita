@@ -23,13 +23,18 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
     dispatch({ type: 'TOGGLE_AVAILABILITY', payload: { id, checked: e.target.checked } })
   }
 
+  function onDelete() {
+    if (!dispatch) return
+    dispatch({ type: 'REMOVE_RELATIVE', payload: { id } })
+  }
+
   return (
     <div>
       <label>
         <input type="text" value={me.name} onChange={onNameChange} />
       </label>
-
       <br />
+      <button onClick={onDelete}>Rimuovi</button>
       <label>
         <input type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
         Disponibile a ricevere l&apos;eredità

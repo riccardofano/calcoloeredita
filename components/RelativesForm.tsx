@@ -29,7 +29,12 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
 
   function onCheckChange(e: ChangeEvent<HTMLInputElement>, category: CategoryName) {
     if (!dispatch) return
-    dispatch({ type: 'TOGGLE_CATEGORY', payload: { id, category, checked: e.target.checked } })
+    dispatch({ type: 'TOGGLE_CATEGORY', payload: { parentId: id, category, checked: e.target.checked } })
+  }
+
+  function onAdd(category: CategoryName) {
+    if (!dispatch) return
+    dispatch({ type: 'ADD_RELATIVE', payload: { parentId: id, category } })
   }
 
   const header = isRoot ? (
@@ -41,12 +46,10 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
   ) : (
     <nav>
       {pagination.reverse().map((p) => (
-        <>
-          <button key={p.id} onClick={() => setSelectedId(p.id)}>
-            {p.name}
-          </button>
+        <span key={p.id}>
+          <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
           <span> / </span>
-        </>
+        </span>
       ))}
     </nav>
   )
@@ -59,7 +62,7 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
     >
       <header>{header}</header>
       {categories.map((category) => (
-        <div key={category}>
+        <div key={`${me.id} - ${category}`}>
           <label>
             <input
               type="checkbox"
@@ -74,7 +77,7 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
             .map((relativeId) => (
               <RelativeCard key={relativeId} id={relativeId} setSelectedId={setSelectedId} />
             ))}
-          {categoriesChecked[category] && <button>+ Aggiungi discendente</button>}
+          {categoriesChecked[category] && <button onClick={() => onAdd(category)}>+ Aggiungi discendente</button>}
         </div>
       ))}
     </form>
