@@ -1,4 +1,5 @@
-import { usePeopleContext } from '../context/PeopleContext'
+import { ChangeEvent } from 'react'
+import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
 
@@ -8,6 +9,7 @@ interface RelativesFormProps {
 
 function RelativesForm({ id }: RelativesFormProps) {
   const people = usePeopleContext()
+  const dispatch = usePeopleDispatchContext()
   if (!people) return null
 
   const me = people[id]
@@ -17,17 +19,21 @@ function RelativesForm({ id }: RelativesFormProps) {
   const categoriesChecked = checkedCategories(people, me.relatives)
   const categoriesDisabled = disabledCategories(categoriesChecked)
 
+  function onNameChange(e: ChangeEvent<HTMLInputElement>) {
+    if (!dispatch) return
+    dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
+  }
+
+  function onCheckChange(e: ChangeEvent<HTMLInputElement>, category: CategoryName) {
+    if (!dispatch) return
+    dispatch({ type: 'TOGGLE_CATEGORY', payload: { id, category, checked: e.target.checked } })
+  }
+
   const header = isRoot ? (
     <label>
       Nome del defunto
       <br />
-      <input
-        type="text"
-        value={me.name}
-        onChange={() => {
-          console.log('do nothing')
-        }}
-      />
+      <input type="text" value={me.name} onChange={onNameChange} />
     </label>
   ) : (
     <p>{me.name}</p>
@@ -43,12 +49,15 @@ function RelativesForm({ id }: RelativesFormProps) {
               type="checkbox"
               checked={categoriesChecked[category]}
               disabled={categoriesDisabled.includes(category)}
-              onChange={() => {
-                console.log('changed')
-              }}
+              onChange={(e) => onCheckChange(e, category)}
             />
             {category}
           </label>
+          {me.relatives
+            .filter((id) => people[id].category === category)
+            .map((id) => (
+              <p key={id}>{people[id].name}</p>
+            ))}
         </div>
       ))}
     </form>
@@ -61,18 +70,21 @@ function allowedCategories(category: CategoryName, degree: number): CategoryName
   if (degree === 0) {
     return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral', 'others']
   }
-
-  if (category === 'children' || category === 'bilateral') {
-    return ['children']
-  }
-
-  if (category === 'ascendants') {
-    if (degree === 1) {
-      return ['ascendants']
+  switch (category) {
+    case 'children':
+    case 'bilateral': {
+      return ['children']
     }
-    return ['ascendants', 'children']
+    case 'ascendants': {
+      if (degree === 1) {
+        return ['ascendants']
+      }
+      return ['children', 'ascendants']
+    }
+    default: {
+      return []
+    }
   }
-  return []
 }
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
@@ -89,8 +101,8 @@ function checkedCategories(list: PersonList, relativeIDs: string[]): CategoryChe
 
   // When a category is checked it auto adds one person to the relatives
   // so if there is a person with that category it must be on
-  for (const id in relativeIDs) {
-    const relative = list[id]
+  for (const relativeID of relativeIDs) {
+    const relative = list[relativeID]
     categories[relative.category] = true
   }
   return categories
