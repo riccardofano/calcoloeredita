@@ -8,7 +8,9 @@ const Home: NextPage = () => {
   const [selectedId, setSelectedId] = useState('0')
   return (
     <PeopleProvider>
-      <RelativesForm id={selectedId} setSelectedId={setSelectedId}></RelativesForm>
+      <main className="px-8 py-16">
+        <RelativesForm id={selectedId} setSelectedId={setSelectedId}></RelativesForm>
+      </main>
     </PeopleProvider>
   )
 }

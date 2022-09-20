@@ -29,23 +29,33 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
   }
 
   return (
-    <div>
+    <li className="py-4 first:pt-2 space-y-2 flex flex-col leading-none border-b border-gray-200">
+      <div>
+        <label className="text-xs" htmlFor="relative-name">
+          Nome
+        </label>
+        <div className="flex items-center">
+          <input
+            className="px-2 py-2 mr-2 w-full border rounded-md shadow-sm"
+            type="text"
+            value={me.name}
+            onChange={onNameChange}
+            id="relative-name"
+          />
+          <button onClick={onDelete}>Rimuovi</button>
+        </div>
+      </div>
       <label>
-        <input type="text" value={me.name} onChange={onNameChange} />
-      </label>
-      <button onClick={onDelete}>Rimuovi</button>
-      <br />
-      <label>
-        <input type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
+        <input className="mr-2" type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
         Disponibile a ricevere l&apos;eredità
       </label>
       {!me.available && (
-        <div>
-          <span>{me.relatives.length} parenti</span>
-          <button onClick={() => setSelectedId(id)}>Modifica parenti</button>
-        </div>
+        <button className="flex items-center text-blue-400 space-x-2 leading-none" onClick={() => setSelectedId(id)}>
+          <span className="px-2 py-1 border border-blue-400 rounded-md">{me.relatives.length} parenti</span>
+          <span>Modifica parenti</span>
+        </button>
       )}
-    </div>
+    </li>
   )
 }
 

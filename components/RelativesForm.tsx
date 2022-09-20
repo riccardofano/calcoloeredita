@@ -38,11 +38,18 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
   }
 
   const header = isRoot ? (
-    <label>
-      Nome del defunto
-      <br />
-      <input type="text" value={me.name} onChange={onNameChange} />
-    </label>
+    <>
+      <label className="text-xs" htmlFor="deceased-name">
+        Nome del defunto
+      </label>
+      <input
+        className="px-2 py-2 mr-2 w-full border rounded-md shadow-sm"
+        type="text"
+        id="deceased-name"
+        value={me.name}
+        onChange={onNameChange}
+      />
+    </>
   ) : (
     <nav>
       {pagination.reverse().map((p) => (
@@ -56,15 +63,21 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
 
   return (
     <form
+      className="space-y-2"
       onSubmit={(e) => {
         e.preventDefault()
       }}
     >
       <header>{header}</header>
       {categories.map((category) => (
-        <div key={`${me.id} - ${category}`}>
-          <label>
+        <section title={category} key={`${me.id} - ${category}`}>
+          <label
+            className={`${
+              categoriesDisabled.includes(category) ? 'opacity-40 cursor-not-allowed' : ''
+            } capitalize text-lg font-medium`}
+          >
             <input
+              className="mr-2"
               type="checkbox"
               checked={categoriesChecked[category]}
               disabled={categoriesDisabled.includes(category)}
@@ -72,19 +85,28 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
             />
             {category}
           </label>
-          {me.relatives
-            .filter((relativeId) => list[relativeId].category === category)
-            .map((relativeId) => (
-              <RelativeCard key={relativeId} id={relativeId} setSelectedId={setSelectedId} />
-            ))}
-          {categoriesChecked[category] && <button onClick={() => onAdd(category)}>+ Aggiungi discendente</button>}
-        </div>
+          <ul className="ml-4">
+            {me.relatives
+              .filter((relativeId) => list[relativeId].category === category)
+              .map((relativeId) => (
+                <RelativeCard key={relativeId} id={relativeId} setSelectedId={setSelectedId} />
+              ))}
+            {categoriesChecked[category] && (
+              <button className="pt-3 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
+                + Aggiungi discendente
+              </button>
+            )}
+          </ul>
+        </section>
       ))}
 
       {isRoot ? (
-        <button type="submit">Calcola eredità</button>
+        <button className="px-4 py-2 bg-blue-400 text-white rounded-md" type="submit">
+          Calcola eredità
+        </button>
       ) : (
         <button
+          className="px-4 py-2 border border-blue-400 text-blue-400 rounded-md"
           onClick={() => {
             if (!me.root) return
             setSelectedId(me.root)
