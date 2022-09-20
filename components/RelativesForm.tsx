@@ -55,6 +55,8 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
       }}
     >
       <header>{header}</header>
+      <p>Seleziona le tipologie di parenti di questa persona.</p>
+
       <Categories id={id} setSelectedId={setSelectedId} />
       {isRoot ? (
         <button className="px-4 py-2 bg-blue-400 text-white rounded-md" type="submit">

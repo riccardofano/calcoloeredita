@@ -118,7 +118,7 @@ function createPerson(category: CategoryName, parent: Person): Person {
   const degreeOffset = category === 'bilateral' || category === 'unilateral' ? 2 : 1
   return {
     id: `${ID_COUNT}`,
-    name: 'Nuova persona',
+    name: '',
     available: true,
     degree: parent.degree + degreeOffset,
     root: parent.id,

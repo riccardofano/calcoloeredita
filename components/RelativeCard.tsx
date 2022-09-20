@@ -38,6 +38,7 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
           <input
             className="px-2 py-2 mr-2 w-full border rounded-md shadow-sm"
             type="text"
+            placeholder="Nuova persona"
             value={me.name}
             onChange={onNameChange}
             id="relative-name"

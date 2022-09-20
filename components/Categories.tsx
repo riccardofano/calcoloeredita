@@ -55,23 +55,28 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
 
   return (
     <div>
-      {allowed.map((c) => (
-        <section title={c} key={`${me.id} - ${c}`}>
-          <label
-            className={`${disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''} capitalize text-lg font-medium`}
-          >
-            <input
-              className="mr-2"
-              type="checkbox"
-              checked={checked[c]}
-              disabled={disabled.includes(c)}
-              onChange={(e) => onCheckChange(e, c)}
-            />
-            {c}
-          </label>
-          {relativesList(c)}
-        </section>
-      ))}
+      {allowed.map((c) => {
+        const translation = translateLabel(c)
+        return (
+          <section title={translation} key={`${me.id} - ${c}`}>
+            <label
+              className={`${
+                disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''
+              } flex items-center text-lg font-medium`}
+            >
+              <input
+                className="mr-2"
+                type="checkbox"
+                checked={checked[c]}
+                disabled={disabled.includes(c)}
+                onChange={(e) => onCheckChange(e, c)}
+              />
+              {translation}
+            </label>
+            {relativesList(c)}
+          </section>
+        )
+      })}
     </div>
   )
 }
@@ -128,4 +133,17 @@ function disabledCategories(checkedCategories: CategoryChecklist): CategoryName[
   }
 
   return []
+}
+
+function translateLabel(category: CategoryName): string {
+  const dictionary: { [key in CategoryName]: string } = {
+    children: 'Discendenti',
+    spouse: 'Coniuge',
+    ascendants: 'Ascendenti',
+    bilateral: 'Fratelli o sorelle germane',
+    unilateral: 'Fratelli o sorelle unilaterali',
+    others: 'Altri parenti',
+  }
+
+  return dictionary[category]
 }
