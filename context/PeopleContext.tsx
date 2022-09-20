@@ -73,6 +73,7 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       person.name = payload.name
       return { ...state, [person.id]: person }
     }
+
     case 'TOGGLE_CATEGORY': {
       const parent = { ...state[payload.parentId] }
       if (payload.checked) {
@@ -80,14 +81,30 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
         parent.relatives = [...parent.relatives, newRelative.id]
         return { ...state, [parent.id]: parent, [newRelative.id]: newRelative }
       }
-      const filteredRelatives = parent.relatives.filter((id) => state[id].category !== payload.category)
-      parent.relatives = filteredRelatives
-      return { ...state, [parent.id]: parent }
+
+      // separate relatives that will remain to the ones that were in this category
+      const { filtered, inCategory } = parent.relatives.reduce(
+        ({ filtered, inCategory }, id) => {
+          if (state[id].category === payload.category) {
+            return { filtered, inCategory: [...inCategory, id] }
     }
+          return { inCategory, filtered: [...filtered, id] }
+        },
+        { filtered: [] as string[], inCategory: [] as string[] }
+      )
+      let nextState = { ...state }
+      for (const id of inCategory) {
+        nextState = deleteAllRelatives(nextState, id)
+      }
+      console.log(nextState)
+      return { ...nextState, [parent.id]: { ...parent, relatives: filtered } }
+    }
+
     case 'TOGGLE_AVAILABILITY': {
       const person = { ...state[payload.id] }
       return { ...state, [person.id]: { ...person, available: payload.checked } }
     }
+
     case 'ADD_RELATIVE': {
       const parent = { ...state[payload.parentId] }
       // TODO: maybe createPerson should throw an error if the max degree is
@@ -96,6 +113,7 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       parent.relatives = [...parent.relatives, newRelative.id]
       return { ...state, [parent.id]: parent, [newRelative.id]: newRelative }
     }
+
     case 'REMOVE_RELATIVE': {
       const relative = { ...state[payload.id] }
       if (!relative.root) return state
