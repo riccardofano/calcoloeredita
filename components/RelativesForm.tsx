@@ -1,7 +1,7 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { CategoryName } from '../utils/types/Category'
-import { PersonList } from '../utils/types/Person'
+import { Person, PersonList } from '../utils/types/Person'
 import RelativeCard from './RelativeCard'
 
 interface RelativesFormProps {
@@ -10,16 +10,17 @@ interface RelativesFormProps {
 }
 
 function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
-  const people = usePeopleContext()
+  const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
-  if (!people) return null
+  if (!list) return null
 
-  const me = people[id]
+  const me = list[id]
   const isRoot = me.id === '0'
 
   const categories = allowedCategories(me.category, me.degree)
-  const categoriesChecked = checkedCategories(people, me.relatives)
+  const categoriesChecked = checkedCategories(list, me.relatives)
   const categoriesDisabled = disabledCategories(categoriesChecked)
+  const pagination = getPagination(list, me)
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     if (!dispatch) return
@@ -38,12 +39,25 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
       <input type="text" value={me.name} onChange={onNameChange} />
     </label>
   ) : (
-    <p>{me.name}</p>
+    <nav>
+      {pagination.reverse().map((p) => (
+        <>
+          <button key={p.id} onClick={() => setSelectedId(p.id)}>
+            {p.name}
+          </button>
+          <span> / </span>
+        </>
+      ))}
+    </nav>
   )
 
   return (
-    <form>
-      {header}
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+      }}
+    >
+      <header>{header}</header>
       {categories.map((category) => (
         <div key={category}>
           <label>
@@ -56,10 +70,11 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
             {category}
           </label>
           {me.relatives
-            .filter((relativeId) => people[relativeId].category === category)
+            .filter((relativeId) => list[relativeId].category === category)
             .map((relativeId) => (
               <RelativeCard key={relativeId} id={relativeId} setSelectedId={setSelectedId} />
             ))}
+          {categoriesChecked[category] && <button>+ Aggiungi discendente</button>}
         </div>
       ))}
     </form>
@@ -120,4 +135,16 @@ function disabledCategories(checkedCategories: CategoryChecklist): CategoryName[
   }
 
   return []
+}
+
+function getPagination(list: PersonList, me: Person): { id: string; name: string }[] {
+  const pagination = [{ id: me.id, name: me.name }]
+  let root = me.root
+  while (root !== null) {
+    const parent = list[root]
+    pagination.push({ id: parent.id, name: parent.name })
+    root = parent.root
+  }
+
+  return pagination
 }

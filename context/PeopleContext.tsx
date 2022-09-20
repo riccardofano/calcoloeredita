@@ -100,7 +100,7 @@ let ID_COUNT = 0
 const initialPeople: PersonList = {
   '0': {
     id: '0',
-    name: '',
+    name: 'Defunto',
     available: false,
     degree: 0,
     root: null,
