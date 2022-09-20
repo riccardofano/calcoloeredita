@@ -63,6 +63,13 @@ export type PeopleAction =
         id: string
       }
     }
+  | {
+      type: 'CHANGE_DEGREE'
+      payload: {
+        id: string
+        degree: number
+      }
+    }
 
 export function peopleReducer(state: PersonList, action: PeopleAction): PersonList {
   const { type, payload } = action
@@ -87,7 +94,7 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
         ({ filtered, inCategory }, id) => {
           if (state[id].category === payload.category) {
             return { filtered, inCategory: [...inCategory, id] }
-    }
+          }
           return { inCategory, filtered: [...filtered, id] }
         },
         { filtered: [] as string[], inCategory: [] as string[] }
@@ -96,7 +103,6 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       for (const id of inCategory) {
         nextState = deleteAllRelatives(nextState, id)
       }
-      console.log(nextState)
       return { ...nextState, [parent.id]: { ...parent, relatives: filtered } }
     }
 
@@ -111,6 +117,7 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       // reacted so we can return the state as is
       const newRelative = createPerson(payload.category, parent)
       parent.relatives = [...parent.relatives, newRelative.id]
+
       return { ...state, [parent.id]: parent, [newRelative.id]: newRelative }
     }
 
@@ -125,6 +132,12 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
       const nextState = deleteAllRelatives(state, relative.id)
       return { ...nextState, [nextParent.id]: nextParent }
     }
+
+    case 'CHANGE_DEGREE': {
+      const relative = { ...state[payload.id] }
+      return { ...state, [relative.id]: { ...relative, degree: payload.degree } }
+    }
+
     default: {
       throw new Error(`Unknown action: ${type}`)
     }
@@ -134,11 +147,12 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
 function createPerson(category: CategoryName, parent: Person): Person {
   ID_COUNT += 1
   const degreeOffset = category === 'bilateral' || category === 'unilateral' ? 2 : 1
+  const degree = category === 'others' ? 3 : parent.degree + degreeOffset
   return {
     id: `${ID_COUNT}`,
     name: '',
     available: true,
-    degree: parent.degree + degreeOffset,
+    degree,
     root: parent.id,
     category,
     relatives: [] as string[],
