@@ -7,3 +7,19 @@
     font-family: 'Roboto', sans-serif;
   }
 }
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md;
+  }
+  .btn-primary {
+    @apply bg-blue-400 text-white;
+  }
+  .btn-inverted {
+    @apply bg-white border border-blue-400 text-blue-400;
+  }
+
+  .input-field {
+    @apply p-2 w-full border rounded-md shadow-sm;
+  }
+}

@@ -29,13 +29,7 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
       <label className="text-xs" htmlFor="deceased-name">
         Nome del defunto
       </label>
-      <input
-        className="px-2 py-2 mr-2 w-full border rounded-md shadow-sm"
-        type="text"
-        id="deceased-name"
-        value={me.name}
-        onChange={onNameChange}
-      />
+      <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
     </>
   ) : (
     <nav>
@@ -60,14 +54,14 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
 
       <Categories id={id} setSelectedId={setSelectedId} />
       {isRoot ? (
-        <button type="submit" className="px-4 py-2 bg-blue-400 text-white rounded-md">
+        <button type="submit" className="btn btn-primary">
           Calcola eredità
         </button>
       ) : (
         <button
           key="back"
           type="button"
-          className="px-4 py-2 border border-blue-400 text-blue-400 rounded-md"
+          className="btn btn-inverted"
           onClick={() => {
             if (!me.root) return
             setSelectedId(me.root)

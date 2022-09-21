@@ -14,12 +14,14 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
 
   return (
     <div>
-      <p>{root.name}</p>
+      <p className="text-lg">
+        Eredità della famiglia di: <span className="font-semibold">{root.name}</span>
+      </p>
       <div className="-ml-4 my-4">
         <Node relatives={root.relatives} inheritance={inheritance}></Node>
       </div>
 
-      <button className="px-4 py-2 border bg-blue-400 text-white rounded-md" onClick={() => setEditing(true)}>
+      <button className="btn btn-inverted" onClick={() => setEditing(true)}>
         Riprova
       </button>
     </div>
@@ -48,8 +50,8 @@ function Node({ relatives, inheritance }: NodeProps) {
         if (!relative) return null
 
         return (
-          <li key={relative.id} className="space-y-1">
-            <p className="flex justify-between p-2 rounded-l-md border border-r-0">
+          <li key={relative.id} className="space-y-2">
+            <p className="flex justify-between p-2 rounded-md border">
               {relative.id} - {relative.category}
               <span>{inheritance[relative.id] ?? 0}</span>
             </p>

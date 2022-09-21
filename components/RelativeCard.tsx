@@ -45,7 +45,7 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
         </label>
         <div className="flex items-center">
           <input
-            className="p-2 mr-2 w-full border rounded-md shadow-sm"
+            className="mr-2 input-field"
             type="text"
             placeholder="Nuova persona"
             value={me.name}
