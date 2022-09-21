@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { Person, PersonList } from '../utils/types/Person'
 
@@ -7,6 +7,7 @@ import Categories from './Categories'
 interface RelativesFormProps {
   id: string
   setSelectedId: Dispatch<SetStateAction<string>>
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void
 }
 
 function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
@@ -40,7 +41,9 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
     <nav>
       {pagination.reverse().map((p) => (
         <span key={p.id}>
-          <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
+          <button type="button" onClick={() => setSelectedId(p.id)}>
+            {p.name}
+          </button>
           <span> / </span>
         </span>
       ))}
@@ -48,22 +51,19 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
   )
 
   return (
-    <form
-      className="space-y-2"
-      onSubmit={(e) => {
-        e.preventDefault()
-      }}
-    >
+    <>
       <header>{header}</header>
       <p>Seleziona le tipologie di parenti di questa persona.</p>
 
       <Categories id={id} setSelectedId={setSelectedId} />
       {isRoot ? (
-        <button className="px-4 py-2 bg-blue-400 text-white rounded-md" type="submit">
+        <button type="submit" className="px-4 py-2 bg-blue-400 text-white rounded-md">
           Calcola eredità
         </button>
       ) : (
         <button
+          key="back"
+          type="button"
           className="px-4 py-2 border border-blue-400 text-blue-400 rounded-md"
           onClick={() => {
             if (!me.root) return
@@ -73,7 +73,7 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
           Indietro
         </button>
       )}
-    </form>
+    </>
   )
 }
 

@@ -52,7 +52,9 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
             onChange={onNameChange}
             id="relative-name"
           />
-          <button onClick={onDelete}>Rimuovi</button>
+          <button type="button" onClick={onDelete}>
+            Rimuovi
+          </button>
         </div>
       </div>
 
@@ -79,7 +81,11 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
         Disponibile a ricevere l&apos;eredità
       </label>
       {!me.available && (
-        <button className="flex items-center text-blue-400 space-x-2 leading-none" onClick={() => setSelectedId(id)}>
+        <button
+          type="button"
+          className="flex items-center text-blue-400 space-x-2 leading-none"
+          onClick={() => setSelectedId(id)}
+        >
           <span className="px-2 py-1 border border-blue-400 rounded-md">{me.relatives.length} parenti</span>
           <span>Modifica parenti</span>
         </button>
