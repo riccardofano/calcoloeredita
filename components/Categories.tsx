@@ -45,7 +45,7 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
           <RelativeCard key={rId} id={rId} setSelectedId={setSelectedId} />
         ))}
         {checked[category] && (
-          <button className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
+          <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
             + Aggiungi discendente
           </button>
         )}
@@ -57,6 +57,7 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
     <div>
       {allowed.map((c) => {
         const translation = translateLabel(c)
+
         return (
           <section title={translation} key={`${me.id} - ${c}`}>
             <label

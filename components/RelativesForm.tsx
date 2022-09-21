@@ -39,14 +39,17 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
     </>
   ) : (
     <nav>
-      {pagination.reverse().map((p) => (
-        <span key={p.id}>
-          <button type="button" onClick={() => setSelectedId(p.id)}>
-            {p.name}
-          </button>
-          <span> / </span>
-        </span>
-      ))}
+      {pagination.reverse().map((p, i) => {
+        const isLast = i === pagination.length - 1
+        return (
+          <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
+            <button type="button" onClick={() => setSelectedId(p.id)}>
+              {p.name}
+            </button>
+            {!isLast && <span> / </span>}
+          </span>
+        )
+      })}
     </nav>
   )
 

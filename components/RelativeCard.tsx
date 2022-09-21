@@ -87,7 +87,7 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
           onClick={() => setSelectedId(id)}
         >
           <span className="px-2 py-1 border border-blue-400 rounded-md">{me.relatives.length} parenti</span>
-          <span>Modifica parenti</span>
+          <span className="underline">Modifica parenti</span>
         </button>
       )}
     </li>
