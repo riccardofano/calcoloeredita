@@ -36,7 +36,7 @@ const Home: NextPage = () => {
           <RelativesForm id={selectedId} setSelectedId={setSelectedId} onSubmit={onSubmit}></RelativesForm>
         </form>
       ) : (
-        <RelativesList inheritance={inheritance} />
+        <RelativesList inheritance={inheritance} setEditing={setEditing} />
       )}
     </main>
   )
