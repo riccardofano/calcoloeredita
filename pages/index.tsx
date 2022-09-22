@@ -1,105 +1,37 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import { useState } from 'react'
-import { Box, Button, Center, Container, FormControl, FormLabel, Heading, Input, SimpleGrid } from '@chakra-ui/react'
+import { NextPage } from 'next'
+import { FormEvent, useState } from 'react'
 
-import CategoryButton from '../components/categoryButton'
+import { ModeProvider } from '../context/ModeContext'
+import { usePeopleContext } from '../context/PeopleContext'
 
-import { Categories, categoryNames } from '../utils/types/Category'
-import { Person } from '../utils/types/Person'
-import List from '../components/list'
-import { CategoryContext, defaultState } from '../context/Category'
-import { InheritanceContext } from '../context/Inheritance'
-import Link from 'next/link'
+import Main from '../templates/Main'
 
 const Home: NextPage = () => {
-  const [allChecked, setAllChecked] = useState<Categories>(defaultState)
-  const [allDisabled, setAllDisabled] = useState<Categories>(defaultState)
+  const [inheritance, setInheritance] = useState<Record<string, string>>({})
+  const [isEditing, setIsEditing] = useState(true)
+  const list = usePeopleContext()
 
-  const [inheritanceList, setInheritanceList] = useState<Record<string, string>>({})
-  const [deceased, setDeceased] = useState<Person>({
-    name: 'Defunto',
-    alive: false,
-    id: '1',
-    category: 'children',
-    children: [],
-    spouse: [],
-    parents: [],
-    siblings: [],
-    unilateral: [],
-    others: [],
-  })
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
 
-  const relatives = [
-    deceased.children,
-    deceased.spouse,
-    deceased.parents,
-    deceased.siblings,
-    deceased.unilateral,
-    deceased.others,
-  ]
-  const isDisabled = !(deceased.name && relatives.some((c) => c.length > 0))
-
-  const showInhertance = async () => {
     const result = await fetch('/api/inheritance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(deceased),
+      body: JSON.stringify(list),
     })
 
     if (result.ok) {
-      const updated = await result.json()
-      setInheritanceList(updated)
+      const updatedInheritance = await result.json()
+      setInheritance(updatedInheritance)
     }
+
+    setIsEditing(false)
   }
 
   return (
-    <Container maxWidth="container.lg" minHeight="100vh" padding="8">
-      <Head>
-        <title>Calcolo eredità</title>
-        <meta name="description" content="Calcola l'eredità per successione legittima." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Link href="/patrimonio">
-          <a style={{ textDecoration: 'underline', color: 'blue' }}>Calcolo patrimonio ➡</a>
-        </Link>
-      </nav>
-
-      <SimpleGrid as="main" spacing="4">
-        <Center>
-          <Heading as="h1" size="2xl">
-            Calcola eredità
-          </Heading>
-        </Center>
-        <FormControl isInvalid={deceased.name === ''} isRequired>
-          <FormLabel htmlFor="name">Nome del defunto</FormLabel>
-          <Input
-            id="name"
-            type="text"
-            value={deceased.name}
-            onChange={(e) => setDeceased((state) => ({ ...state, name: e.target.value }))}
-          ></Input>
-        </FormControl>
-
-        <InheritanceContext.Provider value={{ inheritanceList }}>
-          <CategoryContext.Provider value={{ allChecked, allDisabled, setAllChecked, setAllDisabled }}>
-            {categoryNames.map((c) => (
-              <CategoryButton key={c} category={c}></CategoryButton>
-            ))}
-
-            <List person={deceased} updatePerson={setDeceased}></List>
-          </CategoryContext.Provider>
-        </InheritanceContext.Provider>
-
-        <Box marginBlockEnd="48">
-          <Button type="submit" colorScheme="green" isDisabled={isDisabled} onClick={showInhertance}>
-            Calcola
-          </Button>
-        </Box>
-      </SimpleGrid>
-    </Container>
+    <ModeProvider mode="inheritance">
+      <Main isEditing={isEditing} setIsEditing={setIsEditing} inheritance={inheritance} onSubmit={onSubmit}></Main>
+    </ModeProvider>
   )
 }
 
