@@ -20,6 +20,6 @@
   }
 
   .input-field {
-    @apply p-2 w-full border rounded-md shadow-sm;
+    @apply p-2 w-full border rounded-md shadow-sm text-base;
   }
 }

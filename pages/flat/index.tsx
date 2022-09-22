@@ -1,8 +1,10 @@
 import { NextPage } from 'next'
+import { FormEvent, useState } from 'react'
+
 import { usePeopleContext } from '../../context/PeopleContext'
+import { MoneyProvider } from '../../context/MoneyContext'
 
 import RelativesForm from '../../components/RelativesForm'
-import { FormEvent, useState } from 'react'
 import RelativesList from '../../components/RelativesList'
 
 const Home: NextPage = () => {
@@ -31,13 +33,15 @@ const Home: NextPage = () => {
 
   return (
     <main className="px-8 py-16">
-      {editing ? (
-        <form className="space-y-2" onSubmit={onSubmit}>
-          <RelativesForm id={selectedId} setSelectedId={setSelectedId} onSubmit={onSubmit}></RelativesForm>
-        </form>
-      ) : (
-        <RelativesList inheritance={inheritance} setEditing={setEditing} />
-      )}
+      <MoneyProvider>
+        {editing ? (
+          <form className="space-y-4" onSubmit={onSubmit}>
+            <RelativesForm id={selectedId} setSelectedId={setSelectedId} onSubmit={onSubmit}></RelativesForm>
+          </form>
+        ) : (
+          <RelativesList inheritance={inheritance} setEditing={setEditing} />
+        )}
+      </MoneyProvider>
     </main>
   )
 }

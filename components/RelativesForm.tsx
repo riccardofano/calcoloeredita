@@ -3,6 +3,7 @@ import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleCon
 import { Person, PersonList } from '../utils/types/Person'
 
 import Categories from './Categories'
+import MoneyForm from './MoneyForm'
 
 interface RelativesFormProps {
   id: string
@@ -25,34 +26,39 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
   }
 
   const header = isRoot ? (
-    <>
+    <header className="space-y-2">
       <label className="text-xs" htmlFor="deceased-name">
         Nome del defunto
+        <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
       </label>
-      <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
-    </>
+
+      <MoneyForm />
+    </header>
   ) : (
-    <nav>
-      {pagination.reverse().map((p, i) => {
-        const isLast = i === pagination.length - 1
-        return (
-          <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
-            <button type="button" onClick={() => setSelectedId(p.id)}>
-              {p.name}
-            </button>
-            {!isLast && <span> / </span>}
-          </span>
-        )
-      })}
-    </nav>
+    <header>
+      <nav>
+        {pagination.reverse().map((p, i) => {
+          const isLast = i === pagination.length - 1
+          return (
+            <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
+              <button type="button" onClick={() => setSelectedId(p.id)}>
+                {p.name}
+              </button>
+              {!isLast && <span> / </span>}
+            </span>
+          )
+        })}
+      </nav>
+    </header>
   )
 
   return (
     <>
-      <header>{header}</header>
-      <p>Seleziona le tipologie di parenti di questa persona.</p>
+      {header}
 
+      <p>Seleziona le tipologie di parenti di questa persona.</p>
       <Categories id={id} setSelectedId={setSelectedId} />
+
       {isRoot ? (
         <button type="submit" className="btn btn-primary">
           Calcola eredità
