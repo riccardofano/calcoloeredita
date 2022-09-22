@@ -60,7 +60,11 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
       <Categories id={id} setSelectedId={setSelectedId} />
 
       {isRoot ? (
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          disabled={isSubmitDisabled(list)}
+          className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           Calcola eredità
         </button>
       ) : (
@@ -92,4 +96,24 @@ function getPagination(list: PersonList, me: Person): { id: string; name: string
   }
 
   return pagination
+}
+
+function isSubmitDisabled(list: PersonList): boolean {
+  const root = list['0']
+  if (!root || root.relatives.length < 1) return true
+
+  let disabled = false
+  const queue = [root.id]
+
+  while (!disabled && queue.length > 0) {
+    const currentId = queue.pop() as string
+    const current = list[currentId]
+    if (!current || !current.name) {
+      disabled = true
+      break
+    }
+    queue.push(...current.relatives)
+  }
+
+  return disabled
 }
