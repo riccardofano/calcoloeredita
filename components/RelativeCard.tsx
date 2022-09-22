@@ -4,9 +4,10 @@ import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleCon
 interface RelativeCardProps {
   id: string
   setSelectedId: Dispatch<SetStateAction<string>>
+  canHaveHeirs: boolean
 }
 
-function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
+function RelativeCard({ id, setSelectedId, canHaveHeirs }: RelativeCardProps) {
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
   if (!list) return null
@@ -80,7 +81,7 @@ function RelativeCard({ id, setSelectedId }: RelativeCardProps) {
         <input className="mr-2" type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
         Disponibile a ricevere l&apos;eredità
       </label>
-      {!me.available && (
+      {!me.available && canHaveHeirs && (
         <button
           type="button"
           className="flex items-center text-blue-400 space-x-2 leading-none"

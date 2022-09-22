@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext } from 'react'
 
-type Mode = 'inheritance' | 'patrimony'
+export type Mode = 'inheritance' | 'patrimony'
 
 export const ModeContext = createContext<Mode>('inheritance')
 

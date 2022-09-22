@@ -1,4 +1,5 @@
 import { ChangeEvent, Dispatch, ReactNode, SetStateAction } from 'react'
+import { Mode, useModeContext } from '../context/ModeContext'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
@@ -13,13 +14,14 @@ interface CategoriesProps {
 }
 
 function Categories({ id, setSelectedId }: CategoriesProps) {
+  const mode = useModeContext()
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
   if (!list) return null
 
   const me = list[id]
 
-  const allowed = allowedCategories(me.category, me.degree)
+  const allowed = allowedCategories(me.category, me.degree, mode)
   const checked = checkedCategories(list, me.relatives)
   const disabled = disabledCategories(checked)
 
@@ -39,12 +41,16 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
     const filtered = me.relatives.filter((rId) => list[rId].category === category)
     if (filtered.length < 1) return null
 
+    // Degree does not matter as long as it's greater than 0
+    const canHaveHeirs = allowedCategories(category, 1, mode).length > 0
+    const hasReachedHeirLimit = filtered.length >= maxHeirs(category)
+
     return (
       <ul className="ml-4 mt-2 mb-4">
         {filtered.map((rId) => (
-          <RelativeCard key={rId} id={rId} setSelectedId={setSelectedId} />
+          <RelativeCard key={rId} id={rId} setSelectedId={setSelectedId} canHaveHeirs={canHaveHeirs} />
         ))}
-        {checked[category] && (
+        {checked[category] && !hasReachedHeirLimit && (
           <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
             + Aggiungi discendente
           </button>
@@ -84,7 +90,17 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
 
 export default Categories
 
-function allowedCategories(category: CategoryName, degree: number): CategoryName[] {
+function allowedCategories(category: CategoryName, degree: number, mode: Mode): CategoryName[] {
+  if (mode === 'patrimony') {
+    if (degree === 0) {
+      return ['children', 'spouse', 'ascendants']
+    }
+    if (category === 'children') {
+      return ['children']
+    }
+    return []
+  }
+
   if (degree === 0) {
     return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral', 'others']
   }
@@ -147,4 +163,21 @@ function translateLabel(category: CategoryName): string {
   }
 
   return dictionary[category]
+}
+
+function maxHeirs(category: CategoryName): number {
+  switch (category) {
+    case 'children':
+    case 'bilateral':
+    case 'unilateral':
+    case 'others': {
+      return 20
+    }
+    case 'spouse': {
+      return 1
+    }
+    case 'ascendants': {
+      return 2
+    }
+  }
 }
