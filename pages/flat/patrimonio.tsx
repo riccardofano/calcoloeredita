@@ -6,7 +6,7 @@ import { usePeopleContext } from '../../context/PeopleContext'
 
 import Main from '../../templates/Main'
 
-const Home: NextPage = () => {
+const Patrimony: NextPage = () => {
   const [inheritance, setInheritance] = useState<Record<string, string>>({})
   const [isEditing, setIsEditing] = useState(true)
   const list = usePeopleContext()
@@ -14,7 +14,7 @@ const Home: NextPage = () => {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const result = await fetch('/api/inheritance', {
+    const result = await fetch('/api/patrimony', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(list),
@@ -29,10 +29,10 @@ const Home: NextPage = () => {
   }
 
   return (
-    <ModeProvider mode="inheritance">
-      <Main isEditing={isEditing} setIsEditing={setIsEditing} inheritance={inheritance} onSubmit={onSubmit}></Main>
+    <ModeProvider mode="patrimony">
+      <Main isEditing={isEditing} setIsEditing={setIsEditing} inheritance={inheritance} onSubmit={onSubmit} />
     </ModeProvider>
   )
 }
 
-export default Home
+export default Patrimony
