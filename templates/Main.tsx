@@ -14,7 +14,7 @@ function Main({ isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
   const [selectedId, setSelectedId] = useState('0')
 
   return (
-    <main className="px-8 py-16">
+    <main className="px-8 py-16 mx-auto max-w-prose">
       <MoneyProvider>
         {isEditing ? (
           <form className="space-y-4" onSubmit={onSubmit}>
