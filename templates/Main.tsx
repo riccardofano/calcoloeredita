@@ -1,8 +1,11 @@
 import Link from 'next/link'
-import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
+
+import { MoneyProvider } from '../context/MoneyContext'
+import { SelectedIdProvider } from '../context/SelectedIdContext'
+
 import RelativesForm from '../components/RelativesForm'
 import RelativesList from '../components/RelativesList'
-import { MoneyProvider } from '../context/MoneyContext'
 
 interface MainProps {
   isEditing: boolean
@@ -12,8 +15,6 @@ interface MainProps {
 }
 
 function Main({ isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
-  const [selectedId, setSelectedId] = useState('0')
-
   return (
     <div className="px-8 py-16 space-y-8 mx-auto max-w-prose">
       <header>
@@ -29,15 +30,17 @@ function Main({ isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
         </nav>
       </header>
       <main>
-        <MoneyProvider>
-          {isEditing ? (
-            <form className="space-y-4" onSubmit={onSubmit}>
-              <RelativesForm id={selectedId} setSelectedId={setSelectedId} onSubmit={onSubmit}></RelativesForm>
-            </form>
-          ) : (
-            <RelativesList inheritance={inheritance} setEditing={setIsEditing} />
-          )}
-        </MoneyProvider>
+        <SelectedIdProvider>
+          <MoneyProvider>
+            {isEditing ? (
+              <form className="space-y-4" onSubmit={onSubmit}>
+                <RelativesForm />
+              </form>
+            ) : (
+              <RelativesList inheritance={inheritance} setEditing={setIsEditing} />
+            )}
+          </MoneyProvider>
+        </SelectedIdProvider>
       </main>
     </div>
   )

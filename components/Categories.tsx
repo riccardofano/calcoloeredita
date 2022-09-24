@@ -1,20 +1,19 @@
-import { ChangeEvent, Dispatch, ReactNode, SetStateAction } from 'react'
-import { Mode, useModeContext } from '../context/ModeContext'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { ChangeEvent, ReactNode } from 'react'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
+
+import { Mode, useModeContext } from '../context/ModeContext'
+import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { useSelectedIdContext } from '../context/SelectedIdContext'
 
 import RelativeCard from './RelativeCard'
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
 
-interface CategoriesProps {
-  id: string
-  setSelectedId: Dispatch<SetStateAction<string>>
-}
-
-function Categories({ id, setSelectedId }: CategoriesProps) {
+function Categories() {
   const mode = useModeContext()
+  const id = useSelectedIdContext()
+
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
   if (!list) return null
@@ -48,7 +47,7 @@ function Categories({ id, setSelectedId }: CategoriesProps) {
     return (
       <ul className="ml-4 mt-2 mb-4">
         {filtered.map((rId) => (
-          <RelativeCard key={rId} id={rId} setSelectedId={setSelectedId} canHaveHeirs={canHaveHeirs} />
+          <RelativeCard key={rId} id={rId} canHaveHeirs={canHaveHeirs} />
         ))}
         {checked[category] && !hasReachedHeirLimit && (
           <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>

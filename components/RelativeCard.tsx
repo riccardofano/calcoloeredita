@@ -1,16 +1,17 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import { ChangeEvent } from 'react'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { useSetSelectedIdContext } from '../context/SelectedIdContext'
 
 interface RelativeCardProps {
   id: string
-  setSelectedId: Dispatch<SetStateAction<string>>
   canHaveHeirs: boolean
 }
 
-function RelativeCard({ id, setSelectedId, canHaveHeirs }: RelativeCardProps) {
+function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
-  if (!list) return null
+  const setSelectedId = useSetSelectedIdContext()
+  if (!list || !setSelectedId) return null
 
   const me = list[id]
 

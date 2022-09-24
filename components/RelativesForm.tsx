@@ -1,20 +1,19 @@
-import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { ChangeEvent } from 'react'
 import { Person, PersonList } from '../utils/types/Person'
+
+import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { useSelectedIdContext, useSetSelectedIdContext } from '../context/SelectedIdContext'
 
 import Categories from './Categories'
 import MoneyForm from './MoneyForm'
 
-interface RelativesFormProps {
-  id: string
-  setSelectedId: Dispatch<SetStateAction<string>>
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void
-}
-
-function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
+function RelativesForm() {
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
-  if (!list) return null
+
+  const id = useSelectedIdContext()
+  const setSelectedId = useSetSelectedIdContext()
+  if (!list || !setSelectedId) return null
 
   const me = list[id]
   const isRoot = me.id === '0'
@@ -57,7 +56,7 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
       {header}
 
       <p>Seleziona le tipologie di parenti di questa persona.</p>
-      <Categories id={id} setSelectedId={setSelectedId} />
+      <Categories />
 
       {isRoot ? (
         <button
@@ -86,12 +85,16 @@ function RelativesForm({ id, setSelectedId }: RelativesFormProps) {
 
 export default RelativesForm
 
+export function toNonEmptyName(name: string): string {
+  return name === '' ? 'Senza nome' : name
+}
+
 function getPagination(list: PersonList, me: Person): { id: string; name: string }[] {
-  const pagination = [{ id: me.id, name: me.name }]
+  const pagination = [{ id: me.id, name: toNonEmptyName(me.name) }]
   let root = me.root
   while (root !== null) {
     const parent = list[root]
-    pagination.push({ id: parent.id, name: parent.name })
+    pagination.push({ id: parent.id, name: toNonEmptyName(parent.name) })
     root = parent.root
   }
 

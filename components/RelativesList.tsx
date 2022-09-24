@@ -5,6 +5,7 @@ import { PersonList } from '../utils/types/Person'
 import { useModeContext } from '../context/ModeContext'
 import { useMoneyContext } from '../context/MoneyContext'
 import { usePeopleContext } from '../context/PeopleContext'
+import { toNonEmptyName } from './RelativesForm'
 
 interface RelativesListProps {
   inheritance: Record<string, string>
@@ -41,7 +42,7 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
           return (
             <li key={relative.id} className="space-y-2">
               <p className="flex justify-between p-2 rounded-md border">
-                {relative.id} - {relative.category}
+                {toNonEmptyName(relative.name)}
                 <span>{shownValue}</span>
               </p>
               {node(relative.relatives, list)}
