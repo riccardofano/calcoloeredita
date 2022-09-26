@@ -6,6 +6,7 @@ import { useModeContext } from '../context/ModeContext'
 import { useMoneyContext } from '../context/MoneyContext'
 import { usePeopleContext } from '../context/PeopleContext'
 import { toNonEmptyName } from './RelativesForm'
+import { motion } from 'framer-motion'
 
 interface RelativesListProps {
   inheritance: Record<string, string>
@@ -31,20 +32,21 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
   function node(relatives: string[], list: PersonList): ReactNode {
     return (
       <ul className="ml-4 space-y-2">
-        {relatives.map((id) => {
+        {relatives.map((id, i) => {
           const relative = list[id]
           if (!relative) return null
 
           const relativeInheritance = inheritance[relative.id] ?? '0'
-          const shownValue = showMoney
-            ? currencyFormatter.format(new Fraction(relativeInheritance).valueOf() * intMoney)
-            : relativeInheritance
 
           return (
             <li key={relative.id} className="space-y-2">
-              <p className="flex justify-between p-2 rounded-md border">
+              <p className="flex items-center justify-between p-2 rounded-md border">
                 {toNonEmptyName(relative.name)}
-                <span>{shownValue}</span>
+                {showMoney ? (
+                  <span>{currencyFormatter.format(new Fraction(relativeInheritance).valueOf() * intMoney)}</span>
+                ) : (
+                  <ProgressRing progressFraction={relativeInheritance} index={i} />
+                )}
               </p>
               {node(relative.relatives, list)}
             </li>
@@ -86,3 +88,49 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
 }
 
 export default RelativesList
+
+interface ProgressRingProps {
+  progressFraction: string
+  index: number
+}
+
+function ProgressRing({ progressFraction, index }: ProgressRingProps) {
+  const radius = 16
+  const stroke = 3
+
+  const normalizedRadius = radius - stroke * 2
+  const circumference = normalizedRadius * 2 * Math.PI
+
+  const progress = new Fraction(progressFraction).valueOf()
+  const strokeDashoffset = circumference - progress * circumference
+
+  return (
+    <span className="flex items-center">
+      {progressFraction}
+      <svg className="ml-1 text-green-600 -rotate-90" width={radius * 2} height={radius * 2}>
+        <circle
+          className="text-green-200"
+          stroke="currentColor"
+          fill="transparent"
+          strokeWidth={stroke}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+        />
+        <motion.circle
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset }}
+          transition={{ strokeDashOffset: { duration: 0.5 }, delay: index * 0.2 }}
+          stroke="currentColor"
+          fill="transparent"
+          strokeWidth={stroke}
+          strokeDasharray={`${circumference} ${circumference}`}
+          style={{ strokeLinecap: 'round' }}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+        />
+      </svg>
+    </span>
+  )
+}
