@@ -2,11 +2,21 @@ import { NextPage } from 'next'
 import { FormEvent, useState } from 'react'
 
 import { ModeProvider } from '../context/ModeContext'
-import { usePeopleContext } from '../context/PeopleContext'
+import { PeopleProvider, usePeopleContext } from '../context/PeopleContext'
 
 import Main from '../templates/Main'
 
 const Patrimony: NextPage = () => {
+  return (
+    <PeopleProvider>
+      <Content />
+    </PeopleProvider>
+  )
+}
+
+export default Patrimony
+
+function Content() {
   const [inheritance, setInheritance] = useState<Record<string, string>>({})
   const [isEditing, setIsEditing] = useState(true)
   const list = usePeopleContext()
@@ -34,5 +44,3 @@ const Patrimony: NextPage = () => {
     </ModeProvider>
   )
 }
-
-export default Patrimony
