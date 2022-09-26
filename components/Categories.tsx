@@ -51,7 +51,7 @@ function Categories() {
         ))}
         {checked[category] && !hasReachedHeirLimit && (
           <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
-            + Aggiungi discendente
+            + Aggiungi {translateName(category).toLocaleLowerCase()}
           </button>
         )}
       </ul>
@@ -61,10 +61,10 @@ function Categories() {
   return (
     <div>
       {allowed.map((c) => {
-        const translation = translateLabel(c)
+        const label = translateLabel(c)
 
         return (
-          <section title={translation} key={`${me.id} - ${c}`}>
+          <section title={label} key={`${me.id} - ${c}`}>
             <label
               className={`${
                 disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''
@@ -77,7 +77,7 @@ function Categories() {
                 disabled={disabled.includes(c)}
                 onChange={(e) => onCheckChange(e, c)}
               />
-              {translation}
+              {label}
             </label>
             {relativesList(c)}
           </section>
@@ -151,17 +151,44 @@ function disabledCategories(checkedCategories: CategoryChecklist): CategoryName[
   return []
 }
 
-function translateLabel(category: CategoryName): string {
-  const dictionary: { [key in CategoryName]: string } = {
-    children: 'Discendenti',
-    spouse: 'Coniuge',
-    ascendants: 'Ascendenti',
-    bilateral: 'Fratelli o sorelle germane',
-    unilateral: 'Fratelli o sorelle unilaterali',
-    others: 'Altri parenti',
-  }
+interface DictionaryEntry {
+  label: string
+  name: string
+}
 
-  return dictionary[category]
+const dictionary: Record<CategoryName, DictionaryEntry> = {
+  children: {
+    label: 'Discendenti',
+    name: 'Discendente',
+  },
+  spouse: {
+    label: 'Coniuge',
+    name: 'Coniuge',
+  },
+  ascendants: {
+    label: 'Ascendenti',
+    name: 'Genitore',
+  },
+  bilateral: {
+    label: 'Fratelli o sorelle germane',
+    name: 'Fratello o sorella',
+  },
+  unilateral: {
+    label: 'Fratelli o sorelle unilaterali',
+    name: 'Fratello o sorella',
+  },
+  others: {
+    label: 'Altri parenti',
+    name: 'Parente',
+  },
+}
+
+function translateLabel(category: CategoryName): string {
+  return dictionary[category].label
+}
+
+function translateName(category: CategoryName): string {
+  return dictionary[category].name
 }
 
 function maxHeirs(category: CategoryName): number {
