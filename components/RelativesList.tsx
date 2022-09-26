@@ -25,7 +25,8 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
   const moneyIsValid = !isNaN(intMoney) && intMoney > 0
 
   const currencyFormatter = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' })
-  const reserve = currencyFormatter.format(new Fraction(inheritance['available']).valueOf() * intMoney)
+  const availableInFraction = inheritance['available'] ?? '0'
+  const available = currencyFormatter.format(new Fraction(availableInFraction).valueOf() * intMoney)
 
   function node(relatives: string[], list: PersonList): ReactNode {
     return (
@@ -59,13 +60,13 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
         Eredità della famiglia di: <span className="font-semibold">{root.name}</span>
       </p>
       {mode === 'patrimony' && moneyIsValid && (
-        <>
+        <div className="mt-2">
           <p>Valore totale del patrimonio: {currencyFormatter.format(intMoney)}</p>
-          <p>Valore della riserva: {reserve}</p>
-        </>
+          <p>Valore disponibile: {showMoney ? available : availableInFraction}</p>
+        </div>
       )}
       {moneyIsValid && (
-        <label className="flex items-center">
+        <label className="flex items-center mt-4">
           <input
             className="mr-2"
             type="checkbox"
