@@ -8,13 +8,14 @@ import RelativesForm from '../components/RelativesForm'
 import RelativesList from '../components/RelativesList'
 
 interface MainProps {
+  isLoading: boolean
   isEditing: boolean
   setIsEditing: Dispatch<SetStateAction<boolean>>
   inheritance: Record<string, string>
   onSubmit: (e: FormEvent<HTMLFormElement>) => void
 }
 
-function Main({ isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
+function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
   return (
     <div className="px-8 py-16 space-y-8 mx-auto max-w-prose">
       <header>
@@ -34,7 +35,7 @@ function Main({ isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
           <MoneyProvider>
             {isEditing ? (
               <form className="space-y-4" onSubmit={onSubmit}>
-                <RelativesForm />
+                <RelativesForm isLoading={isLoading} />
               </form>
             ) : (
               <RelativesList inheritance={inheritance} setEditing={setIsEditing} />

@@ -18,17 +18,20 @@ export default Patrimony
 
 function Content() {
   const [inheritance, setInheritance] = useState<Record<string, string>>({})
+  const [isLoading, setIsLoading] = useState(false)
   const [isEditing, setIsEditing] = useState(true)
   const list = usePeopleContext()
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
+    setIsLoading(true)
     const result = await fetch('/api/patrimony', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(list),
     })
+    setIsLoading(false)
 
     if (result.ok) {
       const updatedInheritance = await result.json()
@@ -40,7 +43,13 @@ function Content() {
 
   return (
     <ModeProvider mode="patrimony">
-      <Main isEditing={isEditing} setIsEditing={setIsEditing} inheritance={inheritance} onSubmit={onSubmit} />
+      <Main
+        isLoading={isLoading}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        inheritance={inheritance}
+        onSubmit={onSubmit}
+      />
     </ModeProvider>
   )
 }

@@ -7,7 +7,11 @@ import { useSelectedIdContext, useSetSelectedIdContext } from '../context/Select
 import Categories from './Categories'
 import MoneyForm from './MoneyForm'
 
-function RelativesForm() {
+interface RelativesFormProps {
+  isLoading: boolean
+}
+
+export default function RelativesForm({ isLoading }: RelativesFormProps) {
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
 
@@ -61,9 +65,10 @@ function RelativesForm() {
       {isRoot ? (
         <button
           type="submit"
-          disabled={isSubmitDisabled(list)}
-          className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || isSubmitDisabled(list)}
+          className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          {isLoading && <Spinner />}
           Calcola eredità
         </button>
       ) : (
@@ -82,8 +87,6 @@ function RelativesForm() {
     </>
   )
 }
-
-export default RelativesForm
 
 export function toNonEmptyName(name: string): string {
   return name === '' ? 'Senza nome' : name
@@ -119,4 +122,27 @@ function isSubmitDisabled(list: PersonList): boolean {
   }
 
   return disabled
+}
+
+function Spinner() {
+  return (
+    <svg className="w-6 h-6 mr-2 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <path
+        d="M434.67 285.59v-29.8c0-98.73-80.24-178.79-179.2-178.79a179 179 0 00-140.14 67.36m-38.53 82v29.8C76.8 355 157 435 256 435a180.45 180.45 0 00140-66.92"
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="32"
+      />
+      <path
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="32"
+        d="M32 256l44-44 46 44M480 256l-44 44-46-44"
+      />
+    </svg>
+  )
 }

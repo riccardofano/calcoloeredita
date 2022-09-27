@@ -45,7 +45,7 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
                 {showMoney ? (
                   <span>{currencyFormatter.format(new Fraction(relativeInheritance).valueOf() * intMoney)}</span>
                 ) : (
-                  <ProgressRing progressFraction={relativeInheritance} index={i} />
+                  <ProgressRing fraction={relativeInheritance} index={i} />
                 )}
               </p>
               {node(relative.relatives, list)}
@@ -90,23 +90,23 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
 export default RelativesList
 
 interface ProgressRingProps {
-  progressFraction: string
+  fraction: string
   index: number
 }
 
-function ProgressRing({ progressFraction, index }: ProgressRingProps) {
+function ProgressRing({ fraction, index }: ProgressRingProps) {
   const radius = 16
   const stroke = 3
 
   const normalizedRadius = radius - stroke * 2
   const circumference = normalizedRadius * 2 * Math.PI
 
-  const progress = new Fraction(progressFraction).valueOf()
+  const progress = new Fraction(fraction).valueOf()
   const strokeDashoffset = circumference - progress * circumference
 
   return (
     <span className="flex items-center">
-      {progressFraction}
+      {fraction}
       <svg className="ml-1 text-green-600 -rotate-90" width={radius * 2} height={radius * 2}>
         <circle
           className="text-green-200"
@@ -120,7 +120,7 @@ function ProgressRing({ progressFraction, index }: ProgressRingProps) {
         <motion.circle
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset }}
-          transition={{ strokeDashOffset: { duration: 0.5 }, delay: index * 0.2 }}
+          transition={{ strokeDashOffset: { duration: 0.5 }, delay: index * 0.2 + 0.3 }}
           stroke="currentColor"
           fill="transparent"
           strokeWidth={stroke}
