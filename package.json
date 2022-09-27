@@ -24,7 +24,7 @@
     "@types/uuid": "8.3.4",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "autoprefixer": "^10.4.11",
-    "eslint": "8.9.0",
+    "eslint": "8.24.0",
     "eslint-config-next": "12.3.0",
     "eslint-config-prettier": "8.5.0",
     "jest": "27.5.1",
