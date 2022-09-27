@@ -1,9 +1,9 @@
-import { MaybeEligible, Person, PersonDegree, StrippedPerson } from './types/Person'
+import { Person, PersonList } from './types/Person'
 
 const DEGREE_CUTOFF = 6
 
-function isDegreeTooHigh(person: MaybeEligible | PersonDegree, maxDegree: number, maxAscendantDegree: number) {
-  if (person.category === 'parents') {
+function isDegreeTooHigh(person: Person, maxDegree: number, maxAscendantDegree: number) {
+  if (person.category === 'ascendants') {
     // Ascendants only get excluded is another ascendant has a degree lower than them
     // but they set the degree for everyone
     return person.degree > maxAscendantDegree
@@ -11,149 +11,190 @@ function isDegreeTooHigh(person: MaybeEligible | PersonDegree, maxDegree: number
   return person.degree > maxDegree
 }
 
-function isPersonEligible(person: MaybeEligible, maxDegree: number, maxAscendantDegree: number) {
+function isPersonEligible(
+  person: Person,
+  maxDegree: number,
+  maxAscendantDegree: number,
+  hasRepresentationRight: boolean
+) {
   // Someone is eligible if:
   // They are within 6 degrees from the deceased and
   // nobody with a degree lower than them was found eligible already.
   // They have the representation right (direct children or bilateral siblings).
   // They are an unilateral sibling (degree 2) (otherwise they would get excluded by the parents (degree 1))
   return (
-    (person.degree <= DEGREE_CUTOFF && !isDegreeTooHigh(person, maxDegree, maxAscendantDegree)) ||
-    person.representationRight ||
-    person.category === 'unilateral'
+    person.degree <= DEGREE_CUTOFF &&
+    (!isDegreeTooHigh(person, maxDegree, maxAscendantDegree) ||
+      hasRepresentationRight ||
+      person.category === 'unilateral')
   )
 }
 
-function addEligibleRelativeToRoot(relative: StrippedPerson) {
+function addEligibleRelativeToRoot(list: PersonList, relative: Person) {
   // Recursively append relative to its root
   let current = relative
   while (current.root !== null) {
-    const rootCategory = current.root[current.category] ?? []
+    if (!list[current.root]) {
+      throw new Error(`Could not find person corresponding to id: ${current.root}`)
+    }
     // current element is already in the root, we're finished here
-    if (rootCategory.find((p) => p.id === current.id) !== undefined) {
+    if (list[current.root].relatives.find((id) => id === current.id) !== undefined) {
       break
     }
 
-    rootCategory.push(current)
-    current.root[current.category] = rootCategory
-    current = current.root
+    list[current.root].relatives.push(current.id)
+    current = list[current.root]
   }
 }
 
-function getDegree(relative: MaybeEligible, current: MaybeEligible): number {
+function getDegree(relative: Person, current: Person): number {
   // Return the relative's degree of kinship
   // siblings (unilateral and bilateral) have a difference of 2 degrees of kinship
   // because it's calculated by doing `current -> parent -> sibling`
   // everyone else has just one degree of difference
-  if (relative.category === 'siblings' || relative.category === 'unilateral') {
-    return current.degree + 2
+  if (relative.category === 'bilateral' || relative.category === 'unilateral') {
+    return (current.degree ?? 0) + 2
   } else {
-    return current.degree + 1
+    return (current.degree ?? 0) + 1
   }
 }
 
-// Descendants and siblings' descendence follow the representation right
+// Descendants and siblings' descendants follow the representation right
 // this means they can take over their parents' part of the inheritance
-function hasRepresentationRight(relative: MaybeEligible, current: MaybeEligible, isRoot: boolean): boolean {
-  return (
-    (isRoot && (relative.category === 'children' || relative.category === 'siblings')) ||
-    // If their parent had the representation right they have it as well
-    current.representationRight
-  )
+function hasRepresentationRight(list: PersonList, current: Person, rootId: string): boolean {
+  if (current.id === rootId) {
+    return true
+  }
+
+  // Current person is a direct child or bilateral sibling of the root
+  if (current.root === rootId && (current.category === 'children' || current.category === 'bilateral')) {
+    return true
+  }
+
+  // If everyone in their family line had the right they have it as well
+  let parentHadRepresentationRight = true
+  while (current.root !== null && parentHadRepresentationRight) {
+    const parent = list[current.root]
+    if (!parent) {
+      throw new Error(`Could not find parent with id: ${current.root}`)
+    }
+
+    if (!(parent.category === 'children' || parent.category === 'bilateral')) {
+      parentHadRepresentationRight = false
+    }
+    current = parent
+  }
+
+  return parentHadRepresentationRight
 }
 
 // Build a graph with only the people who can receive the inheritance
 export function stripGraph(
+  list: PersonList,
   root: Person,
-  getRelatives: (isRoot: boolean, person: MaybeEligible) => Person[]
-): StrippedPerson | null {
-  const ROOT_ID = root.id
-  const strippedRoot: StrippedPerson = {
-    id: ROOT_ID,
-    root: null,
-    category: 'children',
-    wantsInheritance: false,
-  }
+  getRelevantCategories: (isRoot: boolean, person: Person) => string[]
+): PersonList {
+  const visited: Record<string, boolean> = { [root.id]: true }
 
-  const visited: Record<string, boolean> = { [ROOT_ID]: true }
-  const queue: MaybeEligible[] = [{ ...root, degree: 0, representationRight: false, root: null }]
+  const queue: string[] = [root.id]
   let maxDegree = Infinity
   let maxAscendantDegree = Infinity
 
-  while (queue.length !== 0) {
-    const person = queue.shift() as MaybeEligible
+  const others = root.relatives.filter((id) => list[id].category === 'others')
 
-    if (person.alive) {
-      if (isPersonEligible(person, maxDegree, maxAscendantDegree)) {
+  while (queue.length !== 0) {
+    const currentId = queue.shift() as string
+    const person = list[currentId]
+
+    if (!person) {
+      throw new Error(`Could not find person with id: ${currentId}`)
+    }
+
+    if (person.available) {
+      if (isPersonEligible(person, maxDegree, maxAscendantDegree, hasRepresentationRight(list, person, root.id))) {
         maxDegree = person.degree
-        if (person.category === 'parents') {
+        if (person.category === 'ascendants') {
           maxAscendantDegree = maxDegree
         }
 
         // Someone eligible was found!
-        addEligibleRelativeToRoot({
-          id: person.id,
-          root: person.root,
-          category: person.category,
-          wantsInheritance: true,
-        })
+        try {
+          addEligibleRelativeToRoot(list, person)
+        } catch (error) {
+          throw new Error(`Unable to strip graph because of: ${error}`)
+        }
       }
       continue
     }
 
-    const isRoot = person.id === ROOT_ID
-    const relatives = getRelatives(isRoot, person)
-    if (relatives.length === 0) {
+    // Could also try checking if root is null but I want to get object validation going first
+    const isRoot = person.id === root.id
+    const categories = getRelevantCategories(isRoot, person)
+    if (categories.length === 0) {
       continue
     }
 
-    // Using a variable here so it's the same reference shared between relatives
-    // person.root's categories should be empty at this moment in time so
-    // there's no need to add them here
-    const strippedPerson = { id: person.id, root: person.root, category: person.category, wantsInheritance: false }
+    const relatives = person.relatives.filter((id) => {
+      const relative = list[id]
+      if (!relative) {
+        throw new Error(`Could not find relative with id: ${id}`)
+      }
+      return categories.includes(list[id].category)
+    })
 
-    for (const relative of relatives as MaybeEligible[]) {
-      if (visited[relative.id]) {
+    for (const relativeId of relatives) {
+      if (visited[relativeId]) {
         continue
       }
 
-      relative.representationRight = hasRepresentationRight(relative, person, isRoot)
+      const relative = list[relativeId]
+      relative.root = person.id
       relative.degree = getDegree(relative, person)
-      relative.root = isRoot ? strippedRoot : strippedPerson
 
       visited[relative.id] = true
-      queue.push(relative)
+      queue.push(relative.id)
     }
+
+    // reset relatives so only eligible relatives get readded
+    list[person.id].relatives = []
   }
 
   // Some relative was found to be eligible, we're done!
   if (maxDegree !== Infinity) {
-    return strippedRoot
+    return list
   }
 
   // There are no eligible relatives.
-  if (!root.others || root.others.length === 0) {
-    return null
+  if (others.length === 0) {
+    return list
   }
 
-  // Look through the 'other' relatives for a candidate.
-  const others = [...root.others]
-  others.sort((a, b) => a.degree - b.degree)
+  const sorted = others.sort((a, b) => {
+    const ap = list[a]
+    const bp = list[b]
+    if (!ap) {
+      throw new Error(`Could not find other relative with id: ${a}`)
+    }
+    if (!bp) {
+      throw new Error(`Could not find other relative with id: ${b}`)
+    }
+    return ap.degree - bp.degree
+  })
 
-  const othersQueue = [...others]
+  const othersQueue = [...sorted]
   while (othersQueue.length !== 0) {
-    const person = othersQueue.shift() as PersonDegree
+    const otherId = othersQueue.shift() as string
+    const person = list[otherId]
+    if (!person) {
+      throw new Error(`Could not find other relative with id: ${otherId}`)
+    }
+    person.root = root.id
 
-    if (person?.alive && person.degree <= DEGREE_CUTOFF && person.degree <= maxDegree) {
+    if (person.available && person.degree <= DEGREE_CUTOFF && !isDegreeTooHigh(person, maxDegree, Infinity)) {
       maxDegree = person.degree
-      addEligibleRelativeToRoot({ id: person.id, root: strippedRoot, category: 'others', wantsInheritance: true })
+      addEligibleRelativeToRoot(list, person)
     }
   }
 
-  // Nobody was found in 'others' either.
-  if (strippedRoot?.others?.length === 0) {
-    return null
-  }
-
-  return strippedRoot
+  return list
 }
