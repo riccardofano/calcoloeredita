@@ -103,7 +103,7 @@ test('Spouse and one child', () => {
 })
 
 test('Spouse and two or more children', () => {
-  // The spouse receives 1/3,
+  // The spouse receives 1/4,
   // the children receive 1/2 divided among them evenly,
   // 1/4 remains available
   const list = {
@@ -114,7 +114,7 @@ test('Spouse and two or more children', () => {
   }
   const result = calculatePatrimony(list)
 
-  expect(result['spouse']).toBe('1/3')
+  expect(result['spouse']).toBe('1/4')
   expect(result['daughter']).toBe('1/4')
   expect(result['son']).toBe('1/4')
   expect(result.available).toBe('1/4')
