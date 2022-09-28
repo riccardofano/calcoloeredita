@@ -97,6 +97,9 @@ function allowedCategories(category: CategoryName, degree: number, mode: Mode): 
     if (category === 'children') {
       return ['children']
     }
+    if (category === 'ascendants') {
+      return ['ascendants']
+    }
     return []
   }
 
