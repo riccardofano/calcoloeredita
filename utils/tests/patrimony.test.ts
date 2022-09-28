@@ -70,6 +70,32 @@ test('Only ascendants', () => {
   expect(result.available).toBe('2/3')
 })
 
+test('Grandparents can inherit too', () => {
+  const list = {
+    ...newDeceased(['mother']),
+    ...newPerson({ id: 'mother', category: 'ascendants', available: false, relatives: ['grandmother'] }),
+    ...newPerson({ id: 'grandmother', category: 'ascendants' }),
+  }
+  const result = calculatePatrimony(list)
+
+  expect(result['grandmother']).toBe('1/3')
+  expect(result.available).toBe('2/3')
+})
+
+test('Grandparent and spouse', () => {
+  const list = {
+    ...newDeceased(['mother', 'spouse']),
+    ...newPerson({ id: 'spouse', category: 'spouse' }),
+    ...newPerson({ id: 'mother', category: 'ascendants', available: false, relatives: ['grandmother'] }),
+    ...newPerson({ id: 'grandmother', category: 'ascendants' }),
+  }
+  const result = calculatePatrimony(list)
+
+  expect(result['spouse']).toBe('1/2')
+  expect(result['grandmother']).toBe('1/4')
+  expect(result.available).toBe('1/4')
+})
+
 test('Only spouse and ascendants', () => {
   // The spouse receives 1/2,
   // the ascendants 1/4

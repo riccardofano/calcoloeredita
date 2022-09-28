@@ -62,6 +62,11 @@ export function calculatePatrimony(list: PersonList, total = 100): Record<string
         findPatrimony(remaining / 2, list[spouse[0]])
       }
 
+      if (current.id !== root.id) {
+        ascendantsPatrimony = remaining / ascendants.length
+        remains = 0
+      }
+
       if (numberAscendantsPresent > 0) {
         ascendants.forEach((ascendant) => {
           findPatrimony(ascendantsPatrimony / numberAscendantsPresent, list[ascendant])
@@ -84,6 +89,10 @@ function getRelevantCategories(isRoot: boolean, person: Person): CategoryName[] 
   if (person.category === 'children') {
     // Children can defer to their children
     return ['children']
+  }
+
+  if (person.category === 'ascendants') {
+    return ['ascendants']
   }
 
   // Everyone else's heirs aren't eligible
