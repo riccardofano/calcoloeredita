@@ -44,7 +44,7 @@ export function calculatePatrimony(list: PersonList, total = 100): Record<string
 
       children.forEach((child) => findPatrimony(forChildren, list[child]))
       if (spousePresent) {
-        findPatrimony(remaining / 4, list[spouse[0]])
+        findPatrimony(remaining / 3, list[spouse[0]])
       }
 
       return remains
