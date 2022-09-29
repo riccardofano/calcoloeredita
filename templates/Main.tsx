@@ -6,6 +6,7 @@ import { SelectedIdProvider } from '../context/SelectedIdContext'
 
 import RelativesForm from '../components/RelativesForm'
 import RelativesList from '../components/RelativesList'
+import Head from 'next/head'
 
 interface MainProps {
   isLoading: boolean
@@ -18,6 +19,12 @@ interface MainProps {
 function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
   return (
     <div className="px-8 py-16 space-y-8 mx-auto max-w-prose">
+      <Head>
+        <meta charSet="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+      </Head>
       <header>
         <nav>
           <ul className="flex justify-between text-blue-400 underline">
@@ -34,7 +41,7 @@ function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: Mai
         <SelectedIdProvider>
           <MoneyProvider>
             {isEditing ? (
-              <form className="space-y-4" onSubmit={onSubmit}>
+              <form className="relative space-y-4" onSubmit={onSubmit}>
                 <RelativesForm isLoading={isLoading} />
               </form>
             ) : (

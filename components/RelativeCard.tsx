@@ -7,9 +7,10 @@ interface RelativeCardProps {
   me: Person
   id: string
   canHaveHeirs: boolean
+  setDirectionForward: () => void
 }
 
-function RelativeCard({ me, id, canHaveHeirs }: RelativeCardProps) {
+export default function RelativeCard({ me, id, canHaveHeirs, setDirectionForward }: RelativeCardProps) {
   const dispatch = usePeopleDispatchContext()
   const setSelectedId = useSetSelectedIdContext()
   if (!setSelectedId) return null
@@ -89,6 +90,8 @@ function RelativeCard({ me, id, canHaveHeirs }: RelativeCardProps) {
         <button
           type="button"
           className="flex items-center text-blue-400 space-x-4 leading-none"
+          onMouseEnter={() => setDirectionForward()}
+          onFocus={() => setDirectionForward()}
           onClick={() => setSelectedId(id)}
         >
           <span className="px-2 py-1 flex items-center border border-blue-400 rounded-md">
@@ -110,5 +113,3 @@ function RelativeCard({ me, id, canHaveHeirs }: RelativeCardProps) {
     </div>
   )
 }
-
-export default RelativeCard

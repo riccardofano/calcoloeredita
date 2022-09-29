@@ -3,17 +3,19 @@ import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
 
 import { Mode, useModeContext } from '../context/ModeContext'
-import { useSelectedIdContext } from '../context/SelectedIdContext'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 
 import CategoryCards from './CategoryCards'
 
 type CategoryChecklist = Record<CategoryName, boolean>
 
-export default function Categories() {
-  const mode = useModeContext()
-  const id = useSelectedIdContext()
+interface CategoriesProps {
+  id: string
+  setDirectionForward: () => void
+}
 
+export default function Categories({ id, setDirectionForward }: CategoriesProps) {
+  const mode = useModeContext()
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
   if (!list) return null
@@ -56,7 +58,13 @@ export default function Categories() {
               {label}
             </label>
 
-            <CategoryCards category={c} person={me} isChecked={checked[c]} onAdd={onAdd} />
+            <CategoryCards
+              category={c}
+              person={me}
+              isChecked={checked[c]}
+              onAdd={onAdd}
+              setDirectionForward={setDirectionForward}
+            />
           </ul>
         )
       })}

@@ -14,9 +14,10 @@ interface CategoryCardsProps {
   category: CategoryName
   isChecked: boolean
   onAdd: (c: CategoryName) => void
+  setDirectionForward: () => void
 }
 
-export default function CategoryCards({ person, category, isChecked, onAdd }: CategoryCardsProps) {
+export default function CategoryCards({ person, category, isChecked, onAdd, setDirectionForward }: CategoryCardsProps) {
   const mode = useModeContext()
   const list = usePeopleContext()
   if (!list) {
@@ -41,7 +42,12 @@ export default function CategoryCards({ person, category, isChecked, onAdd }: Ca
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <RelativeCard id={relativeId} me={list[relativeId]} canHaveHeirs={canHaveHeirs} />
+            <RelativeCard
+              id={relativeId}
+              me={list[relativeId]}
+              canHaveHeirs={canHaveHeirs}
+              setDirectionForward={setDirectionForward}
+            />
           </motion.li>
         ))}
       </AnimatePresence>

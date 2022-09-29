@@ -1,4 +1,6 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+
 import { Person, PersonList } from '../utils/types/Person'
 
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
@@ -12,6 +14,8 @@ interface RelativesFormProps {
 }
 
 export default function RelativesForm({ isLoading }: RelativesFormProps) {
+  const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward')
+
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
 
@@ -26,6 +30,14 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     if (!dispatch) return
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
+  }
+
+  function setDirectionBackward() {
+    setAnimationDirection('backward')
+  }
+
+  function setDirectionForward() {
+    setAnimationDirection('forward')
   }
 
   const header = isRoot ? (
@@ -43,10 +55,20 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
         {pagination.reverse().map((p, i) => {
           const isLast = i === pagination.length - 1
           return (
-            <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
-              <button type="button" onClick={() => setSelectedId(p.id)}>
-                {p.name}
-              </button>
+            <span key={p.id}>
+              {isLast ? (
+                <span className="text-lg text-black font-semibold">{p.name}</span>
+              ) : (
+                <button
+                  className="text-sm text-gray-400"
+                  type="button"
+                  onMouseEnter={() => setDirectionBackward()}
+                  onFocus={() => setDirectionBackward()}
+                  onClick={() => setSelectedId(p.id)}
+                >
+                  {p.name}
+                </button>
+              )}
               {!isLast && <span> / </span>}
             </span>
           )
@@ -56,35 +78,50 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
   )
 
   return (
-    <>
-      {header}
+    <AnimatePresence initial={false}>
+      <motion.div
+        key={id}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { delay: 0.2 } }}
+        exit={{
+          opacity: 0,
+          position: 'absolute',
+          width: '100%',
+          x: animationDirection === 'backward' ? 200 : -200,
+          transition: { duration: 0.5 },
+        }}
+      >
+        {header}
 
-      <p>Seleziona le tipologie di parenti di questa persona.</p>
-      <Categories />
+        <p>Seleziona le tipologie di parenti di questa persona.</p>
+        <Categories id={id} setDirectionForward={setDirectionForward} />
 
-      {isRoot ? (
-        <button
-          type="submit"
-          disabled={isLoading || isSubmitDisabled(list)}
-          className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading && <Spinner />}
-          Calcola eredità
-        </button>
-      ) : (
-        <button
-          key="back"
-          type="button"
-          className="btn btn-inverted"
-          onClick={() => {
-            if (!me.root) return
-            setSelectedId(me.root)
-          }}
-        >
-          Indietro
-        </button>
-      )}
-    </>
+        {isRoot ? (
+          <button
+            type="submit"
+            disabled={isLoading || isSubmitDisabled(list)}
+            className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading && <Spinner />}
+            Calcola eredità
+          </button>
+        ) : (
+          <button
+            key="back"
+            type="button"
+            className="btn btn-inverted"
+            onMouseEnter={() => setDirectionBackward()}
+            onFocus={() => setDirectionBackward()}
+            onClick={() => {
+              if (!me.root) return
+              setSelectedId(me.root)
+            }}
+          >
+            Indietro
+          </button>
+        )}
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
