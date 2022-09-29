@@ -6,6 +6,12 @@
   :root {
     font-family: 'Roboto', sans-serif;
   }
+  /* width: 100vw and overflow-x: hidden are needed so the centered layout
+   * doesn't shift when the scrollbar appears */
+  body {
+    width: 100vw;
+    overflow-x: hidden;
+  }
 }
 
 @layer components {

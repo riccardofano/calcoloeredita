@@ -1,19 +1,18 @@
 import { ChangeEvent } from 'react'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { usePeopleDispatchContext } from '../context/PeopleContext'
 import { useSetSelectedIdContext } from '../context/SelectedIdContext'
+import { Person } from '../utils/types/Person'
 
 interface RelativeCardProps {
+  me: Person
   id: string
   canHaveHeirs: boolean
 }
 
-function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
-  const list = usePeopleContext()
+function RelativeCard({ me, id, canHaveHeirs }: RelativeCardProps) {
   const dispatch = usePeopleDispatchContext()
   const setSelectedId = useSetSelectedIdContext()
-  if (!list || !setSelectedId) return null
-
-  const me = list[id]
+  if (!setSelectedId) return null
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     if (!dispatch) return
@@ -40,7 +39,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   }
 
   return (
-    <li className="py-4 first:pt-0 space-y-2 flex flex-col leading-none border-b border-gray-200">
+    <div className="py-4 space-y-2 border-b border-gray-200">
       <div>
         <label className="text-xs" htmlFor="relative-name">
           Nome
@@ -81,10 +80,11 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
         </select>
       )}
 
-      <label>
+      <label className="flex">
         <input className="mr-2" type="checkbox" checked={me.available} onChange={onAvailabilityChange} />
         Disponibile a ricevere l&apos;eredità
       </label>
+
       {!me.available && canHaveHeirs && (
         <button
           type="button"
@@ -107,7 +107,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
           </p>
         </button>
       )}
-    </li>
+    </div>
   )
 }
 

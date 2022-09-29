@@ -1,16 +1,16 @@
-import { ChangeEvent, ReactNode } from 'react'
+import { ChangeEvent } from 'react'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
 
 import { Mode, useModeContext } from '../context/ModeContext'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { useSelectedIdContext } from '../context/SelectedIdContext'
+import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 
-import RelativeCard from './RelativeCard'
+import CategoryCards from './CategoryCards'
 
-type CategoryChecklist = { [key in CategoryName]: boolean }
+type CategoryChecklist = Record<CategoryName, boolean>
 
-function Categories() {
+export default function Categories() {
   const mode = useModeContext()
   const id = useSelectedIdContext()
 
@@ -34,37 +34,13 @@ function Categories() {
     dispatch({ type: 'ADD_RELATIVE', payload: { parentId: id, category } })
   }
 
-  function relativesList(category: CategoryName): ReactNode {
-    if (!list) return null
-
-    const filtered = me.relatives.filter((rId) => list[rId].category === category)
-    if (filtered.length < 1) return null
-
-    // Degree does not matter as long as it's greater than 0
-    const canHaveHeirs = allowedCategories(category, 1, mode).length > 0
-    const hasReachedHeirLimit = filtered.length >= maxHeirs(category)
-
-    return (
-      <ul className="ml-4 mt-2 mb-4">
-        {filtered.map((rId) => (
-          <RelativeCard key={rId} id={rId} canHaveHeirs={canHaveHeirs} />
-        ))}
-        {checked[category] && !hasReachedHeirLimit && (
-          <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
-            + Aggiungi {translateName(category).toLocaleLowerCase()}
-          </button>
-        )}
-      </ul>
-    )
-  }
-
   return (
     <div>
       {allowed.map((c) => {
         const label = translateLabel(c)
 
         return (
-          <section title={label} key={`${me.id} - ${c}`}>
+          <ul key={`${me.id} - ${c}`} className="overflow-hidden flex flex-col">
             <label
               className={`${
                 disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''
@@ -79,17 +55,16 @@ function Categories() {
               />
               {label}
             </label>
-            {relativesList(c)}
-          </section>
+
+            <CategoryCards category={c} person={me} isChecked={checked[c]} onAdd={onAdd} />
+          </ul>
         )
       })}
     </div>
   )
 }
 
-export default Categories
-
-function allowedCategories(category: CategoryName, degree: number, mode: Mode): CategoryName[] {
+export function allowedCategories(category: CategoryName, degree: number, mode: Mode): CategoryName[] {
   if (mode === 'patrimony') {
     if (degree === 0) {
       return ['children', 'spouse', 'ascendants']
@@ -190,23 +165,6 @@ function translateLabel(category: CategoryName): string {
   return dictionary[category].label
 }
 
-function translateName(category: CategoryName): string {
+export function translateName(category: CategoryName): string {
   return dictionary[category].name
-}
-
-function maxHeirs(category: CategoryName): number {
-  switch (category) {
-    case 'children':
-    case 'bilateral':
-    case 'unilateral':
-    case 'others': {
-      return 20
-    }
-    case 'spouse': {
-      return 1
-    }
-    case 'ascendants': {
-      return 2
-    }
-  }
 }
