@@ -18,10 +18,10 @@ interface MainProps {
 
 function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: MainProps) {
   return (
-    <div className="px-8 py-16 space-y-8 mx-auto max-w-prose">
+    <div className="py-16 px-8 space-y-8 mx-auto max-w-prose">
       <Head>
         <meta charSet="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
       </Head>
@@ -41,9 +41,7 @@ function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: Mai
         <SelectedIdProvider>
           <MoneyProvider>
             {isEditing ? (
-              <form className="relative space-y-4" onSubmit={onSubmit}>
-                <RelativesForm isLoading={isLoading} />
-              </form>
+              <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
             ) : (
               <RelativesList inheritance={inheritance} setEditing={setIsEditing} />
             )}

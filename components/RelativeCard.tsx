@@ -6,11 +6,12 @@ import { Person } from '../utils/types/Person'
 interface RelativeCardProps {
   me: Person
   id: string
+  isFirst: boolean
   canHaveHeirs: boolean
   setDirectionForward: () => void
 }
 
-export default function RelativeCard({ me, id, canHaveHeirs, setDirectionForward }: RelativeCardProps) {
+export default function RelativeCard({ me, id, isFirst, canHaveHeirs, setDirectionForward }: RelativeCardProps) {
   const dispatch = usePeopleDispatchContext()
   const setSelectedId = useSetSelectedIdContext()
   if (!setSelectedId) return null
@@ -40,7 +41,7 @@ export default function RelativeCard({ me, id, canHaveHeirs, setDirectionForward
   }
 
   return (
-    <div className="py-4 space-y-2 border-b border-gray-200">
+    <div className={`py-4 space-y-2 ${isFirst ? 'border-none pt-2' : 'border-t'} border-gray-200`}>
       <div>
         <label className="text-xs" htmlFor="relative-name">
           Nome

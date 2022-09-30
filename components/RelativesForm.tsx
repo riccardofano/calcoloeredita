@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { Person, PersonList } from '../utils/types/Person'
@@ -11,9 +11,10 @@ import MoneyForm from './MoneyForm'
 
 interface RelativesFormProps {
   isLoading: boolean
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void
 }
 
-export default function RelativesForm({ isLoading }: RelativesFormProps) {
+export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProps) {
   const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward')
 
   const list = usePeopleContext()
@@ -40,87 +41,90 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
     setAnimationDirection('forward')
   }
 
-  const header = isRoot ? (
+  const header = (
     <header className="space-y-2">
-      <label className="text-xs" htmlFor="deceased-name">
-        Nome del defunto
-        <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
-      </label>
+      {isRoot ? (
+        <>
+          <label className="text-xs" htmlFor="deceased-name">
+            Nome del defunto
+            <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
+          </label>
 
-      <MoneyForm />
-    </header>
-  ) : (
-    <header>
-      <nav>
-        {pagination.reverse().map((p, i) => {
-          const isLast = i === pagination.length - 1
-          return (
-            <span key={p.id}>
-              {isLast ? (
-                <span className="text-lg text-black font-semibold">{p.name}</span>
-              ) : (
-                <button
-                  className="text-sm text-gray-400"
-                  type="button"
-                  onMouseEnter={() => setDirectionBackward()}
-                  onFocus={() => setDirectionBackward()}
-                  onClick={() => setSelectedId(p.id)}
-                >
-                  {p.name}
-                </button>
-              )}
-              {!isLast && <span> / </span>}
-            </span>
-          )
-        })}
-      </nav>
+          <MoneyForm />
+        </>
+      ) : (
+        <nav>
+          {pagination.reverse().map((p, i) => {
+            const isLast = i === pagination.length - 1
+            return (
+              <span key={p.id}>
+                {isLast ? (
+                  <span className="text-lg text-black font-semibold">{p.name}</span>
+                ) : (
+                  <button
+                    className="text-sm text-gray-400"
+                    type="button"
+                    onMouseEnter={() => setDirectionBackward()}
+                    onFocus={() => setDirectionBackward()}
+                    onClick={() => setSelectedId(p.id)}
+                  >
+                    {p.name}
+                  </button>
+                )}
+                {!isLast && <span> / </span>}
+              </span>
+            )
+          })}
+        </nav>
+      )}
     </header>
   )
 
+  const initialX = animationDirection === 'forward' ? 110 : -110
+  const endingX = initialX * -1
+
   return (
     <AnimatePresence initial={false}>
-      <motion.div
+      <motion.form
         key={id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 0.2 } }}
-        exit={{
-          opacity: 0,
-          position: 'absolute',
-          width: '100%',
-          x: animationDirection === 'backward' ? 200 : -200,
-          transition: { duration: 0.5 },
-        }}
+        initial={{ opacity: 0, x: `${initialX}%` }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: `${endingX}%`, width: '100%', position: 'absolute' }}
+        className="space-y-4"
+        onSubmit={onSubmit}
       >
         {header}
 
         <p>Seleziona le tipologie di parenti di questa persona.</p>
         <Categories id={id} setDirectionForward={setDirectionForward} />
 
-        {isRoot ? (
-          <button
-            type="submit"
-            disabled={isLoading || isSubmitDisabled(list)}
-            className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading && <Spinner />}
-            Calcola eredità
-          </button>
-        ) : (
-          <button
-            key="back"
-            type="button"
-            className="btn btn-inverted"
-            onMouseEnter={() => setDirectionBackward()}
-            onFocus={() => setDirectionBackward()}
-            onClick={() => {
-              if (!me.root) return
-              setSelectedId(me.root)
-            }}
-          >
-            Indietro
-          </button>
-        )}
-      </motion.div>
+        <div>
+          {isRoot ? (
+            <button
+              type="submit"
+              disabled={isLoading || isSubmitDisabled(list)}
+              className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading && <Spinner />}
+              Calcola eredità
+            </button>
+          ) : (
+            <button
+              key="back"
+              type="button"
+              className="btn btn-inverted"
+              onMouseEnter={() => setDirectionBackward()}
+              onFocus={() => setDirectionBackward()}
+              onClick={() => {
+                if (!me.root) return
+                setSelectedId(me.root)
+              }}
+            >
+              Indietro
+            </button>
+          )}
+        </div>
+      </motion.form>
     </AnimatePresence>
   )
 }

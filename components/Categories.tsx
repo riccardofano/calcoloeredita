@@ -42,7 +42,7 @@ export default function Categories({ id, setDirectionForward }: CategoriesProps)
         const label = translateLabel(c)
 
         return (
-          <ul key={`${me.id} - ${c}`} className="overflow-hidden flex flex-col">
+          <div key={`${me.id}-${c}`} className="flex flex-col">
             <label
               className={`${
                 disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''
@@ -58,14 +58,16 @@ export default function Categories({ id, setDirectionForward }: CategoriesProps)
               {label}
             </label>
 
-            <CategoryCards
-              category={c}
-              person={me}
-              isChecked={checked[c]}
-              onAdd={onAdd}
-              setDirectionForward={setDirectionForward}
-            />
-          </ul>
+            <ul>
+              <CategoryCards
+                category={c}
+                person={me}
+                isChecked={checked[c]}
+                onAdd={onAdd}
+                setDirectionForward={setDirectionForward}
+              />
+            </ul>
+          </div>
         )
       })}
     </div>
