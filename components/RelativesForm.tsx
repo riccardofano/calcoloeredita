@@ -90,6 +90,7 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
         initial={{ opacity: 0, x: `${initialX}%` }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: `${endingX}%`, width: '100%', position: 'absolute' }}
+        transition={{ duration: 0.4 }}
         className="space-y-4"
         onSubmit={onSubmit}
       >
