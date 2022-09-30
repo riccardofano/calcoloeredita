@@ -17,6 +17,11 @@ interface CategoryCardsProps {
   setDirectionForward: () => void
 }
 
+const variants = {
+  visible: { opacity: 1, height: 'auto', transitionEnd: { overflow: 'visible' } },
+  hidden: { opacity: 0, height: 0, overflow: 'hidden' },
+}
+
 export default function CategoryCards({ person, category, isChecked, onAdd, setDirectionForward }: CategoryCardsProps) {
   const mode = useModeContext()
   const list = usePeopleContext()
@@ -35,16 +40,12 @@ export default function CategoryCards({ person, category, isChecked, onAdd, setD
   return (
     <>
       <AnimatePresence initial={false}>
-        {filtered.map((relativeId) => (
-          <motion.li
-            key={relativeId}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
+        {filtered.map((relativeId, i) => (
+          <motion.li key={relativeId} initial="hidden" animate="visible" exit="hidden" variants={variants}>
             <RelativeCard
               id={relativeId}
               me={list[relativeId]}
+              isFirst={i === 0}
               canHaveHeirs={canHaveHeirs}
               setDirectionForward={setDirectionForward}
             />
@@ -54,10 +55,16 @@ export default function CategoryCards({ person, category, isChecked, onAdd, setD
 
       <AnimatePresence>
         {shouldAddButtonBeShown && (
-          <motion.li exit={{ opacity: 0, height: 0 }}>
+          <motion.li
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={variants}
+            className="bg-white relative z-10"
+          >
             <button
               type="button"
-              className="py-4 text-blue-400 font-medium leading-none"
+              className="py-4 w-full font-medium leading-none text-left text-blue-400 border-t border-gray-200"
               onClick={() => onAdd(category)}
             >
               + Aggiungi {translateName(category).toLocaleLowerCase()}
