@@ -41,7 +41,9 @@ function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: Mai
         <SelectedIdProvider>
           <MoneyProvider>
             {isEditing ? (
-              <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
+              <div className="relative">
+                <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
+              </div>
             ) : (
               <RelativesList inheritance={inheritance} setEditing={setIsEditing} />
             )}

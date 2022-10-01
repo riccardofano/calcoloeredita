@@ -11,10 +11,10 @@ type CategoryChecklist = Record<CategoryName, boolean>
 
 interface CategoriesProps {
   id: string
-  setDirectionForward: () => void
+  goForwardTo: (id: string | null) => void
 }
 
-export default function Categories({ id, setDirectionForward }: CategoriesProps) {
+export default function Categories({ id, goForwardTo }: CategoriesProps) {
   const mode = useModeContext()
   const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
@@ -59,13 +59,7 @@ export default function Categories({ id, setDirectionForward }: CategoriesProps)
             </label>
 
             <ul>
-              <CategoryCards
-                category={c}
-                person={me}
-                isChecked={checked[c]}
-                onAdd={onAdd}
-                setDirectionForward={setDirectionForward}
-              />
+              <CategoryCards category={c} person={me} isChecked={checked[c]} onAdd={onAdd} goForwardTo={goForwardTo} />
             </ul>
           </div>
         )

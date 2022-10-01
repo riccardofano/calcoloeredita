@@ -14,7 +14,7 @@ interface CategoryCardsProps {
   category: CategoryName
   isChecked: boolean
   onAdd: (c: CategoryName) => void
-  setDirectionForward: () => void
+  goForwardTo: (id: string | null) => void
 }
 
 const variants = {
@@ -22,7 +22,7 @@ const variants = {
   hidden: { opacity: 0, height: 0, overflow: 'hidden' },
 }
 
-export default function CategoryCards({ person, category, isChecked, onAdd, setDirectionForward }: CategoryCardsProps) {
+export default function CategoryCards({ person, category, isChecked, onAdd, goForwardTo }: CategoryCardsProps) {
   const mode = useModeContext()
   const list = usePeopleContext()
   if (!list) {
@@ -47,7 +47,7 @@ export default function CategoryCards({ person, category, isChecked, onAdd, setD
               me={list[relativeId]}
               isFirst={i === 0}
               canHaveHeirs={canHaveHeirs}
-              setDirectionForward={setDirectionForward}
+              goForwardTo={goForwardTo}
             />
           </motion.li>
         ))}
