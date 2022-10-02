@@ -40,7 +40,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   }
 
   return (
-    <li className="py-4 first:pt-0 space-y-2 flex flex-col leading-none border-b border-gray-200">
+    <li className="py-4 first:pt-0 space-y-2 flex flex-col leading-none border-t first:border-none border-gray-200">
       <div>
         <label className="text-xs" htmlFor="relative-name">
           Nome

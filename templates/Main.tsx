@@ -34,7 +34,7 @@ function Main({ isLoading, isEditing, setIsEditing, inheritance, onSubmit }: Mai
         <SelectedIdProvider>
           <MoneyProvider>
             {isEditing ? (
-              <form className="space-y-4" onSubmit={onSubmit}>
+              <form className="space-y-8" onSubmit={onSubmit}>
                 <RelativesForm isLoading={isLoading} />
               </form>
             ) : (

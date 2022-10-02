@@ -38,8 +38,11 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
         setSelectedId={setSelectedId}
       />
 
-      <p>Seleziona le tipologie di parenti di questa persona.</p>
-      <Categories />
+      <section>
+        <h1 className="text-2xl">Albero genealogico</h1>
+        <p className="text-gray-500 mb-4">Seleziona le tipologie di parenti di questa persona.</p>
+        <Categories />
+      </section>
 
       {isRoot ? (
         <button

@@ -45,12 +45,16 @@ function Categories() {
     const hasReachedHeirLimit = filtered.length >= maxHeirs(category)
 
     return (
-      <ul className="ml-4 mt-2 mb-4">
+      <ul className="mt-4">
         {filtered.map((rId) => (
           <RelativeCard key={rId} id={rId} canHaveHeirs={canHaveHeirs} />
         ))}
         {checked[category] && !hasReachedHeirLimit && (
-          <button type="button" className="pt-4 text-blue-400 font-medium leading-none" onClick={() => onAdd(category)}>
+          <button
+            type="button"
+            className="pt-4 w-full text-left text-blue-400 font-medium leading-none border-t"
+            onClick={() => onAdd(category)}
+          >
             + Aggiungi {translateName(category).toLocaleLowerCase()}
           </button>
         )}
@@ -59,25 +63,30 @@ function Categories() {
   }
 
   return (
-    <div>
+    <div className="space-y-2">
       {allowed.map((c) => {
         const label = translateLabel(c)
+        const isDisabled = disabled.includes(c)
 
         return (
-          <section title={label} key={`${me.id} - ${c}`}>
-            <label
-              className={`${
-                disabled.includes(c) ? 'opacity-40 cursor-not-allowed' : ''
-              } flex items-center text-lg font-medium`}
-            >
-              <input
-                className="mr-2"
-                type="checkbox"
-                checked={checked[c]}
-                disabled={disabled.includes(c)}
-                onChange={(e) => onCheckChange(e, c)}
-              />
-              {label}
+          <section
+            key={`${me.id}-${c}`}
+            title={label}
+            className={`px-4 py-6 bg-white rounded-md shadow-sm border
+            ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <label className={isDisabled ? 'cursor-not-allowed' : ''}>
+              <div className="flex items-center">
+                <input
+                  className="mr-2 disabled:cursor-not-allowed"
+                  type="checkbox"
+                  checked={checked[c]}
+                  disabled={isDisabled}
+                  onChange={(e) => onCheckChange(e, c)}
+                />
+                <h2 className="text-xl">{label}</h2>
+              </div>
+              <p className="text-gray-500">{translateDescription(c)}</p>
             </label>
             {relativesList(c)}
           </section>
@@ -157,32 +166,39 @@ function disabledCategories(checkedCategories: CategoryChecklist): CategoryName[
 interface DictionaryEntry {
   label: string
   name: string
+  description: string
 }
 
 const dictionary: Record<CategoryName, DictionaryEntry> = {
   children: {
     label: 'Discendenti',
     name: 'Discendente',
+    description: 'Figli, figli di figli e così via, sono equiparati i figli legittimati e quelli adottivi.',
   },
   spouse: {
     label: 'Coniuge',
     name: 'Coniuge',
+    description: 'Il coniuge putativo o separato se la separazione non sia stata a lui addebitata.',
   },
   ascendants: {
     label: 'Ascendenti',
     name: 'Genitore',
+    description: 'Genitori, nonni, bisnonni ma anche pro zii pro pro zii specificando figli degli ascendenti.',
   },
   bilateral: {
     label: 'Fratelli o sorelle germane',
     name: 'Fratello o sorella',
+    description: "Sono 'germani' i fratelli i quali hanno in comune con il de cuius entrambi i genitori.",
   },
   unilateral: {
     label: 'Fratelli o sorelle unilaterali',
     name: 'Fratello o sorella',
+    description: 'Sono unilaterali i fratelli che hanno in comune solo un genitore.',
   },
   others: {
     label: 'Altri parenti',
     name: 'Parente',
+    description: 'Ossia gli zii e i cugini oppure altri parenti fino al sesto grado di parentela.',
   },
 }
 
@@ -192,6 +208,10 @@ function translateLabel(category: CategoryName): string {
 
 function translateName(category: CategoryName): string {
   return dictionary[category].name
+}
+
+function translateDescription(category: CategoryName): string {
+  return dictionary[category].description
 }
 
 function maxHeirs(category: CategoryName): number {

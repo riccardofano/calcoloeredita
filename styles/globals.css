@@ -6,6 +6,9 @@
   :root {
     font-family: 'Roboto', sans-serif;
   }
+  body {
+    @apply text-gray-800 bg-gray-100;
+  }
 }
 
 @layer components {
