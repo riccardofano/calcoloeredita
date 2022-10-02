@@ -12,13 +12,18 @@ interface FormHeaderProps {
 export default function FormHeader({ isRoot, name, pagination, onNameChange, setSelectedId }: FormHeaderProps) {
   if (isRoot) {
     return (
-      <header className="space-y-2">
-        <label className="text-xs" htmlFor="deceased-name">
-          Nome del defunto
-          <input className="input-field" type="text" id="deceased-name" value={name} onChange={onNameChange} />
-        </label>
-
-        <MoneyForm />
+      <header>
+        <div className="mb-4">
+          <h1 className="text-2xl">Informazioni personali del defunto</h1>
+          <p className="text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+        </div>
+        <div className="p-4 space-y-2 bg-white rounded-md border">
+          <label className="text-xs" htmlFor="deceased-name">
+            Nome
+            <input className="input-field" type="text" id="deceased-name" value={name} onChange={onNameChange} />
+          </label>
+          <MoneyForm />
+        </div>
       </header>
     )
   }

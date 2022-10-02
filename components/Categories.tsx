@@ -72,7 +72,7 @@ function Categories() {
           <section
             key={`${me.id}-${c}`}
             title={label}
-            className={`px-4 py-6 bg-white rounded-md shadow-sm border
+            className={`px-4 py-6 bg-white rounded-md border
             ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <label className={isDisabled ? 'cursor-not-allowed' : ''}>
@@ -84,7 +84,7 @@ function Categories() {
                   disabled={isDisabled}
                   onChange={(e) => onCheckChange(e, c)}
                 />
-                <h2 className="text-xl">{label}</h2>
+                <h2 className="text-lg">{label}</h2>
               </div>
               <p className="text-gray-500">{translateDescription(c)}</p>
             </label>
