@@ -5,7 +5,7 @@ import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleCon
 import { useSelectedIdContext, useSetSelectedIdContext } from '../context/SelectedIdContext'
 
 import Categories from './Categories'
-import MoneyForm from './MoneyForm'
+import Header from './FormHeader'
 
 interface RelativesFormProps {
   isLoading: boolean
@@ -28,36 +28,15 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
   }
 
-  const header = isRoot ? (
-    <header className="space-y-2">
-      <label className="text-xs" htmlFor="deceased-name">
-        Nome del defunto
-        <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
-      </label>
-
-      <MoneyForm />
-    </header>
-  ) : (
-    <header>
-      <nav>
-        {pagination.reverse().map((p, i) => {
-          const isLast = i === pagination.length - 1
-          return (
-            <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
-              <button type="button" onClick={() => setSelectedId(p.id)}>
-                {p.name}
-              </button>
-              {!isLast && <span> / </span>}
-            </span>
-          )
-        })}
-      </nav>
-    </header>
-  )
-
   return (
     <>
-      {header}
+      <Header
+        isRoot={isRoot}
+        name={me.name}
+        pagination={pagination}
+        onNameChange={onNameChange}
+        setSelectedId={setSelectedId}
+      />
 
       <p>Seleziona le tipologie di parenti di questa persona.</p>
       <Categories />
