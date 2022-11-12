@@ -7,6 +7,7 @@ import { SelectedIdProvider } from '../context/SelectedIdContext'
 import RelativesForm from '../components/RelativesForm'
 import RelativesList from '../components/RelativesList'
 import { useRouter } from 'next/router'
+import { motion } from 'framer-motion'
 
 interface MainProps {
   title: string
@@ -50,9 +51,16 @@ function NavLink({ href, text }: { href: string; text: string }) {
   const isActive = asPath === href
 
   return (
-    <Link href={href}>
-      <a className={`inline-block border-b-4 py-4 ${isActive ? 'border-blue-400' : 'border-transparent'}`}>{text}</a>
-    </Link>
+    <span className="relative inline-block py-4">
+      <Link href={href}>{text}</Link>
+      {isActive && (
+        <motion.span
+          layout
+          layoutId="activeNavLink"
+          className="absolute inset-x-0 bottom-0 h-1 bg-blue-400"
+        ></motion.span>
+      )}
+    </span>
   )
 }
 
