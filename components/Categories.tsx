@@ -15,28 +15,23 @@ function Categories() {
   const id = useSelectedIdContext()
 
   const list = usePeopleContext()
-  const dispatch = usePeopleDispatchContext()
-  if (!list) return null
-
   const me = list[id]
+  const dispatch = usePeopleDispatchContext()
+
 
   const allowed = allowedCategories(me.category, me.degree, mode)
   const checked = checkedCategories(list, me.relatives)
   const disabled = disabledCategories(checked)
 
   function onCheckChange(e: ChangeEvent<HTMLInputElement>, category: CategoryName) {
-    if (!dispatch) return
     dispatch({ type: 'TOGGLE_CATEGORY', payload: { parentId: id, category, checked: e.target.checked } })
   }
 
   function onAdd(category: CategoryName) {
-    if (!dispatch) return
     dispatch({ type: 'ADD_RELATIVE', payload: { parentId: id, category } })
   }
 
   function relativesList(category: CategoryName): ReactNode {
-    if (!list) return null
-
     const filtered = me.relatives.filter((rId) => list[rId].category === category)
     if (filtered.length < 1) return null
 

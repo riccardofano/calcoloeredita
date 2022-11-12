@@ -12,19 +12,16 @@ interface RelativesFormProps {
 }
 
 export default function RelativesForm({ isLoading }: RelativesFormProps) {
-  const list = usePeopleContext()
-  const dispatch = usePeopleDispatchContext()
-
   const id = useSelectedIdContext()
   const setSelectedId = useSetSelectedIdContext()
-  if (!list || !setSelectedId) return null
 
+  const dispatch = usePeopleDispatchContext()
+  const list = usePeopleContext()
   const me = list[id]
   const isRoot = me.id === '0'
   const pagination = getPagination(list, me)
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!dispatch) return
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
   }
 

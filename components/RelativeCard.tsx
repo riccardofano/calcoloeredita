@@ -9,30 +9,23 @@ interface RelativeCardProps {
 
 function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   const list = usePeopleContext()
+  const me = list[id]
   const dispatch = usePeopleDispatchContext()
   const setSelectedId = useSetSelectedIdContext()
-  if (!list || !setSelectedId) return null
-
-  const me = list[id]
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!dispatch) return
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
   }
 
   function onAvailabilityChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!dispatch) return
     dispatch({ type: 'TOGGLE_AVAILABILITY', payload: { id, checked: e.target.checked } })
   }
 
   function onDelete() {
-    if (!dispatch) return
     dispatch({ type: 'REMOVE_RELATIVE', payload: { id } })
   }
 
   function onDegreeChange(e: ChangeEvent<HTMLSelectElement>) {
-    if (!dispatch) return
-
     const degree = Number(e.target.value)
     if (isNaN(degree)) return
 

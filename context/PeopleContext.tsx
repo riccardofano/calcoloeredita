@@ -5,12 +5,20 @@ import { Person, PersonList } from '../utils/types/Person'
 export const PeopleContext = createContext<PersonList | null>(null)
 export const PeopleDispatchContext = createContext<Dispatch<PeopleAction> | null>(null)
 
-export function usePeopleContext() {
-  return useContext(PeopleContext)
+export function usePeopleContext(): PersonList {
+  const context = useContext(PeopleContext)
+  if (context === null) {
+    throw new Error("You must surround this component with 'PeopleProvider' to use this hook.")
+  }
+  return context
 }
 
-export function usePeopleDispatchContext() {
-  return useContext(PeopleDispatchContext)
+export function usePeopleDispatchContext(): Dispatch<PeopleAction>  {
+  const dispatch = useContext(PeopleDispatchContext)
+  if (dispatch === null) {
+    throw new Error("You must surround this component with 'PeopleProvider' to use this hook.")
+  }
+  return dispatch
 }
 
 interface PeopleProviderProps {

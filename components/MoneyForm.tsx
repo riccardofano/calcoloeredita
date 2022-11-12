@@ -20,7 +20,7 @@ function MoneyForm() {
   })
 
   useEffect(() => {
-    if (!setMoney || mode !== 'patrimony') return
+    if (mode !== 'patrimony') return
 
     const { total, debt, donations } = patrimonyValues
     const intTotal = toNumber(total)
@@ -33,7 +33,6 @@ function MoneyForm() {
   }, [mode, patrimonyValues, setMoney])
 
   function onMoneyChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!setMoney) return
     setMoney(e.target.value)
   }
 

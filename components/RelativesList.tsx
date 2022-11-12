@@ -19,7 +19,6 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
   const mode = useModeContext()
   const list = usePeopleContext()
   const money = useMoneyContext()
-  if (!list) return null
 
   const root = list['0']
   const intMoney = Number(money) ?? 0
