@@ -39,7 +39,7 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
 
           return (
             <li key={relative.id} className="space-y-2">
-              <p className="flex items-center justify-between p-2 rounded-md border">
+              <p className="flex items-center justify-between px-4 bg-white border rounded-md h-14">
                 {toNonEmptyName(relative.name)}
                 {showMoney ? (
                   <span>{currencyFormatter.format(new Fraction(relativeInheritance).valueOf() * intMoney)}</span>
@@ -57,15 +57,23 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
 
   return (
     <div>
-      <p className="text-lg">
-        Eredità della famiglia di: <span className="font-semibold">{root.name}</span>
-      </p>
+      <h2 className="text-xl">
+        Eredità della famiglia di: <span className="font-medium">{root.name}</span>
+      </h2>
+
       {mode === 'patrimony' && moneyIsValid && (
-        <div className="mt-2">
-          <p>Valore totale del patrimonio: {currencyFormatter.format(intMoney)}</p>
-          <p>Valore disponibile: {showMoney ? available : availableInFraction}</p>
+        <div className="mt-2 text-gray-500">
+          <p>
+            Valore totale del patrimonio:
+            <span className="font-medium text-gray-800"> {currencyFormatter.format(intMoney)}</span>
+          </p>
+          <p>
+            Valore disponibile:
+            <span className="font-medium text-gray-800"> {showMoney ? available : availableInFraction}</span>
+          </p>
         </div>
       )}
+
       {moneyIsValid && (
         <label className="flex items-center mt-4">
           <input
@@ -77,7 +85,8 @@ function RelativesList({ inheritance, setEditing }: RelativesListProps) {
           Mostra eredità in €
         </label>
       )}
-      <div className="-ml-4 my-4">{node(root.relatives, list)}</div>
+
+      <div className="my-4 -ml-4">{node(root.relatives, list)}</div>
 
       <button className="btn btn-inverted" onClick={() => setEditing(true)}>
         Riprova

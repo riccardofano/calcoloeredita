@@ -14,10 +14,10 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
     return (
       <header>
         <div className="mb-4">
-          <h1 className="text-2xl">Informazioni personali del defunto</h1>
+          <h2 className="text-xl">Informazioni personali del defunto</h2>
           <p className="text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
         </div>
-        <div className="p-4 space-y-2 bg-white rounded-md border">
+        <div className="p-6 space-y-2 bg-white rounded-md border">
           <label className="text-xs" htmlFor="deceased-name">
             Nome
             <input className="input-field" type="text" id="deceased-name" value={name} onChange={onNameChange} />

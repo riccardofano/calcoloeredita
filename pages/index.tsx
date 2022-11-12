@@ -44,6 +44,7 @@ function Content() {
   return (
     <ModeProvider mode="inheritance">
       <Main
+        title="Calcolo Eredità"
         isLoading={isLoading}
         isEditing={isEditing}
         setIsEditing={setIsEditing}

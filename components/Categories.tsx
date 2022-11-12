@@ -18,7 +18,6 @@ function Categories() {
   const me = list[id]
   const dispatch = usePeopleDispatchContext()
 
-
   const allowed = allowedCategories(me.category, me.degree, mode)
   const checked = checkedCategories(list, me.relatives)
   const disabled = disabledCategories(checked)
@@ -47,7 +46,7 @@ function Categories() {
         {checked[category] && !hasReachedHeirLimit && (
           <button
             type="button"
-            className="pt-4 w-full text-left text-blue-400 font-medium leading-none border-t"
+            className="w-full pt-4 font-medium leading-none text-left text-blue-400 border-t"
             onClick={() => onAdd(category)}
           >
             + Aggiungi {translateName(category).toLocaleLowerCase()}
@@ -58,7 +57,7 @@ function Categories() {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="bg-white border divide-y rounded-md">
       {allowed.map((c) => {
         const label = translateLabel(c)
         const isDisabled = disabled.includes(c)
@@ -67,8 +66,7 @@ function Categories() {
           <section
             key={`${me.id}-${c}`}
             title={label}
-            className={`px-4 py-6 bg-white rounded-md border
-            ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`${isDisabled ? 'opacity-50 cursor-not-allowed ' : ''} p-6`}
           >
             <label className={isDisabled ? 'cursor-not-allowed' : ''}>
               <div className="flex items-center">
@@ -79,7 +77,7 @@ function Categories() {
                   disabled={isDisabled}
                   onChange={(e) => onCheckChange(e, c)}
                 />
-                <h2 className="text-lg">{label}</h2>
+                <h3 className="text-lg">{label}</h3>
               </div>
               <p className="text-gray-500">{translateDescription(c)}</p>
             </label>

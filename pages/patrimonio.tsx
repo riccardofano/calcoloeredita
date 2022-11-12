@@ -44,6 +44,7 @@ function Content() {
   return (
     <ModeProvider mode="patrimony">
       <Main
+        title="Calcolo Patrimonio"
         isLoading={isLoading}
         isEditing={isEditing}
         setIsEditing={setIsEditing}

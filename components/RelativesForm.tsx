@@ -36,8 +36,8 @@ export default function RelativesForm({ isLoading }: RelativesFormProps) {
       />
 
       <section>
-        <h1 className="text-2xl">Albero genealogico</h1>
-        <p className="text-gray-500 mb-4">Seleziona le tipologie di parenti di questa persona.</p>
+        <h2 className="text-xl">Albero genealogico</h2>
+        <p className="mb-4 text-gray-500">Seleziona le tipologie di parenti di questa persona.</p>
         <Categories />
       </section>
 
@@ -105,7 +105,7 @@ function isSubmitDisabled(list: PersonList): boolean {
 
 function Spinner() {
   return (
-    <svg className="w-6 h-6 mr-2 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <svg className="w-6 h-6 mr-2 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
       <path
         d="M434.67 285.59v-29.8c0-98.73-80.24-178.79-179.2-178.79a179 179 0 00-140.14 67.36m-38.53 82v29.8C76.8 355 157 435 256 435a180.45 180.45 0 00140-66.92"
         fill="none"
