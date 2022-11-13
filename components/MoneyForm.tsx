@@ -41,7 +41,7 @@ function MoneyForm() {
   }
 
   return (
-    <div>
+    <>
       {mode === 'inheritance' ? (
         <NumberInputField
           name="inheritance"
@@ -75,7 +75,7 @@ function MoneyForm() {
           />
         </>
       )}
-    </div>
+    </>
   )
 }
 
@@ -91,11 +91,11 @@ interface NumberInputFieldProps {
 
 function NumberInputField({ name, value, label, placeholder, onChange }: NumberInputFieldProps) {
   return (
-    <label className="text-xs">
+    <label className="input-label">
       {label}
-      <div className="text-base relative before:absolute before:top-0 before:bottom-0 before:right-4 before:content-['€'] before:h-full before:flex before:items-center">
+      <div className="text-base relative before:absolute before:top-0 before:bottom-0 before:right-4 before:content-['€'] before:h-full before:flex before:items-center before:font-normal">
         <input
-          className="pr-8 input-field invalid:outline invalid:outline-red-400"
+          className="pr-8 input-field font-normal invalid:outline invalid:outline-red-400"
           name={name}
           type="text"
           inputMode="numeric"

@@ -7,7 +7,7 @@
     font-family: 'Roboto', sans-serif;
   }
   body {
-    @apply text-gray-800 bg-gray-100;
+    @apply text-gray-800;
   }
 }
 
@@ -22,7 +22,10 @@
     @apply bg-white border border-blue-400 text-blue-400;
   }
 
+  .input-label {
+    @apply text-xs font-medium;
+  }
   .input-field {
-    @apply p-2 w-full border rounded-md shadow-sm text-base;
+    @apply p-2 w-full border rounded-md shadow-sm text-sm font-normal;
   }
 }

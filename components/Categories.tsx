@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode } from 'react'
+import { ChangeEvent } from 'react'
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
 
@@ -6,7 +6,7 @@ import { Mode, useModeContext } from '../context/ModeContext'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { useSelectedIdContext } from '../context/SelectedIdContext'
 
-import RelativeCard from './RelativeCard'
+import RelativeCardList from './RelativeCardList'
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
 
@@ -26,38 +26,8 @@ function Categories() {
     dispatch({ type: 'TOGGLE_CATEGORY', payload: { parentId: id, category, checked: e.target.checked } })
   }
 
-  function onAdd(category: CategoryName) {
-    dispatch({ type: 'ADD_RELATIVE', payload: { parentId: id, category } })
-  }
-
-  function relativesList(category: CategoryName): ReactNode {
-    const filtered = me.relatives.filter((rId) => list[rId].category === category)
-    if (filtered.length < 1) return null
-
-    // Degree does not matter as long as it's greater than 0
-    const canHaveHeirs = allowedCategories(category, 1, mode).length > 0
-    const hasReachedHeirLimit = filtered.length >= maxHeirs(category)
-
-    return (
-      <ul className="mt-4">
-        {filtered.map((rId) => (
-          <RelativeCard key={rId} id={rId} canHaveHeirs={canHaveHeirs} />
-        ))}
-        {checked[category] && !hasReachedHeirLimit && (
-          <button
-            type="button"
-            className="w-full pt-4 font-medium leading-none text-left text-blue-400 border-t"
-            onClick={() => onAdd(category)}
-          >
-            + Aggiungi {translateName(category).toLocaleLowerCase()}
-          </button>
-        )}
-      </ul>
-    )
-  }
-
   return (
-    <div className="bg-white border divide-y rounded-md">
+    <div className="space-y-5">
       {allowed.map((c) => {
         const label = translateLabel(c)
         const isDisabled = disabled.includes(c)
@@ -66,22 +36,27 @@ function Categories() {
           <section
             key={`${me.id}-${c}`}
             title={label}
-            className={`${isDisabled ? 'opacity-50 cursor-not-allowed ' : ''} p-6`}
+            className={`pb-5 border-b last:pb-0 last:border-none ${isDisabled ? 'opacity-50 cursor-not-allowed ' : ''}`}
           >
-            <label className={isDisabled ? 'cursor-not-allowed' : ''}>
-              <div className="flex items-center">
-                <input
-                  className="mr-2 disabled:cursor-not-allowed"
-                  type="checkbox"
-                  checked={checked[c]}
-                  disabled={isDisabled}
-                  onChange={(e) => onCheckChange(e, c)}
-                />
-                <h3 className="text-lg">{label}</h3>
-              </div>
-              <p className="text-gray-500">{translateDescription(c)}</p>
+            <label className={`grid items-center justify-start gap-x-4 ${isDisabled ? 'cursor-not-allowed' : ''}`}>
+              <input
+                className="disabled:cursor-not-allowed"
+                type="checkbox"
+                checked={checked[c]}
+                disabled={isDisabled}
+                onChange={(e) => onCheckChange(e, c)}
+              />
+              <h3 className="text-lg">{label}</h3>
+              <p className="row-start-2 col-start-2 text-gray-500 text-sm">{translateDescription(c)}</p>
             </label>
-            {relativesList(c)}
+            <RelativeCardList
+              id={me.id}
+              category={c}
+              checked={checked[c]}
+              mode={mode}
+              allowedCategories={allowedCategories}
+              translatedName={translateName(c)}
+            />
           </section>
         )
       })}
@@ -205,21 +180,4 @@ function translateName(category: CategoryName): string {
 
 function translateDescription(category: CategoryName): string {
   return dictionary[category].description
-}
-
-function maxHeirs(category: CategoryName): number {
-  switch (category) {
-    case 'children':
-    case 'bilateral':
-    case 'unilateral':
-    case 'others': {
-      return 20
-    }
-    case 'spouse': {
-      return 1
-    }
-    case 'ascendants': {
-      return 2
-    }
-  }
 }
