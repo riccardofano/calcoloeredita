@@ -104,7 +104,9 @@ function Results({ inheritance, setEditing }: ResultsProps) {
             if (relative.root === null) return
 
             const relativeInheritance = inheritance[relativeId]
-            const width = `${new Fraction(relativeInheritance).valueOf() * 100}%`
+            const inheritanceValue = new Fraction(relativeInheritance).valueOf()
+            const width = `${inheritanceValue * 100}%`
+            const inheritanceMoney = currencyFormatter.format(inheritanceValue * intMoney)
 
             const relation = categoryRelation[relative.category]
 
@@ -117,10 +119,16 @@ function Results({ inheritance, setEditing }: ResultsProps) {
                   </p>
                 </td>
                 <td className="px-4 py-2">
-                  <p className="text-center text-gray-800">{relativeInheritance ?? 0}</p>
-                  <p className="relative h-2 w-16 overflow-hidden rounded-sm bg-gray-200">
-                    <span className="absolute inset-y-0 left-0 bg-primary-400" style={{ width }}></span>
-                  </p>
+                  {showMoney ? (
+                    <p className="text-right text-gray-800">{inheritanceMoney}</p>
+                  ) : (
+                    <>
+                      <p className="text-center text-gray-800">{relativeInheritance ?? 0}</p>
+                      <p className="relative h-2 w-16 overflow-hidden rounded-sm bg-gray-200">
+                        <span className="absolute inset-y-0 left-0 bg-primary-400" style={{ width }}></span>
+                      </p>
+                    </>
+                  )}
                 </td>
               </tr>
             )
