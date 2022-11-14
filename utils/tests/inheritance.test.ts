@@ -159,9 +159,9 @@ test('Spouse and one unilateral sibling', () => {
 
 test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   // The spouse gets 2/3
-  // Parents at least 1/4 of the total
-  // Bilateral siblings 1/18
-  // Unilateral siblings half a the bilateral siblings (1/36)
+  // Parents at least 1/2 of the remaining amount for the relatives so 1/6
+  // Bilateral siblings 1/9
+  // Unilateral siblings half a the bilateral siblings (1/18)
   const list = {
     ...newDeceased(['spouse', 'mother', 'sister', 'unilateral-brother']),
     ...newPerson({ id: 'spouse', category: 'spouse' }),
@@ -172,9 +172,9 @@ test('Spouse, parents, bilateral, and unilateral siblings ', () => {
   const result = calculateInheritance(list)
 
   expect(result['spouse']).toBe('2/3')
-  expect(result['mother']).toBe('1/4')
-  expect(result['sister']).toBe('1/18')
-  expect(result['unilateral-brother']).toBe('1/36')
+  expect(result['mother']).toBe('1/6')
+  expect(result['sister']).toBe('1/9')
+  expect(result['unilateral-brother']).toBe('1/18')
 })
 
 test('Spouse, two grandparents and one sibling', () => {
@@ -189,14 +189,14 @@ test('Spouse, two grandparents and one sibling', () => {
   const result = calculateInheritance(list)
 
   expect(result['spouse']).toBe('2/3')
-  expect(result['brother']).toBe('1/12')
-  expect(result['grandmother']).toBe('1/8')
-  expect(result['grandfather']).toBe('1/8')
+  expect(result['brother']).toBe('1/6')
+  expect(result['grandmother']).toBe('1/12')
+  expect(result['grandfather']).toBe('1/12')
 })
 
 test('Spouse, one grandparent and four siblings', () => {
   // The spouse takes 2/3
-  // The grandparent has to have at least 1/4 of the inheritance
+  // The grandparent has to have at least 1/4 of the remaining relatives' inheritance
   // The rest goes to the siblings
   const list = {
     ...newDeceased(['spouse', 'mother', 'first-brother', 'second-brother', 'first-sister', 'second-sister']),
@@ -211,11 +211,11 @@ test('Spouse, one grandparent and four siblings', () => {
   const result = calculateInheritance(list)
 
   expect(result['spouse']).toBe('2/3')
-  expect(result['first-brother']).toBe('1/48')
-  expect(result['second-brother']).toBe('1/48')
-  expect(result['first-sister']).toBe('1/48')
-  expect(result['second-sister']).toBe('1/48')
-  expect(result['grandmother']).toBe('1/4')
+  expect(result['grandmother']).toBe('1/6')
+  expect(result['first-brother']).toBe('1/24')
+  expect(result['second-brother']).toBe('1/24')
+  expect(result['first-sister']).toBe('1/24')
+  expect(result['second-sister']).toBe('1/24')
 })
 
 test('Two parents', () => {

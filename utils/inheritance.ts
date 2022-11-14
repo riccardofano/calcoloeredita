@@ -68,9 +68,7 @@ export function calculateInheritance(list: PersonList, total = 100): Record<stri
         inheritance.ascendants = inheritance.relatives / numberRelatives
         // The parents receive at least half of the remaining inheritance
         const totalParentsInheritance = inheritance.ascendants * numberAscendants
-        if (spousePresent && totalParentsInheritance < remaning / 4) {
-          inheritance.ascendants = remaning / 4
-        } else if (totalParentsInheritance < inheritance.relatives / 2) {
+        if (totalParentsInheritance < inheritance.relatives / 2) {
           inheritance.ascendants = inheritance.relatives / 2 / numberAscendants
         }
 
