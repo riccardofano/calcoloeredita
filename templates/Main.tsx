@@ -22,14 +22,14 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
   return (
     <>
       <nav className="bg-white px-4 sm:px-8 lg:px-0">
-        <div className="max-w-4xl mx-auto space-x-8">
+        <div className="mx-auto max-w-4xl space-x-8">
           <NavLink href="/" text="Calcolo eredità" />
           <NavLink href="/patrimonio" text="Calcolo patrimonio" />
         </div>
       </nav>
 
-      <main className="px-4 sm:px-8 lg:px-0 mt-8 mb-16">
-        <div className="max-w-4xl mx-auto">
+      <main className="mt-8 mb-16 px-4 sm:px-8 lg:px-0">
+        <div className="mx-auto max-w-4xl">
           <h1 className="mb-4 text-3xl font-medium">{title}</h1>
           <SelectedIdProvider>
             <MoneyProvider>

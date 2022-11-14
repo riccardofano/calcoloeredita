@@ -27,7 +27,7 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
   }
 
   return (
-    <form className="border rounded-md bg-gray-100" onSubmit={onSubmit}>
+    <form className="rounded-md border bg-gray-100" onSubmit={onSubmit}>
       <Header
         isRoot={isRoot}
         name={me.name}
@@ -38,18 +38,18 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
 
       <div className="px-4">
         <h2 className="text-lg font-medium">Albero genealogico</h2>
-        <p className="text-gray-600 text-sm">Seleziona le tipologie di parenti di questa persona.</p>
+        <p className="text-sm text-gray-600">Seleziona le tipologie di parenti di questa persona.</p>
       </div>
-      <div className="bg-white px-4 py-5 mt-5">
+      <div className="mt-5 bg-white px-4 py-5">
         <Categories />
       </div>
 
-      <div className="grid bg-gray-50 px-4 pt-5 pb-6 rounded-md">
+      <div className="grid rounded-md bg-gray-50 px-4 pt-5 pb-6">
         {isRoot ? (
           <button
             type="submit"
             disabled={isLoading || isSubmitDisabled(list)}
-            className="justify-self-end flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary flex items-center justify-self-end disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading && <Spinner />}
             Calcola eredità
@@ -110,7 +110,7 @@ function isSubmitDisabled(list: PersonList): boolean {
 
 function Spinner() {
   return (
-    <svg className="w-6 h-6 mr-2 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <svg className="mr-2 h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
       <path
         d="M434.67 285.59v-29.8c0-98.73-80.24-178.79-179.2-178.79a179 179 0 00-140.14 67.36m-38.53 82v29.8C76.8 355 157 435 256 435a180.45 180.45 0 00140-66.92"
         fill="none"

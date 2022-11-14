@@ -13,19 +13,19 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md;
+    @apply rounded-md px-4 py-2;
   }
   .btn-primary {
     @apply bg-blue-400 text-white;
   }
   .btn-inverted {
-    @apply bg-white border border-blue-400 text-blue-400;
+    @apply border border-blue-400 bg-white text-blue-400;
   }
 
   .input-label {
     @apply text-xs font-medium;
   }
   .input-field {
-    @apply p-2 w-full border rounded-md shadow-sm text-sm font-normal;
+    @apply w-full rounded-md border p-2 text-sm font-normal shadow-sm;
   }
 }

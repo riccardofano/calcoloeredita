@@ -64,20 +64,20 @@ function Results({ inheritance, setEditing }: ResultsProps) {
       </h2>
 
       {mode === 'patrimony' && moneyIsValid && (
-        <div className="mt-2 text-blue-100 p-4 bg-blue-900 rounded-md">
-          <p className="pb-2 text-base border-b border-white/10">
+        <div className="mt-2 rounded-md bg-blue-900 p-4 text-blue-100">
+          <p className="border-b border-white/10 pb-2 text-base">
             Valore totale:
-            <span className="font-medium text-xl text-white"> {currencyFormatter.format(intMoney)}</span>
+            <span className="text-xl font-medium text-white"> {currencyFormatter.format(intMoney)}</span>
           </p>
-          <p className="text-base pt-2">
+          <p className="pt-2 text-base">
             Valore disponibile:
-            <span className="font-medium text-xl text-white"> {showMoney ? available : availableInFraction}</span>
+            <span className="text-xl font-medium text-white"> {showMoney ? available : availableInFraction}</span>
           </p>
         </div>
       )}
 
       {moneyIsValid && (
-        <label className="flex items-center mt-4">
+        <label className="mt-4 flex items-center">
           <input
             className="mr-2"
             type="checkbox"
@@ -88,11 +88,11 @@ function Results({ inheritance, setEditing }: ResultsProps) {
         </label>
       )}
 
-      <table className="mt-5 w-full border table-auto">
+      <table className="mt-5 w-full table-auto border">
         <thead className="border bg-gray-50 text-left">
           <tr>
             <th className="p-4">Nome</th>
-            <th className="p-4 w-20">Quota</th>
+            <th className="w-20 p-4">Quota</th>
           </tr>
         </thead>
         <tbody>
@@ -114,9 +114,9 @@ function Results({ inheritance, setEditing }: ResultsProps) {
                   </p>
                 </td>
                 <td className="px-4 py-2">
-                  <p className="text-gray-800 text-center">{relativeInheritance ?? 0}</p>
-                  <p className="relative h-2 w-16 rounded-sm overflow-hidden bg-gray-200">
-                    <span className="absolute left-0 inset-y-0 bg-green-500" style={{ width }}></span>
+                  <p className="text-center text-gray-800">{relativeInheritance ?? 0}</p>
+                  <p className="relative h-2 w-16 overflow-hidden rounded-sm bg-gray-200">
+                    <span className="absolute inset-y-0 left-0 bg-green-500" style={{ width }}></span>
                   </p>
                 </td>
               </tr>
@@ -125,16 +125,16 @@ function Results({ inheritance, setEditing }: ResultsProps) {
         </tbody>
       </table>
 
-      <p className="max-w-prose mx-auto border p-4 rounded-md mt-5 text-gray-600 border-yellow-500 bg-yellow-50/50">
+      <p className="mx-auto mt-5 max-w-prose rounded-md border border-yellow-500 bg-yellow-50/50 p-4 text-gray-600">
         Ricordiamo che questi risultati so approssimativi, molte leggi che protrebbero influenzare i risultati per
         questo consigliamo di contattare un nostro esperto per avera una panoramica più completa.
       </p>
 
       <div className="flex justify-between">
-        <button className="mt-5 btn btn-inverted" onClick={() => setEditing(true)}>
+        <button className="btn btn-inverted mt-5" onClick={() => setEditing(true)}>
           Riprova
         </button>
-        <button className="mt-5 btn btn-primary">Contatta un&apos;esperto</button>
+        <button className="btn btn-primary mt-5">Contatta un&apos;esperto</button>
       </div>
     </div>
   )

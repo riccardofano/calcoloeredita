@@ -33,14 +33,14 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   }
 
   return (
-    <li className="flex flex-col py-4 space-y-4 leading-none first:pt-0 text-sm">
+    <li className="flex flex-col space-y-4 py-4 text-sm leading-none first:pt-0">
       <div>
         <label className="input-label" htmlFor={`relative-name-${id}`}>
           Nome
         </label>
-        <div className="flex mt-1">
+        <div className="mt-1 flex">
           <input
-            className="mr-2 input-field"
+            className="input-field mr-2"
             type="text"
             placeholder="Nuova persona"
             value={me.name}
@@ -49,7 +49,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
           />
           <button
             type="button"
-            className="px-4 font-normal border rounded-md shadow-sm text-red-400"
+            className="rounded-md border px-4 font-normal text-red-400 shadow-sm"
             onClick={onDelete}
           >
             Rimuovi
@@ -59,7 +59,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
 
       {me.category === 'others' && (
         <select
-          className="w-full p-2 bg-white border rounded-md shadow-sm"
+          className="w-full rounded-md border bg-white p-2 shadow-sm"
           onChange={onDegreeChange}
           placeholder="Parente (grado di parentela)"
         >
@@ -85,7 +85,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
         // set the selected id so you can use the browser controls to navigate
         // back and forth
         <button
-          className="self-start flex gap-2 items-center underline text-blue-400"
+          className="flex items-center gap-2 self-start text-blue-400 underline"
           onClick={() => setSelectedId(id)}
         >
           Inserisci parenti di questa persona &rarr;

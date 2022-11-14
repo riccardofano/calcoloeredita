@@ -36,7 +36,7 @@ function Categories() {
           <section
             key={`${me.id}-${c}`}
             title={label}
-            className={`pb-5 border-b last:pb-0 last:border-none ${isDisabled ? 'opacity-50 cursor-not-allowed ' : ''}`}
+            className={`border-b pb-5 last:border-none last:pb-0 ${isDisabled ? 'cursor-not-allowed opacity-50 ' : ''}`}
           >
             <label className={`grid items-center justify-start gap-x-4 ${isDisabled ? 'cursor-not-allowed' : ''}`}>
               <input
@@ -47,7 +47,7 @@ function Categories() {
                 onChange={(e) => onCheckChange(e, c)}
               />
               <h3 className="text-lg">{label}</h3>
-              <p className="row-start-2 col-start-2 text-gray-500 text-sm">{translateDescription(c)}</p>
+              <p className="col-start-2 row-start-2 text-sm text-gray-500">{translateDescription(c)}</p>
             </label>
             <RelativeCardList
               id={me.id}

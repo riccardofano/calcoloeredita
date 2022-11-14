@@ -46,7 +46,7 @@ export default function RelativeCardList({
       </ul>
 
       {checked && !hasReachedHeirLimit && (
-        <button type="button" className="justify-self-end btn btn-primary text-sm" onClick={() => handleAdd(category)}>
+        <button type="button" className="btn btn-primary justify-self-end text-sm" onClick={() => handleAdd(category)}>
           + Aggiungi {translatedName.toLocaleLowerCase()}
         </button>
       )}
