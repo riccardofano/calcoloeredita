@@ -5,7 +5,7 @@ import { MoneyProvider } from '../context/MoneyContext'
 import { SelectedIdProvider } from '../context/SelectedIdContext'
 
 import RelativesForm from '../components/RelativesForm'
-import RelativesList from '../components/RelativesList'
+import Results from '../components/Results'
 import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
 
@@ -36,7 +36,7 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
               {isEditing ? (
                 <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
               ) : (
-                <RelativesList inheritance={inheritance} setEditing={setIsEditing} />
+                <Results inheritance={inheritance} setEditing={setIsEditing} />
               )}
             </MoneyProvider>
           </SelectedIdProvider>
