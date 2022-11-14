@@ -30,7 +30,7 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
 
       <main className="mt-8 mb-16 px-4 sm:px-8 lg:px-0">
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-4 text-3xl font-medium">{title}</h1>
+          <h1 className="mb-4 text-2xl font-medium md:text-3xl">{title}</h1>
           <SelectedIdProvider>
             <MoneyProvider>
               {isEditing ? (
@@ -54,11 +54,7 @@ function NavLink({ href, text }: { href: string; text: string }) {
     <span className="relative inline-block py-4">
       <Link href={href}>{text}</Link>
       {isActive && (
-        <motion.span
-          layout
-          layoutId="activeNavLink"
-          className="absolute inset-x-0 bottom-0 h-1 bg-blue-400"
-        ></motion.span>
+        <motion.span layout layoutId="activeNavLink" className="absolute inset-x-0 bottom-0 h-1 bg-primary-400" />
       )}
     </span>
   )

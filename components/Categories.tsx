@@ -46,8 +46,8 @@ function Categories() {
                 disabled={isDisabled}
                 onChange={(e) => onCheckChange(e, c)}
               />
-              <h3 className="text-lg">{label}</h3>
-              <p className="col-start-2 row-start-2 text-sm text-gray-500">{translateDescription(c)}</p>
+              <h3 className="text-base font-medium md:text-lg">{label}</h3>
+              <p className="col-start-2 row-start-2 text-sm text-gray-600 md:text-base">{translateDescription(c)}</p>
             </label>
             <RelativeCardList
               id={me.id}

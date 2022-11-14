@@ -37,8 +37,8 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
       />
 
       <div className="px-4">
-        <h2 className="text-lg font-medium">Albero genealogico</h2>
-        <p className="text-sm text-gray-600">Seleziona le tipologie di parenti di questa persona.</p>
+        <h2 className="text-lg font-medium md:text-xl">Albero genealogico</h2>
+        <p className="text-sm text-gray-600 md:text-base">Seleziona le tipologie di parenti di questa persona.</p>
       </div>
       <div className="mt-5 bg-white px-4 py-5">
         <Categories />

@@ -59,19 +59,22 @@ function Results({ inheritance, setEditing }: ResultsProps) {
 
   return (
     <div className="max-w-xl">
-      <h2 className="text-xl">
+      <h2 className="text-lg md:text-xl">
         Eredità della famiglia di: <span className="font-medium">{root.name}</span>
       </h2>
 
       {mode === 'patrimony' && moneyIsValid && (
-        <div className="mt-2 rounded-md bg-blue-900 p-4 text-blue-100">
-          <p className="border-b border-white/10 pb-2 text-base">
+        <div className="mt-2 rounded-md bg-primary-900 p-4 text-primary-100">
+          <p className="border-b border-white/10 pb-2 text-base md:text-lg">
             Valore totale:
-            <span className="text-xl font-medium text-white"> {currencyFormatter.format(intMoney)}</span>
+            <span className="text-xl font-medium text-white md:text-2xl"> {currencyFormatter.format(intMoney)}</span>
           </p>
-          <p className="pt-2 text-base">
+          <p className="pt-2 text-base md:text-lg">
             Valore disponibile:
-            <span className="text-xl font-medium text-white"> {showMoney ? available : availableInFraction}</span>
+            <span className="text-xl font-medium text-white md:text-2xl">
+              {' '}
+              {showMoney ? available : availableInFraction}
+            </span>
           </p>
         </div>
       )}
@@ -109,14 +112,14 @@ function Results({ inheritance, setEditing }: ResultsProps) {
               <tr key={relativeId} className="border-t">
                 <td className="px-4 py-2">
                   <p className="font-medium text-gray-800">{relative.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600 md:text-base">
                     {relation} {list[relative.root].name}
                   </p>
                 </td>
                 <td className="px-4 py-2">
                   <p className="text-center text-gray-800">{relativeInheritance ?? 0}</p>
                   <p className="relative h-2 w-16 overflow-hidden rounded-sm bg-gray-200">
-                    <span className="absolute inset-y-0 left-0 bg-green-500" style={{ width }}></span>
+                    <span className="absolute inset-y-0 left-0 bg-primary-400" style={{ width }}></span>
                   </p>
                 </td>
               </tr>
@@ -125,7 +128,7 @@ function Results({ inheritance, setEditing }: ResultsProps) {
         </tbody>
       </table>
 
-      <p className="mx-auto mt-5 max-w-prose rounded-md border border-yellow-500 bg-yellow-50/50 p-4 text-gray-600">
+      <p className="mx-auto mt-5 max-w-prose rounded-md border border-primary-400 bg-primary-50/50 p-4 text-gray-600">
         Ricordiamo che questi risultati so approssimativi, molte leggi che protrebbero influenzare i risultati per
         questo consigliamo di contattare un nostro esperto per avera una panoramica più completa.
       </p>

@@ -93,9 +93,9 @@ function NumberInputField({ name, value, label, placeholder, onChange }: NumberI
   return (
     <label className="input-label">
       {label}
-      <div className="relative text-base before:absolute before:top-0 before:bottom-0 before:right-4 before:flex before:h-full before:items-center before:font-normal before:content-['€']">
+      <div className="relative text-base before:absolute before:top-0 before:bottom-0 before:right-4 before:flex before:h-full before:items-center before:font-normal before:content-['€'] md:text-lg">
         <input
-          className="input-field pr-8 font-normal invalid:outline invalid:outline-red-400"
+          className="input-field pr-8 font-normal invalid:outline invalid:outline-danger-400"
           name={name}
           type="text"
           inputMode="numeric"

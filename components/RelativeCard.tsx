@@ -33,7 +33,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   }
 
   return (
-    <li className="flex flex-col space-y-4 py-4 text-sm leading-none first:pt-0">
+    <li className="flex flex-col space-y-4 py-4 text-sm leading-none first:pt-0 md:text-base">
       <div>
         <label className="input-label" htmlFor={`relative-name-${id}`}>
           Nome
@@ -49,7 +49,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
           />
           <button
             type="button"
-            className="rounded-md border px-4 font-normal text-red-400 shadow-sm"
+            className="rounded-md border px-4 font-normal text-danger-400 shadow-sm"
             onClick={onDelete}
           >
             Rimuovi
@@ -85,10 +85,10 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
         // set the selected id so you can use the browser controls to navigate
         // back and forth
         <button
-          className="flex items-center gap-2 self-start text-blue-400 underline"
+          className="flex items-center gap-2 self-start text-primary-400 underline"
           onClick={() => setSelectedId(id)}
         >
-          Inserisci parenti di questa persona &rarr;
+          Inserisci parenti di questa persona &#8599;
         </button>
       )}
     </li>

@@ -16,8 +16,8 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
     return (
       <header className="pt-6">
         <div className="mb-4 px-4">
-          <h2 className="text-lg font-medium">Informazioni del defunto</h2>
-          <p className="text-sm text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+          <h2 className="text-lg font-medium md:text-xl">Informazioni del defunto</h2>
+          <p className="text-sm text-gray-600 md:text-base">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
         </div>
         <div className="my-5 grid gap-y-4 border-b bg-white px-4 py-5">
           <label className="input-label" htmlFor="deceased-name">
@@ -38,14 +38,14 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
 
           if (isLast) {
             return (
-              <span key={p.id} className="text-base text-gray-800">
+              <span key={p.id} className="text-base text-gray-800 md:text-lg">
                 {p.name}
               </span>
             )
           }
 
           return (
-            <span key={p.id} className="text-sm text-gray-400">
+            <span key={p.id} className="text-sm text-gray-600 md:text-base">
               <button type="button" className="mr-2" onClick={() => setSelectedId(p.id)}>
                 {p.name}
               </button>
