@@ -44,12 +44,12 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
         <Categories />
       </div>
 
-      <div className="grid gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6">
+      <div className="flex flex-col gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6 md:flex-row md:justify-between">
         {!isRoot && (
           <button
             key="back"
             type="button"
-            className="btn btn-inverted"
+            className="btn btn-inverted px-8"
             onClick={() => {
               if (!me.root) return
               setSelectedId(me.root)
@@ -61,7 +61,7 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
         <button
           type="submit"
           disabled={isLoading || isSubmitDisabled(list)}
-          className="btn btn-primary flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn btn-primary flex items-center justify-center px-8 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading && <Spinner />}
           Calcola eredità
