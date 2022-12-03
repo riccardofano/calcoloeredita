@@ -6,20 +6,26 @@
   :root {
     font-family: 'Roboto', sans-serif;
   }
+  body {
+    @apply text-gray-800;
+  }
 }
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md;
+    @apply rounded-md px-4 py-2 shadow-sm;
   }
   .btn-primary {
-    @apply bg-blue-400 text-white;
+    @apply bg-primary-500 text-white;
   }
   .btn-inverted {
-    @apply bg-white border border-blue-400 text-blue-400;
+    @apply border bg-white text-primary-500;
   }
 
+  .input-label {
+    @apply text-xs font-medium md:text-sm;
+  }
   .input-field {
-    @apply p-2 w-full border rounded-md shadow-sm text-base;
+    @apply w-full rounded-md border p-2 text-sm font-normal shadow-sm focus:outline focus:outline-2 focus:outline-primary-500 focus:ring-4 focus:ring-primary-100;
   }
 }

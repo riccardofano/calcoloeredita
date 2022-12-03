@@ -1,90 +1,73 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, FormEvent } from 'react'
 import { Person, PersonList } from '../utils/types/Person'
 
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
 import { useSelectedIdContext, useSetSelectedIdContext } from '../context/SelectedIdContext'
 
 import Categories from './Categories'
-import MoneyForm from './MoneyForm'
+import Header from './FormHeader'
 
 interface RelativesFormProps {
   isLoading: boolean
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void
 }
 
-export default function RelativesForm({ isLoading }: RelativesFormProps) {
-  const list = usePeopleContext()
-  const dispatch = usePeopleDispatchContext()
-
+export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProps) {
   const id = useSelectedIdContext()
   const setSelectedId = useSetSelectedIdContext()
-  if (!list || !setSelectedId) return null
 
+  const dispatch = usePeopleDispatchContext()
+  const list = usePeopleContext()
   const me = list[id]
   const isRoot = me.id === '0'
   const pagination = getPagination(list, me)
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!dispatch) return
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
   }
 
-  const header = isRoot ? (
-    <header className="space-y-2">
-      <label className="text-xs" htmlFor="deceased-name">
-        Nome del defunto
-        <input className="input-field" type="text" id="deceased-name" value={me.name} onChange={onNameChange} />
-      </label>
-
-      <MoneyForm />
-    </header>
-  ) : (
-    <header>
-      <nav>
-        {pagination.reverse().map((p, i) => {
-          const isLast = i === pagination.length - 1
-          return (
-            <span key={p.id} className={`${isLast ? 'text-lg text-black font-semibold' : 'text-sm text-gray-400'}`}>
-              <button type="button" onClick={() => setSelectedId(p.id)}>
-                {p.name}
-              </button>
-              {!isLast && <span> / </span>}
-            </span>
-          )
-        })}
-      </nav>
-    </header>
-  )
-
   return (
-    <>
-      {header}
+    <form className="rounded-md border bg-gray-100" onSubmit={onSubmit}>
+      <Header
+        isRoot={isRoot}
+        name={me.name}
+        pagination={pagination}
+        onNameChange={onNameChange}
+        setSelectedId={setSelectedId}
+      />
 
-      <p>Seleziona le tipologie di parenti di questa persona.</p>
-      <Categories />
+      <div className="px-4">
+        <h2 className="text-lg font-medium md:text-xl">Albero genealogico</h2>
+        <p className="text-sm text-gray-600 md:text-base">Seleziona le tipologie di parenti di questa persona.</p>
+      </div>
+      <div className="mt-5 bg-white py-5">
+        <Categories />
+      </div>
 
-      {isRoot ? (
+      <div className="flex flex-col gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6 md:flex-row md:justify-between">
+        {!isRoot && (
+          <button
+            key="back"
+            type="button"
+            className="btn btn-inverted px-8"
+            onClick={() => {
+              if (!me.root) return
+              setSelectedId(me.root)
+            }}
+          >
+            Indietro
+          </button>
+        )}
         <button
           type="submit"
           disabled={isLoading || isSubmitDisabled(list)}
-          className="flex items-center btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-primary flex items-center justify-center px-8 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading && <Spinner />}
           Calcola eredità
         </button>
-      ) : (
-        <button
-          key="back"
-          type="button"
-          className="btn btn-inverted"
-          onClick={() => {
-            if (!me.root) return
-            setSelectedId(me.root)
-          }}
-        >
-          Indietro
-        </button>
-      )}
-    </>
+      </div>
+    </form>
   )
 }
 
@@ -126,21 +109,21 @@ function isSubmitDisabled(list: PersonList): boolean {
 
 function Spinner() {
   return (
-    <svg className="w-6 h-6 mr-2 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <svg className="mr-2 h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
       <path
         d="M434.67 285.59v-29.8c0-98.73-80.24-178.79-179.2-178.79a179 179 0 00-140.14 67.36m-38.53 82v29.8C76.8 355 157 435 256 435a180.45 180.45 0 00140-66.92"
         fill="none"
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="32"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="32"
       />
       <path
         fill="none"
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="32"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="32"
         d="M32 256l44-44 46 44M480 256l-44 44-46-44"
       />
     </svg>

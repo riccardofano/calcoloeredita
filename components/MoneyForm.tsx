@@ -20,7 +20,7 @@ function MoneyForm() {
   })
 
   useEffect(() => {
-    if (!setMoney || mode !== 'patrimony') return
+    if (mode !== 'patrimony') return
 
     const { total, debt, donations } = patrimonyValues
     const intTotal = toNumber(total)
@@ -33,7 +33,6 @@ function MoneyForm() {
   }, [mode, patrimonyValues, setMoney])
 
   function onMoneyChange(e: ChangeEvent<HTMLInputElement>) {
-    if (!setMoney) return
     setMoney(e.target.value)
   }
 
@@ -42,7 +41,7 @@ function MoneyForm() {
   }
 
   return (
-    <div>
+    <>
       {mode === 'inheritance' ? (
         <NumberInputField
           name="inheritance"
@@ -76,7 +75,7 @@ function MoneyForm() {
           />
         </>
       )}
-    </div>
+    </>
   )
 }
 
@@ -92,11 +91,11 @@ interface NumberInputFieldProps {
 
 function NumberInputField({ name, value, label, placeholder, onChange }: NumberInputFieldProps) {
   return (
-    <label className="text-xs">
+    <label className="input-label">
       {label}
-      <div className="text-base relative before:absolute before:top-0 before:bottom-0 before:right-4 before:content-['€'] before:h-full before:flex before:items-center">
+      <div className="relative text-base before:absolute before:top-0 before:bottom-0 before:right-4 before:flex before:h-full before:items-center before:font-normal before:content-['€'] md:text-lg">
         <input
-          className="input-field pr-8 invalid:outline invalid:outline-red-400"
+          className="input-field pr-8 font-normal invalid:outline invalid:outline-danger-400"
           name={name}
           type="text"
           inputMode="numeric"

@@ -8,7 +8,11 @@ export function useMoneyContext() {
 }
 
 export function useSetMoneyContext() {
-  return useContext(SetMoneyContext)
+  const setMoney = useContext(SetMoneyContext)
+  if (setMoney === null) {
+    throw new Error("This component must be a descendent of 'MoneyProvider' to use this hook.")
+  }
+  return setMoney
 }
 
 interface MoneyProviderProps {

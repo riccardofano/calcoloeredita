@@ -8,7 +8,11 @@ export function useSelectedIdContext() {
 }
 
 export function useSetSelectedIdContext() {
-  return useContext(SetSelectedIdContext)
+  const setSelectedId = useContext(SetSelectedIdContext)
+  if (setSelectedId === null) {
+    throw new Error("This component must be a descendent of 'SelectedIdProvider' to use this hook.")
+  }
+  return setSelectedId
 }
 
 interface SelectedIdProviderProps {
