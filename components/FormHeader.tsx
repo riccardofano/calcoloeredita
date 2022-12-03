@@ -17,7 +17,7 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
       <header className="pt-6">
         <div className="mb-4 px-4">
           <h2 className="text-lg font-medium md:text-xl">Informazioni del defunto</h2>
-          <p className="text-sm text-gray-600 md:text-base">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+          <p className="text-sm text-gray-600 md:text-base">Queste informazioni saranno visibili solo a te.</p>
         </div>
         <div className="my-5 grid gap-y-4 border-b bg-white px-4 py-5">
           <label className="input-label" htmlFor="deceased-name">

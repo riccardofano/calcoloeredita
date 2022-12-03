@@ -30,7 +30,7 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
 
       <main className="mt-8 mb-16 px-4 sm:px-8 lg:px-0">
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-4 text-2xl font-medium md:text-3xl">{title}</h1>
+          <h1 className="mb-4 text-center text-2xl font-medium md:text-3xl">{title}</h1>
           <SelectedIdProvider>
             <MoneyProvider>
               {isEditing ? (

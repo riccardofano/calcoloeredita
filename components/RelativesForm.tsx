@@ -40,25 +40,16 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
         <h2 className="text-lg font-medium md:text-xl">Albero genealogico</h2>
         <p className="text-sm text-gray-600 md:text-base">Seleziona le tipologie di parenti di questa persona.</p>
       </div>
-      <div className="mt-5 bg-white px-4 py-5">
+      <div className="mt-5 bg-white py-5">
         <Categories />
       </div>
 
-      <div className="grid rounded-md bg-gray-50 px-4 pt-5 pb-6">
-        {isRoot ? (
-          <button
-            type="submit"
-            disabled={isLoading || isSubmitDisabled(list)}
-            className="btn btn-primary flex items-center justify-self-end disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading && <Spinner />}
-            Calcola eredità
-          </button>
-        ) : (
+      <div className="grid gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6">
+        {!isRoot && (
           <button
             key="back"
             type="button"
-            className="btn btn-inverted justify-self-start"
+            className="btn btn-inverted"
             onClick={() => {
               if (!me.root) return
               setSelectedId(me.root)
@@ -67,6 +58,14 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
             Indietro
           </button>
         )}
+        <button
+          type="submit"
+          disabled={isLoading || isSubmitDisabled(list)}
+          className="btn btn-primary flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isLoading && <Spinner />}
+          Calcola eredità
+        </button>
       </div>
     </form>
   )
