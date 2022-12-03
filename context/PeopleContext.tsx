@@ -13,7 +13,7 @@ export function usePeopleContext(): PersonList {
   return context
 }
 
-export function usePeopleDispatchContext(): Dispatch<PeopleAction>  {
+export function usePeopleDispatchContext(): Dispatch<PeopleAction> {
   const dispatch = useContext(PeopleDispatchContext)
   if (dispatch === null) {
     throw new Error("You must surround this component with 'PeopleProvider' to use this hook.")

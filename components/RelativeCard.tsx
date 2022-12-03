@@ -1,15 +1,15 @@
 import { ChangeEvent } from 'react'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { usePeopleDispatchContext } from '../context/PeopleContext'
 import { useSetSelectedIdContext } from '../context/SelectedIdContext'
+import { Person } from '../utils/types/Person'
 
 interface RelativeCardProps {
   id: string
+  me: Person
   canHaveHeirs: boolean
 }
 
-function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
-  const list = usePeopleContext()
-  const me = list[id]
+function RelativeCard({ id, me, canHaveHeirs }: RelativeCardProps) {
   const dispatch = usePeopleDispatchContext()
   const setSelectedId = useSetSelectedIdContext()
 
@@ -33,7 +33,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
   }
 
   return (
-    <li className="flex flex-col space-y-4 py-4 text-sm leading-none first:pt-0 md:text-base">
+    <div className="flex flex-col space-y-4 p-4 text-sm leading-none first:pt-0 md:text-base">
       <div>
         <label className="input-label" htmlFor={`relative-name-${id}`}>
           Nome
@@ -91,7 +91,7 @@ function RelativeCard({ id, canHaveHeirs }: RelativeCardProps) {
           Inserisci parenti di questa persona &#8599;
         </button>
       )}
-    </li>
+    </div>
   )
 }
 

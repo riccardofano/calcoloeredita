@@ -7,6 +7,7 @@ import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleCon
 import { useSelectedIdContext } from '../context/SelectedIdContext'
 
 import RelativeCardList from './RelativeCardList'
+import { AnimatePresence } from 'framer-motion'
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
 
@@ -32,13 +33,15 @@ function Categories() {
         const label = translateLabel(c)
         const isDisabled = disabled.includes(c)
 
+        const peopleInCategory = me.relatives.filter((rId) => list[rId].category === c)
+
         return (
           <section
             key={`${me.id}-${c}`}
             title={label}
             className={`border-b pb-5 last:border-none last:pb-0 ${isDisabled ? 'cursor-not-allowed opacity-50 ' : ''}`}
           >
-            <label className={`grid items-center justify-start gap-x-4 ${isDisabled ? 'cursor-not-allowed' : ''}`}>
+            <label className={`grid items-center justify-start gap-x-4 px-4 ${isDisabled ? 'cursor-not-allowed' : ''}`}>
               <input
                 className="disabled:cursor-not-allowed"
                 type="checkbox"
@@ -49,14 +52,19 @@ function Categories() {
               <h3 className="text-base font-medium md:text-lg">{label}</h3>
               <p className="col-start-2 row-start-2 text-sm text-gray-600 md:text-base">{translateDescription(c)}</p>
             </label>
-            <RelativeCardList
-              id={me.id}
-              category={c}
-              checked={checked[c]}
-              mode={mode}
-              allowedCategories={allowedCategories}
-              translatedName={translateName(c)}
-            />
+            <AnimatePresence initial={false}>
+              {peopleInCategory.length > 0 && (
+                <RelativeCardList
+                  id={me.id}
+                  category={c}
+                  mode={mode}
+                  list={list}
+                  filtered={peopleInCategory}
+                  allowedCategories={allowedCategories}
+                  translatedName={translateName(c)}
+                />
+              )}
+            </AnimatePresence>
           </section>
         )
       })}

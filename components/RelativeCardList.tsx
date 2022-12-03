@@ -1,15 +1,18 @@
-import { CategoryName } from '../utils/types/Category'
+import { AnimatePresence, motion } from 'framer-motion'
 
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { CategoryName } from '../utils/types/Category'
+import { usePeopleDispatchContext } from '../context/PeopleContext'
 import { Mode } from '../context/ModeContext'
 
 import RelativeCard from './RelativeCard'
+import { PersonList } from '../utils/types/Person'
 
 interface RelativeCardListProps {
   id: string
   category: CategoryName
   mode: Mode
-  checked: boolean
+  list: PersonList
+  filtered: string[]
   translatedName: string
   allowedCategories: (category: CategoryName, degree: number, mode: Mode) => CategoryName[]
 }
@@ -18,43 +21,56 @@ export default function RelativeCardList({
   id,
   category,
   mode,
-  checked,
+  list,
+  filtered,
   translatedName,
   allowedCategories,
 }: RelativeCardListProps) {
-  const list = usePeopleContext()
   const dispatch = usePeopleDispatchContext()
-  const me = list[id]
 
   function handleAdd(category: CategoryName) {
     dispatch({ type: 'ADD_RELATIVE', payload: { parentId: id, category } })
   }
-
-  const filtered = me.relatives.filter((rId) => list[rId].category === category)
-  if (filtered.length < 1) return null
 
   // Degree does not matter as long as it's greater than 0
   const canHaveHeirs = allowedCategories(category, 1, mode).length > 0
   const hasReachedHeirLimit = filtered.length >= maxHeirs(category)
 
   return (
-    <div className="grid">
+    <motion.div
+      initial={{ height: 0 }}
+      animate={{ height: 'auto' }}
+      exit={{ height: 0 }}
+      transition={{ type: 'just' }}
+      className="overflow-hidden"
+    >
       <ul className="mt-4">
-        {filtered.map((rId) => (
-          <RelativeCard key={rId} id={rId} canHaveHeirs={canHaveHeirs} />
-        ))}
+        <AnimatePresence initial={false}>
+          {filtered.map((rId) => (
+            <motion.li
+              key={rId}
+              initial={{ height: 0 }}
+              animate={{ height: 'auto' }}
+              exit={{ height: 0 }}
+              transition={{ type: 'just' }}
+              className="overflow-hidden"
+            >
+              <RelativeCard id={rId} me={list[rId]} canHaveHeirs={canHaveHeirs} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </ul>
 
-      {checked && !hasReachedHeirLimit && (
+      {!hasReachedHeirLimit && (
         <button
           type="button"
-          className="btn btn-inverted justify-self-end text-sm md:text-base"
+          className="btn btn-inverted mx-4 justify-self-end text-sm md:text-base"
           onClick={() => handleAdd(category)}
         >
           + Aggiungi {translatedName.toLocaleLowerCase()}
         </button>
       )}
-    </div>
+    </motion.div>
   )
 }
 
