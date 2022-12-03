@@ -7,6 +7,8 @@ import { useModeContext } from '../context/ModeContext'
 import { useMoneyContext } from '../context/MoneyContext'
 import { usePeopleContext } from '../context/PeopleContext'
 
+import ProgressRing from './ProgressRing'
+
 function getOrderedRelatives(id: string, list: PersonList): string[] {
   function recurse(person: Person): string[] {
     const sortedDirectRelatives = [...person.relatives].sort((a, b) => relativesSort(list[a], list[b]))
@@ -58,13 +60,14 @@ function Results({ inheritance, setEditing }: ResultsProps) {
   const allRelatives = getOrderedRelatives('0', list)
 
   return (
-    <div className="max-w-xl">
-      <h2 className="text-lg md:text-xl">
-        Eredità della famiglia di: <span className="font-medium">{root.name}</span>
-      </h2>
+    <div>
+      <h1 className="text-center text-xl md:text-2xl">
+        {mode === 'patrimony' ? 'Patrimonio' : 'Eredità'} della famiglia di{' '}
+        <span className="font-medium">{root.name}</span>
+      </h1>
 
       {mode === 'patrimony' && moneyIsValid && (
-        <div className="mt-2 rounded-md bg-primary-900 p-4 text-primary-100">
+        <div className="mt-2 rounded-md bg-primary-900 p-4 py-6 text-primary-100">
           <p className="border-b border-white/10 pb-2 text-base md:text-lg">
             Valore totale:
             <span className="text-xl font-medium text-white md:text-2xl"> {currencyFormatter.format(intMoney)}</span>
@@ -80,18 +83,18 @@ function Results({ inheritance, setEditing }: ResultsProps) {
       )}
 
       {moneyIsValid && (
-        <label className="mt-4 flex items-center">
+        <label className="mt-5 flex items-center">
           <input
             className="mr-2"
             type="checkbox"
             checked={showMoney}
             onChange={(e) => setShowMoney(e.target.checked)}
           />
-          Mostra eredità in €
+          Mostra valori in €
         </label>
       )}
 
-      <table className="mt-5 w-full table-auto border">
+      <table className="mt-2 w-full table-auto border">
         <thead className="border bg-gray-50 text-left">
           <tr>
             <th className="p-4">Nome</th>
@@ -105,7 +108,6 @@ function Results({ inheritance, setEditing }: ResultsProps) {
 
             const relativeInheritance = inheritance[relativeId]
             const inheritanceValue = new Fraction(relativeInheritance).valueOf()
-            const width = `${inheritanceValue * 100}%`
             const inheritanceMoney = currencyFormatter.format(inheritanceValue * intMoney)
 
             const relation = categoryRelation[relative.category]
@@ -122,12 +124,9 @@ function Results({ inheritance, setEditing }: ResultsProps) {
                   {showMoney ? (
                     <p className="text-right text-gray-800">{inheritanceMoney}</p>
                   ) : (
-                    <>
-                      <p className="text-center text-gray-800">{relativeInheritance ?? 0}</p>
-                      <p className="relative h-2 w-16 overflow-hidden rounded-sm bg-gray-200">
-                        <span className="absolute inset-y-0 left-0 bg-primary-400" style={{ width }}></span>
-                      </p>
-                    </>
+                    <p className="text-center text-gray-800">
+                      <ProgressRing fraction={relativeInheritance} />
+                    </p>
                   )}
                 </td>
               </tr>
@@ -136,16 +135,16 @@ function Results({ inheritance, setEditing }: ResultsProps) {
         </tbody>
       </table>
 
-      <p className="mx-auto mt-5 max-w-prose rounded-md border border-primary-400 bg-primary-50/50 p-4 text-gray-600">
+      <p className="mx-auto mt-5 rounded-md border border-primary-400 bg-primary-50/50 p-4 text-gray-600">
         Ricordiamo che questi risultati so approssimativi, molte leggi che protrebbero influenzare i risultati per
         questo consigliamo di contattare un nostro esperto per avera una panoramica più completa.
       </p>
 
-      <div className="flex justify-between">
-        <button className="btn btn-inverted mt-5" onClick={() => setEditing(true)}>
+      <div className="mt-5 flex flex-col gap-2 md:flex-row md:justify-between">
+        <button className="btn btn-inverted px-8" onClick={() => setEditing(true)}>
           Riprova
         </button>
-        <button className="btn btn-primary mt-5">Contatta un&apos;esperto</button>
+        <button className="btn btn-primary py-3 px-8">Contatta un esperto</button>
       </div>
     </div>
   )
