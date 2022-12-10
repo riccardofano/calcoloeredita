@@ -2,10 +2,11 @@ import { ChangeEvent, FormEvent } from 'react'
 import { Person, PersonList } from '../utils/types/Person'
 
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
-import { useSelectedIdContext, useSetSelectedIdContext } from '../context/SelectedIdContext'
 
 import Categories from './Categories'
 import Header from './FormHeader'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 interface RelativesFormProps {
   isLoading: boolean
@@ -13,8 +14,9 @@ interface RelativesFormProps {
 }
 
 export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProps) {
-  const id = useSelectedIdContext()
-  const setSelectedId = useSetSelectedIdContext()
+  const router = useRouter()
+  const { id: queryId = '0' } = router.query
+  const id = Array.isArray(queryId) ? queryId[0] : queryId
 
   const dispatch = usePeopleDispatchContext()
   const list = usePeopleContext()
@@ -28,13 +30,7 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
 
   return (
     <form className="rounded-md border bg-gray-100" onSubmit={onSubmit}>
-      <Header
-        isRoot={isRoot}
-        name={me.name}
-        pagination={pagination}
-        onNameChange={onNameChange}
-        setSelectedId={setSelectedId}
-      />
+      <Header isRoot={isRoot} name={me.name} pagination={pagination} onNameChange={onNameChange} />
 
       <div className="px-4">
         <h2 className="text-lg font-medium md:text-xl">Albero genealogico</h2>
@@ -46,17 +42,9 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
 
       <div className="flex flex-col gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6 md:flex-row md:justify-between">
         {!isRoot && (
-          <button
-            key="back"
-            type="button"
-            className="btn btn-inverted px-8"
-            onClick={() => {
-              if (!me.root) return
-              setSelectedId(me.root)
-            }}
-          >
-            Indietro
-          </button>
+          <Link href={`?id=${me.root ?? '0'}`}>
+            <a className="btn btn-inverted px-8">Indietro</a>
+          </Link>
         )}
         <button
           type="submit"
