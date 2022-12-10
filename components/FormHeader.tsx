@@ -31,7 +31,7 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange }: F
   }
 
   return (
-    <header className="mb-5 rounded-md bg-white px-4 pt-6 pb-5">
+    <header className="mb-5 rounded-t-md border-b px-4 pt-6 pb-5">
       <nav className="space-x-2">
         {reversedPagination.map((p, i) => {
           const isLast = i === reversedPagination.length - 1

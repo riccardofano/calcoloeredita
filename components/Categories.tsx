@@ -1,23 +1,29 @@
 import { ChangeEvent } from 'react'
+import { AnimatePresence } from 'framer-motion'
+
 import { CategoryName } from '../utils/types/Category'
 import { PersonList } from '../utils/types/Person'
 
 import { Mode, useModeContext } from '../context/ModeContext'
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { usePeopleDispatchContext } from '../context/PeopleContext'
+
 import { useSelectedId } from '../hooks/useSelectedId'
+import { useMe } from '../hooks/useMe'
 
 import RelativeCardList from './RelativeCardList'
-import { AnimatePresence } from 'framer-motion'
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
 
-function Categories() {
+export default function Categories() {
   const mode = useModeContext()
-  const id = useSelectedId()
 
-  const list = usePeopleContext()
-  const me = list[id]
+  const id = useSelectedId()
+  const { me, list } = useMe(id)
   const dispatch = usePeopleDispatchContext()
+
+  if (!me) {
+    return null
+  }
 
   const allowed = allowedCategories(me.category, me.degree, mode)
   const checked = checkedCategories(list, me.relatives)
@@ -71,8 +77,6 @@ function Categories() {
     </div>
   )
 }
-
-export default Categories
 
 function allowedCategories(category: CategoryName, degree: number, mode: Mode): CategoryName[] {
   if (mode === 'patrimony') {

@@ -1,12 +1,14 @@
 import { ChangeEvent, FormEvent } from 'react'
 import { Person, PersonList } from '../utils/types/Person'
 
-import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { usePeopleDispatchContext } from '../context/PeopleContext'
 
 import Categories from './Categories'
 import Header from './FormHeader'
 import Link from 'next/link'
+
 import { useSelectedId } from '../hooks/useSelectedId'
+import { useMe } from '../hooks/useMe'
 
 interface RelativesFormProps {
   isLoading: boolean
@@ -15,10 +17,13 @@ interface RelativesFormProps {
 
 export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProps) {
   const id = useSelectedId()
-
+  const { me, list } = useMe(id)
   const dispatch = usePeopleDispatchContext()
-  const list = usePeopleContext()
-  const me = list[id]
+
+  if (!me) {
+    return null
+  }
+
   const isRoot = me.id === '0'
   const pagination = getPagination(list, me)
 
