@@ -44,8 +44,8 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
 }
 
 function NavLink({ href, text }: { href: string; text: string }) {
-  const { asPath } = useRouter()
-  const isActive = asPath === href
+  const { pathname } = useRouter()
+  const isActive = pathname === href
 
   return (
     <span className="relative inline-block py-4">
