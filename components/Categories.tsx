@@ -4,18 +4,16 @@ import { PersonList } from '../utils/types/Person'
 
 import { Mode, useModeContext } from '../context/ModeContext'
 import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleContext'
+import { useSelectedId } from '../hooks/useSelectedId'
 
 import RelativeCardList from './RelativeCardList'
 import { AnimatePresence } from 'framer-motion'
-import { useRouter } from 'next/router'
 
 type CategoryChecklist = { [key in CategoryName]: boolean }
 
 function Categories() {
   const mode = useModeContext()
-  const router = useRouter()
-  const { id: queryId = '0' } = router.query
-  const id = Array.isArray(queryId) ? queryId[0] : queryId
+  const id = useSelectedId()
 
   const list = usePeopleContext()
   const me = list[id]

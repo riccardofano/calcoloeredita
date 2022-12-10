@@ -5,8 +5,8 @@ import { usePeopleContext, usePeopleDispatchContext } from '../context/PeopleCon
 
 import Categories from './Categories'
 import Header from './FormHeader'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useSelectedId } from '../hooks/useSelectedId'
 
 interface RelativesFormProps {
   isLoading: boolean
@@ -14,9 +14,7 @@ interface RelativesFormProps {
 }
 
 export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProps) {
-  const router = useRouter()
-  const { id: queryId = '0' } = router.query
-  const id = Array.isArray(queryId) ? queryId[0] : queryId
+  const id = useSelectedId()
 
   const dispatch = usePeopleDispatchContext()
   const list = usePeopleContext()
