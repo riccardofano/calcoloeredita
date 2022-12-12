@@ -50,7 +50,7 @@ function Content() {
         setIsEditing={setIsEditing}
         inheritance={inheritance}
         onSubmit={onSubmit}
-      ></Main>
+      />
     </ModeProvider>
   )
 }

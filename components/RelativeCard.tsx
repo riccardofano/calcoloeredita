@@ -1,6 +1,6 @@
+import Link from 'next/link'
 import { ChangeEvent } from 'react'
 import { usePeopleDispatchContext } from '../context/PeopleContext'
-import { useSetSelectedIdContext } from '../context/SelectedIdContext'
 import { Person } from '../utils/types/Person'
 
 interface RelativeCardProps {
@@ -11,7 +11,6 @@ interface RelativeCardProps {
 
 function RelativeCard({ id, me, canHaveHeirs }: RelativeCardProps) {
   const dispatch = usePeopleDispatchContext()
-  const setSelectedId = useSetSelectedIdContext()
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     dispatch({ type: 'UPDATE_NAME', payload: { id, name: e.target.value } })
@@ -81,15 +80,11 @@ function RelativeCard({ id, me, canHaveHeirs }: RelativeCardProps) {
       </label>
 
       {!me.available && canHaveHeirs && (
-        // TODO: make this a link that navigates to ?id=${id} and use that to
-        // set the selected id so you can use the browser controls to navigate
-        // back and forth
-        <button
-          className="flex items-center gap-2 self-start text-primary-400 underline"
-          onClick={() => setSelectedId(id)}
-        >
-          Inserisci parenti di questa persona &#8599;
-        </button>
+        <Link href={`?id=${id}`}>
+          <a className="flex items-center gap-2 self-start text-primary-400 underline">
+            Inserisci parenti di questa persona &#8599;
+          </a>
+        </Link>
       )}
     </div>
   )

@@ -1,4 +1,5 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import Link from 'next/link'
+import { ChangeEvent } from 'react'
 import MoneyForm from './MoneyForm'
 
 interface FormHeaderProps {
@@ -6,10 +7,9 @@ interface FormHeaderProps {
   isRoot: boolean
   name: string
   onNameChange: (e: ChangeEvent<HTMLInputElement>) => void
-  setSelectedId: Dispatch<SetStateAction<string>>
 }
 
-export default function FormHeader({ isRoot, name, pagination, onNameChange, setSelectedId }: FormHeaderProps) {
+export default function FormHeader({ isRoot, name, pagination, onNameChange }: FormHeaderProps) {
   const reversedPagination = [...pagination].reverse()
 
   if (isRoot) {
@@ -31,7 +31,7 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
   }
 
   return (
-    <header className="mb-5 rounded-md bg-white px-4 pt-6 pb-5">
+    <header className="mb-5 rounded-t-md border-b px-4 pt-6 pb-5">
       <nav className="space-x-2">
         {reversedPagination.map((p, i) => {
           const isLast = i === reversedPagination.length - 1
@@ -46,9 +46,9 @@ export default function FormHeader({ isRoot, name, pagination, onNameChange, set
 
           return (
             <span key={p.id} className="text-sm text-gray-600 md:text-base">
-              <button type="button" className="mr-2" onClick={() => setSelectedId(p.id)}>
-                {p.name}
-              </button>
+              <Link href={`?id=${p.id}`}>
+                <a className="mr-2">{p.name}</a>
+              </Link>
               /
             </span>
           )

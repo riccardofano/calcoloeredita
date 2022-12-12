@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import { MoneyProvider } from '../context/MoneyContext'
-import { SelectedIdProvider } from '../context/SelectedIdContext'
 
 import RelativesForm from '../components/RelativesForm'
 import Results from '../components/Results'
@@ -31,15 +30,13 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
       <main className="mt-8 mb-16 px-4 sm:px-8 lg:px-0">
         <div className="mx-auto max-w-4xl">
           <h1 className="mb-4 text-center text-2xl font-medium md:text-3xl">{title}</h1>
-          <SelectedIdProvider>
-            <MoneyProvider>
-              {isEditing ? (
-                <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
-              ) : (
-                <Results inheritance={inheritance} setEditing={setIsEditing} />
-              )}
-            </MoneyProvider>
-          </SelectedIdProvider>
+          <MoneyProvider>
+            {isEditing ? (
+              <RelativesForm isLoading={isLoading} onSubmit={onSubmit} />
+            ) : (
+              <Results inheritance={inheritance} setEditing={setIsEditing} />
+            )}
+          </MoneyProvider>
         </div>
       </main>
     </>
@@ -47,8 +44,8 @@ function Main({ title, isLoading, isEditing, setIsEditing, inheritance, onSubmit
 }
 
 function NavLink({ href, text }: { href: string; text: string }) {
-  const { asPath } = useRouter()
-  const isActive = asPath === href
+  const { pathname } = useRouter()
+  const isActive = pathname === href
 
   return (
     <span className="relative inline-block py-4">
