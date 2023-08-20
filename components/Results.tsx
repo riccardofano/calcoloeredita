@@ -111,16 +111,20 @@ function Results({ inheritance, setEditing }: ResultsProps) {
             const inheritanceMoney = currencyFormatter.format(inheritanceValue * intMoney)
 
             const relation = categoryRelation[relative.category]
+            const depth = countDepth(list, relativeId)
 
             return (
               <tr key={relativeId} className="border-t">
-                <td className="px-4 py-2">
-                  <p className="font-medium text-gray-800">{relative.name}</p>
-                  <p className="text-sm text-gray-600 md:text-base">
-                    {relation} {list[relative.root].name}
-                  </p>
+                <td className="flex p-0">
+                  <div className="bg-gray-200" style={{ width: `${4 * depth}px` }}></div>
+                  <div className="py-2 px-4">
+                    <p className="font-medium text-gray-800">{relative.name}</p>
+                    <p className="text-sm text-gray-600 md:text-base">
+                      {relation} {list[relative.root].name}
+                    </p>
+                  </div>
                 </td>
-                <td className="px-4 py-2">
+                <td className="px-4">
                   {showMoney ? (
                     <p className="text-right text-gray-800">{inheritanceMoney}</p>
                   ) : (
@@ -151,3 +155,13 @@ function Results({ inheritance, setEditing }: ResultsProps) {
 }
 
 export default Results
+
+function countDepth(list: PersonList, id: string): number {
+  let depth = -1
+  let currentRelative = list[id]
+  while (currentRelative.root) {
+    currentRelative = list[currentRelative.root]
+    depth += 1
+  }
+  return depth
+}
