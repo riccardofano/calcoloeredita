@@ -28,7 +28,11 @@ function MoneyForm() {
     const intDonations = toNumber(donations)
 
     if (allValidNumbers([intTotal, intDebt, intDonations])) {
-      setMoney((intTotal - intDebt + intDonations).toString())
+      let total = intTotal - intDebt
+      if (total < 0) {
+        total = 0
+      }
+      setMoney((total + intDonations).toString())
     }
   }, [mode, patrimonyValues, setMoney])
 
