@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ChangeEvent } from 'react'
 import { usePeopleDispatchContext } from '../context/PeopleContext'
-import { Person } from '../utils/types/Person'
+import { Person } from '../core/types/Person'
 
 interface RelativeCardProps {
   id: string

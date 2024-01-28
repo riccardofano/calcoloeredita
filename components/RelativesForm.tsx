@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent } from 'react'
-import { Person, PersonList } from '../utils/types/Person'
+import { Person, PersonList } from '../core/types/Person'
 
 import { usePeopleDispatchContext } from '../context/PeopleContext'
 

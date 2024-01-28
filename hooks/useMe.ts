@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { usePeopleContext } from '../context/PeopleContext'
-import { Person, PersonList } from '../utils/types/Person'
+import { Person, PersonList } from '../core/types/Person'
 
 export function useMe(id: string): { me: Person | undefined; list: PersonList } {
   const router = useRouter()

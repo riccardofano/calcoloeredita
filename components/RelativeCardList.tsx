@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { CategoryName } from '../utils/types/Category'
+import { CategoryName } from '../core/types/Category'
 import { usePeopleDispatchContext } from '../context/PeopleContext'
 import { Mode } from '../context/ModeContext'
 
 import RelativeCard from './RelativeCard'
-import { PersonList } from '../utils/types/Person'
+import { PersonList } from '../core/types/Person'
 
 interface RelativeCardListProps {
   id: string

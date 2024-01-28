@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { calculatePatrimony } from '../../utils/patrimony'
+import { calculatePatrimony } from '../../core/patrimony'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).send({ error: 'Method not allowed' })

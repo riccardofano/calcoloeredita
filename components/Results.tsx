@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react'
 import Fraction from 'fraction.js'
-import { Person, PersonList } from '../utils/types/Person'
-import { CategoryName } from '../utils/types/Category'
+import { Person, PersonList } from '../core/types/Person'
+import { CategoryName } from '../core/types/Category'
 
 import { useModeContext } from '../context/ModeContext'
 import { useMoneyContext } from '../context/MoneyContext'
