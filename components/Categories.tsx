@@ -1,8 +1,8 @@
 import { ChangeEvent } from 'react'
 import { AnimatePresence } from 'framer-motion'
 
-import { CategoryName } from '../utils/types/Category'
-import { PersonList } from '../utils/types/Person'
+import { CategoryName } from '../core/types/Category'
+import { PersonList } from '../core/types/Person'
 
 import { Mode, useModeContext } from '../context/ModeContext'
 import { usePeopleDispatchContext } from '../context/PeopleContext'

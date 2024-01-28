@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { calculateInheritance } from '../../utils/inheritance'
+import { calculateInheritance } from '../../core/inheritance'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).send({ error: 'Method not allowed' })

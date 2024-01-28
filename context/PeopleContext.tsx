@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode, useContext, useReducer } from 'react'
-import { CategoryName } from '../utils/types/Category'
-import { Person, PersonList } from '../utils/types/Person'
+import { CategoryName } from '../core/types/Category'
+import { Person, PersonList } from '../core/types/Person'
 
 export const PeopleContext = createContext<PersonList | null>(null)
 export const PeopleDispatchContext = createContext<Dispatch<PeopleAction> | null>(null)
