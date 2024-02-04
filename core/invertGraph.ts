@@ -11,6 +11,18 @@ type InvertedPerson = {
 
 type InvertedPersonList = Record<string, InvertedPerson>
 
+export function defaultRoot(): Person {
+  return {
+    id: '0',
+    name: 'Defunto',
+    available: false,
+    degree: 0,
+    root: null,
+    category: 'children',
+    relatives: [],
+  }
+}
+
 export function invertGraph(root: Person, list: InvertedPersonList): PersonList {
   const personList: PersonList = { '0': root }
   for (const person of Object.values(list)) {
