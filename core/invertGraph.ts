@@ -1,11 +1,12 @@
 import { CategoryName } from './types/Category'
 import { Person, PersonList } from './types/Person'
+import mappings from './invertedMappings.json'
 
 type InvertedPerson = {
   id: string
   name: string
   available: boolean
-  relationId: number
+  relation: string
   relatedTo: string
 }
 
@@ -26,8 +27,8 @@ export function defaultRoot(): Person {
 export function invertGraph(root: Person, list: InvertedPersonList): PersonList {
   const personList: PersonList = { '0': root }
   for (const person of Object.values(list)) {
-    const degree = relationIdToDegree(person.relationId)
-    const category = relationIdToCategory(person.relationId)
+    const degree = relationIdToDegree(person.relation)
+    const category = relationIdToCategory(person.relation)
     const root = person.relatedTo === '' ? '0' : person.relatedTo
 
     personList[person.id] = {
@@ -52,10 +53,20 @@ export function invertGraph(root: Person, list: InvertedPersonList): PersonList 
   return personList
 }
 
-function relationIdToDegree(relationId: number): number {
-  throw new Error('Function not implemented.')
+function relationIdToDegree(relation: string): number {
+  const mapping = mappings[relation as keyof typeof mappings]
+  if (!mapping) {
+    throw new Error('Unknown relation')
+  }
+
+  return mapping.degree
 }
 
-function relationIdToCategory(relationId: number): CategoryName {
-  throw new Error('Function not implemented.')
+function relationIdToCategory(relation: string): CategoryName {
+  const mapping = mappings[relation as keyof typeof mappings]
+  if (!mapping) {
+    throw new Error('Unknown relation')
+  }
+
+  return mapping.category as CategoryName
 }
