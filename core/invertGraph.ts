@@ -2,15 +2,13 @@ import { CategoryName } from './types/Category'
 import { Person, PersonList } from './types/Person'
 import mappings from './invertedMappings.json'
 
-type InvertedPerson = {
+export type InvertedPerson = {
   id: string
   name: string
   available: boolean
   relation: string
   relatedTo: string
 }
-
-type InvertedPersonList = Record<string, InvertedPerson>
 
 export function defaultRoot(): Person {
   return {
@@ -24,9 +22,10 @@ export function defaultRoot(): Person {
   }
 }
 
-export function invertGraph(root: Person, list: InvertedPersonList): PersonList {
+export function invertGraph(root: Person, list: InvertedPerson[]): PersonList {
   const personList: PersonList = { '0': root }
-  for (const person of Object.values(list)) {
+
+  for (const person of list) {
     const degree = relationIdToDegree(person.relation)
     const category = relationIdToCategory(person.relation)
     const root = person.relatedTo === '' ? '0' : person.relatedTo
