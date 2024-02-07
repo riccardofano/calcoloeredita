@@ -19,21 +19,23 @@ export function getRoot(list: PersonList): Person {
 }
 
 export function getAllRelatives(list: PersonList, person: Person) {
-  return person.relatives.reduce(
-    (acc, id) => {
-      const current = list[id]
-      if (current) {
-        acc[current.category].push(id)
-      }
-      return acc
-    },
-    {
-      children: [] as string[],
-      spouse: [] as string[],
-      ascendants: [] as string[],
-      bilateral: [] as string[],
-      unilateral: [] as string[],
-      others: [] as string[],
+  const relatives: Record<string, string[]> = {
+    children: [],
+    spouse: [],
+    ascendants: [],
+    bilateral: [],
+    unilateral: [],
+    others: [],
+  }
+
+  for (const id in person.relatives) {
+    const current = list[id]
+    if (current.category === 'root') {
+      throw new Error("Can't have more than one root")
     }
-  )
+
+    relatives[current.category].push(id)
+  }
+
+  return relatives
 }
