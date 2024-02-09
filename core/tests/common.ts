@@ -8,7 +8,7 @@ export const newPerson = (options: Partial<Person>): { [key: string]: Person } =
       name: 'does not matter',
       available: true,
       degree: 0,
-      root: null,
+      previous: null,
       category: 'children',
       relatives: [],
       ...options,
@@ -17,5 +17,5 @@ export const newPerson = (options: Partial<Person>): { [key: string]: Person } =
 }
 
 export const newDeceased = (relatives: string[]) => {
-  return newPerson({ id: '0', name: 'Defunto', available: false, root: null, category: 'children', relatives })
+  return newPerson({ id: '0', name: 'Defunto', available: false, previous: null, category: 'root', relatives })
 }
