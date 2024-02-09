@@ -33,17 +33,17 @@ function isPersonEligible(
 function addEligibleRelativeToRoot(list: PersonList, relative: Person) {
   // Recursively append relative to its root
   let current = relative
-  while (current.root !== null) {
-    if (!list[current.root]) {
-      throw new Error(`Could not find person corresponding to id: ${current.root}`)
+  while (current.previous !== null) {
+    if (!list[current.previous]) {
+      throw new Error(`Could not find person corresponding to id: ${current.previous}`)
     }
     // current element is already in the root, we're finished here
-    if (list[current.root].relatives.find((id) => id === current.id) !== undefined) {
+    if (list[current.previous].relatives.find((id) => id === current.id) !== undefined) {
       break
     }
 
-    list[current.root].relatives.push(current.id)
-    current = list[current.root]
+    list[current.previous].relatives.push(current.id)
+    current = list[current.previous]
   }
 }
 
@@ -67,19 +67,22 @@ function hasRepresentationRight(list: PersonList, current: Person, rootId: strin
   }
 
   // Current person is a direct child or bilateral sibling of the root
-  if (current.root === rootId && (current.category === 'children' || current.category === 'bilateral')) {
+  if (
+    current.previous === rootId &&
+    (current.category === 'root' || current.category === 'children' || current.category === 'bilateral')
+  ) {
     return true
   }
 
   // If everyone in their family line had the right they have it as well
   let parentHadRepresentationRight = true
-  while (current.root !== null && parentHadRepresentationRight) {
-    const parent = list[current.root]
+  while (current.previous !== null && parentHadRepresentationRight) {
+    const parent = list[current.previous]
     if (!parent) {
-      throw new Error(`Could not find parent with id: ${current.root}`)
+      throw new Error(`Could not find parent with id: ${current.previous}`)
     }
 
-    if (!(parent.category === 'children' || parent.category === 'bilateral')) {
+    if (!(parent.category === 'root' || parent.category === 'children' || parent.category === 'bilateral')) {
       parentHadRepresentationRight = false
     }
     current = parent
@@ -148,7 +151,7 @@ export function stripGraph(
       }
 
       const relative = list[relativeId]
-      relative.root = person.id
+      relative.previous = person.id
       relative.degree = getDegree(relative, person)
 
       visited[relative.id] = true
@@ -188,7 +191,7 @@ export function stripGraph(
     if (!person) {
       throw new Error(`Could not find other relative with id: ${otherId}`)
     }
-    person.root = root.id
+    person.previous = root.id
 
     if (person.available && person.degree <= DEGREE_CUTOFF && !isDegreeTooHigh(person, maxDegree, Infinity)) {
       maxDegree = person.degree

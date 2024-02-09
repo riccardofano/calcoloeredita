@@ -104,7 +104,7 @@ function Results({ inheritance, setEditing }: ResultsProps) {
         <tbody>
           {allRelatives.map((relativeId) => {
             const relative = list[relativeId]
-            if (relative.root === null) return
+            if (relative.previous === null) return
 
             const relativeInheritance = inheritance[relativeId]
             const inheritanceValue = new Fraction(relativeInheritance).valueOf()
@@ -120,7 +120,7 @@ function Results({ inheritance, setEditing }: ResultsProps) {
                   <div className="py-2 px-4">
                     <p className="font-medium text-gray-800">{relative.name}</p>
                     <p className="text-sm text-gray-600 md:text-base">
-                      {relation} {list[relative.root].name}
+                      {relation} {list[relative.previous].name}
                     </p>
                   </div>
                 </td>
@@ -159,8 +159,8 @@ export default Results
 function countDepth(list: PersonList, id: string): number {
   let depth = -1
   let currentRelative = list[id]
-  while (currentRelative.root) {
-    currentRelative = list[currentRelative.root]
+  while (currentRelative.previous) {
+    currentRelative = list[currentRelative.previous]
     depth += 1
   }
   return depth

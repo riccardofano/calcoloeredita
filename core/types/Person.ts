@@ -9,7 +9,7 @@ export interface Person {
   name: string
   available: boolean
   degree: number
-  root: string | null
+  previous: string | null
   category: CategoryName
   relatives: string[]
 }
@@ -18,7 +18,7 @@ export function getRoot(list: PersonList): Person {
   return list['0']
 }
 
-export function getAllRelatives(list: PersonList, person: Person) {
+export function getAllRelatives(list: Readonly<PersonList>, person: Person) {
   const relatives: Record<string, string[]> = {
     children: [],
     spouse: [],
@@ -28,12 +28,8 @@ export function getAllRelatives(list: PersonList, person: Person) {
     others: [],
   }
 
-  for (const id in person.relatives) {
+  for (const id of person.relatives) {
     const current = list[id]
-    if (current.category === 'root') {
-      throw new Error("Can't have more than one root")
-    }
-
     relatives[current.category].push(id)
   }
 

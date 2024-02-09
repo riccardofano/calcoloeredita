@@ -45,7 +45,7 @@ export default function RelativesForm({ isLoading, onSubmit }: RelativesFormProp
 
       <div className="flex flex-col gap-2 rounded-md bg-gray-50 px-4 pt-5 pb-6 md:flex-row md:justify-between">
         {!isRoot && (
-          <Link href={`?id=${me.root ?? '0'}`}>
+          <Link href={`?id=${me.previous ?? '0'}`}>
             <a className="btn btn-inverted px-8">Indietro</a>
           </Link>
         )}
@@ -68,11 +68,11 @@ export function toNonEmptyName(name: string): string {
 
 function getPagination(list: PersonList, me: Person): { id: string; name: string }[] {
   const pagination = [{ id: me.id, name: toNonEmptyName(me.name) }]
-  let root = me.root
+  let root = me.previous
   while (root !== null) {
     const parent = list[root]
     pagination.push({ id: parent.id, name: toNonEmptyName(parent.name) })
-    root = parent.root
+    root = parent.previous
   }
 
   return pagination

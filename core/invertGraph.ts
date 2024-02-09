@@ -16,7 +16,7 @@ export function defaultRoot(): Person {
     name: 'Defunto',
     available: false,
     degree: 0,
-    root: null,
+    previous: null,
     category: 'children',
     relatives: [],
   }
@@ -35,18 +35,18 @@ export function invertGraph(root: Person, list: InvertedPerson[]): PersonList {
       name: person.name,
       available: person.available,
       degree,
-      root,
+      previous: root,
       category,
       relatives: [],
     }
   }
 
   for (const person of Object.values(personList)) {
-    if (!person.root) {
+    if (!person.previous) {
       continue
     }
 
-    personList[person.root].relatives.push(person.id)
+    personList[person.previous].relatives.push(person.id)
   }
 
   return personList
