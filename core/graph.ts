@@ -136,20 +136,16 @@ export function stripGraph(
       continue
     }
 
-    const relatives = person.relatives.filter((id) => {
-      const relative = list[id]
-      if (!relative) {
-        throw new Error(`Could not find relative with id: ${id}`)
-      }
-      return categories.includes(list[id].category)
-    })
-
-    for (const relativeId of relatives) {
+    for (const relativeId of person.relatives) {
       if (visited.has(relativeId)) {
         continue
       }
 
       const relative = list[relativeId]
+      if (!categories.includes(relative.category)) {
+        continue
+      }
+
       relative.previous = person.id
       relative.degree = getDegree(relative, person)
 
