@@ -97,7 +97,7 @@ export function stripGraph(
   root: Person,
   getRelevantCategories: (isRoot: boolean, person: Person) => string[]
 ): PersonList {
-  const visited: Record<string, boolean> = { [root.id]: true }
+  const visited: Set<string> = new Set(root.id)
 
   const queue: string[] = [root.id]
   let maxDegree = Infinity
@@ -146,7 +146,7 @@ export function stripGraph(
     })
 
     for (const relativeId of relatives) {
-      if (visited[relativeId]) {
+      if (visited.has(relativeId)) {
         continue
       }
 
@@ -154,7 +154,7 @@ export function stripGraph(
       relative.previous = person.id
       relative.degree = getDegree(relative, person)
 
-      visited[relative.id] = true
+      visited.add(relative.id)
       queue.push(relative.id)
     }
 
