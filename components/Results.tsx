@@ -29,6 +29,7 @@ function relativesSort(a: Person, b: Person): number {
 }
 
 const categoryRelation: Record<CategoryName, string> = {
+  root: '',
   children: 'Figlio/a di',
   spouse: 'Coniuge di',
   ascendants: 'Genitore di',
