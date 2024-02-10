@@ -89,4 +89,6 @@ function maxHeirs(category: CategoryName): number {
       return 2
     }
   }
+
+  return 0
 }
