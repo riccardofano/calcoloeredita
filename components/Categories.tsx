@@ -12,8 +12,6 @@ import { useMe } from '../hooks/useMe'
 
 import RelativeCardList from './RelativeCardList'
 
-type CategoryChecklist = { [key in CategoryName]: boolean }
-
 export default function Categories() {
   const mode = useModeContext()
 
@@ -51,7 +49,7 @@ export default function Categories() {
               <input
                 className="disabled:cursor-not-allowed"
                 type="checkbox"
-                checked={checked[c]}
+                checked={checked.has(c)}
                 disabled={isDisabled}
                 onChange={(e) => onCheckChange(e, c)}
               />
@@ -80,63 +78,53 @@ export default function Categories() {
 
 function allowedCategories(category: CategoryName, degree: number, mode: Mode): CategoryName[] {
   if (mode === 'patrimony') {
-    if (degree === 0) {
-      return ['children', 'spouse', 'ascendants']
+    switch (category) {
+      case 'root':
+        return ['children', 'spouse', 'ascendants']
+      case 'children':
+        return ['children']
+      case 'ascendants':
+        return ['ascendants']
+      default:
+        return []
     }
-    if (category === 'children') {
-      return ['children']
-    }
-    if (category === 'ascendants') {
-      return ['ascendants']
-    }
-    return []
   }
 
-  if (degree === 0) {
-    return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral', 'others']
-  }
   switch (category) {
+    case 'root':
+      return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral', 'others']
     case 'children':
-    case 'bilateral': {
+    case 'bilateral':
       return ['children']
-    }
-    case 'ascendants': {
+    case 'ascendants':
       if (degree === 1) {
         return ['ascendants']
       }
       return ['children', 'ascendants']
-    }
-    default: {
+    default:
       return []
-    }
   }
 }
 
-function checkedCategories(list: PersonList, relativeIDs: string[]): CategoryChecklist {
-  const categories: CategoryChecklist = {
-    children: false,
-    spouse: false,
-    ascendants: false,
-    bilateral: false,
-    unilateral: false,
-    others: false,
-  }
+function checkedCategories(list: PersonList, relativeIDs: string[]): Set<CategoryName> {
+  const categories: Set<CategoryName> = new Set()
 
   // When a category is checked it auto adds one person to the relatives
   // so if there is a person with that category it must be on
   for (const relativeID of relativeIDs) {
     const relative = list[relativeID]
-    categories[relative.category] = true
+    categories.add(relative.category)
   }
+
   return categories
 }
 
-function disabledCategories(checkedCategories: CategoryChecklist): CategoryName[] {
-  if (checkedCategories['children']) {
+function disabledCategories(checkedCategories: Set<CategoryName>): CategoryName[] {
+  if (checkedCategories.has('children')) {
     return ['ascendants', 'bilateral', 'unilateral', 'others']
   }
 
-  if (['spouse', 'ascendants', 'bilateral', 'unilateral'].some((c) => checkedCategories[c as CategoryName])) {
+  if ((['spouse', 'ascendants', 'bilateral', 'unilateral'] as const).some((c) => checkedCategories.has(c))) {
     return ['others']
   }
 
@@ -150,6 +138,11 @@ interface DictionaryEntry {
 }
 
 const dictionary: Record<CategoryName, DictionaryEntry> = {
+  root: {
+    label: '',
+    name: '',
+    description: '',
+  },
   children: {
     label: 'Discendenti',
     name: 'Discendente',

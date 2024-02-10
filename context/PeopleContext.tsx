@@ -131,9 +131,9 @@ export function peopleReducer(state: PersonList, action: PeopleAction): PersonLi
 
     case 'REMOVE_RELATIVE': {
       const relative = { ...state[payload.id] }
-      if (!relative.root) return state
+      if (!relative.previous) return state
       // remove self from parent relative
-      const parent = { ...state[relative.root] }
+      const parent = { ...state[relative.previous] }
       const nextParent = { ...parent, relatives: parent.relatives.filter((id) => id !== relative.id) }
 
       // remove every own relative
@@ -161,7 +161,7 @@ function createPerson(category: CategoryName, parent: Person): Person {
     name: '',
     available: true,
     degree,
-    root: parent.id,
+    previous: parent.id,
     category,
     relatives: [] as string[],
   }
@@ -188,8 +188,8 @@ const initialPeople: PersonList = {
     name: 'Defunto',
     available: false,
     degree: 0,
-    root: null,
-    category: 'children',
+    previous: null,
+    category: 'root',
     relatives: [],
   },
 }

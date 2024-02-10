@@ -9,7 +9,7 @@ export interface Person {
   name: string
   available: boolean
   degree: number
-  root: string | null
+  previous: string | null
   category: CategoryName
   relatives: string[]
 }
@@ -18,22 +18,20 @@ export function getRoot(list: PersonList): Person {
   return list['0']
 }
 
-export function getAllRelatives(list: PersonList, person: Person) {
-  return person.relatives.reduce(
-    (acc, id) => {
-      const current = list[id]
-      if (current) {
-        acc[current.category].push(id)
-      }
-      return acc
-    },
-    {
-      children: [] as string[],
-      spouse: [] as string[],
-      ascendants: [] as string[],
-      bilateral: [] as string[],
-      unilateral: [] as string[],
-      others: [] as string[],
-    }
-  )
+export function getAllRelatives(list: Readonly<PersonList>, person: Person) {
+  const relatives: Record<string, string[]> = {
+    children: [],
+    spouse: [],
+    ascendants: [],
+    bilateral: [],
+    unilateral: [],
+    others: [],
+  }
+
+  for (const id of person.relatives) {
+    const current = list[id]
+    relatives[current.category].push(id)
+  }
+
+  return relatives
 }
