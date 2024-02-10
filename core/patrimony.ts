@@ -80,21 +80,18 @@ export function calculatePatrimony(list: PersonList, total = 100): Record<string
   }
 }
 
-function getRelevantCategories(isRoot: boolean, person: Person): CategoryName[] {
-  if (isRoot) {
-    // The deceased can have all possible relatives
-    return ['children', 'spouse', 'ascendants']
+function getRelevantCategories(person: Person): CategoryName[] {
+  switch (person.category) {
+    case 'root':
+      // The deceased can have all possible relatives
+      return ['children', 'spouse', 'ascendants']
+    case 'children':
+      // Children can defer to their children
+      return ['children']
+    case 'ascendants':
+      return ['ascendants']
+    // Everyone else's heirs aren't eligible
+    default:
+      return []
   }
-
-  if (person.category === 'children') {
-    // Children can defer to their children
-    return ['children']
-  }
-
-  if (person.category === 'ascendants') {
-    return ['ascendants']
-  }
-
-  // Everyone else's heirs aren't eligible
-  return []
 }
