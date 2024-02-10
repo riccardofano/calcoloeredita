@@ -120,27 +120,26 @@ function findInheritance(
   }
 }
 
-function getRelevantCategories(isRoot: boolean, person: Person): string[] {
-  if (isRoot) {
-    // The deceased can have all possible relatives
-    return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral']
-  }
+function getRelevantCategories(person: Person): string[] {
+  switch (person.category) {
+    case 'root':
+      // The deceased can have all possible relatives
+      return ['children', 'spouse', 'ascendants', 'bilateral', 'unilateral']
 
-  if (person.category === 'ascendants') {
-    // The deceased parents' only relevant relatives their own parents
-    // because we already accounted for their children, they are the siblings
-    if (person.degree === 1) {
-      return ['ascendants']
-    }
-    // Other ascendants have their children also (uncles and aunts)
-    return ['children', 'ascendants']
+    case 'ascendants':
+      // The deceased parents' only relevant relatives their own parents
+      // because we already accounted for their children, they are the siblings
+      if (person.degree === 1) {
+        return ['ascendants']
+      }
+      // Other ascendants have their children also (uncles and aunts)
+      return ['children', 'ascendants']
+    case 'children':
+    case 'bilateral':
+      // Only direct children and the children of bilateral siblings are eligible
+      return ['children']
+    default:
+      // Everyone else's heirs aren't eligible
+      return []
   }
-
-  if (person.category === 'bilateral' || person.category === 'children') {
-    // Only direct children and the children of bilateral siblings are eligible
-    return ['children']
-  }
-
-  // Everyone else's heirs aren't eligible
-  return []
 }

@@ -95,11 +95,11 @@ function hasRepresentationRight(list: PersonList, current: Person, rootId: strin
 export function stripGraph(
   list: PersonList,
   root: Person,
-  getRelevantCategories: (isRoot: boolean, person: Person) => string[]
+  getRelevantCategories: (person: Person) => string[]
 ): PersonList {
   const visited: Set<string> = new Set(root.id)
-
   const queue: string[] = [root.id]
+
   let maxDegree = Infinity
   let maxAscendantDegree = Infinity
 
@@ -131,8 +131,7 @@ export function stripGraph(
     }
 
     // Could also try checking if root is null but I want to get object validation going first
-    const isRoot = person.id === root.id
-    const categories = getRelevantCategories(isRoot, person)
+    const categories = getRelevantCategories(person)
     if (categories.length === 0) {
       continue
     }
