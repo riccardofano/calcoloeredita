@@ -1,6 +1,6 @@
 import Fraction from 'fraction.js'
 import { stripGraph } from './graph'
-import { PersonList, Person, getAllRelatives, getRoot } from './types/Person'
+import { PersonList, Person, getRoot, rootRelatives, childrenRelatives, childrenAndAscendants } from './types/Person'
 
 export function calculateInheritance(list: PersonList): Record<string, string> {
   try {
@@ -27,95 +27,158 @@ function findInheritance(
 
   if (current.available) {
     results[current.id] = total.toFraction(true)
-  }
-
-  const { children, spouse, ascendants, bilateral, unilateral, others } = getAllRelatives(list, current)
-
-  const spousePresent = spouse.length > 0 ? 1 : 0
-
-  if (children.length > 0) {
-    // multiple children and spouse:    2/3/children and 1/3
-    // multiple children and no spouse: 1/children   and 0
-    let forChildren = spousePresent ? total.div(3).mul(2).div(children.length) : total.div(children.length)
-    let forSpouse = spousePresent ? total.div(3) : new Fraction(0)
-
-    if (children.length === 1) {
-      // single child and spouse:    1/2 and 1/2
-      // single child and no spouse: 1   and 0
-      forChildren = spousePresent ? total.div(2) : total
-      forSpouse = spousePresent ? total.div(2) : new Fraction(0)
-    }
-
-    children.forEach((child) => findInheritance(list, results, forChildren, list[child]))
-    findInheritance(list, results, forSpouse, list[spouse[0]])
     return
   }
 
-  const numberAscendants = ascendants.length
-  const numberBilateral = bilateral.length
-  const numberUnilateral = unilateral.length
-  const numberRelatives = numberAscendants + numberBilateral + numberUnilateral
+  switch (current.category) {
+    case 'root': {
+      const relatives = rootRelatives(list, current)
+      if (relatives.children.length > 0) {
+        childrenAndSpouseInheritance(list, results, total, relatives.children, relatives.spouse)
+      } else {
+        relativesInheritance(list, results, total, relatives)
+      }
+      break
+    }
+    case 'children':
+    case 'bilateral': {
+      onlyChildrenInheritance(list, results, total, childrenRelatives(list, current))
+      break
+    }
+    case 'ascendants': {
+      const relatives = childrenAndAscendants(list, current)
+      if (relatives.children.length > 0) {
+        onlyChildrenInheritance(list, results, total, relatives.children)
+      } else {
+        relativesInheritance(list, results, total, { ...relatives, bilateral: [], unilateral: [], others: [] })
+      }
+      break
+    }
+  }
+}
 
-  const inheritance = {
-    relatives: total,
-    ascendants: new Fraction(0),
-    bilateral: new Fraction(0),
-    unilateral: new Fraction(0),
+function childrenAndSpouseInheritance(
+  list: Readonly<PersonList>,
+  results: Record<string, string>,
+  total: Fraction,
+  children: string[],
+  spouse?: string
+) {
+  if (spouse) {
+    // multiple children and spouse: 2/3/children and 1/3
+    let spouseCut = total.div(3)
+    let childCut = total.div(3).mul(2).div(children.length)
+
+    if (children.length === 1) {
+      // single child and spouse: 1/2 and 1/2
+      spouseCut = total.div(2)
+      childCut = spouseCut
+    }
+
+    // in the absence of a spouse the children divide to total among themselves
+    children.forEach((child) => findInheritance(list, results, childCut, list[child]))
+    findInheritance(list, results, spouseCut, list[spouse])
+    return
   }
 
-  if (spousePresent + numberRelatives > 0) {
-    if (spousePresent) {
+  onlyChildrenInheritance(list, results, total, children)
+}
+
+function onlyChildrenInheritance(
+  list: Readonly<PersonList>,
+  results: Record<string, string>,
+  total: Fraction,
+  children: string[]
+) {
+  const childCut = total.div(children.length)
+  children.forEach((child) => findInheritance(list, results, childCut, list[child]))
+}
+
+type Relatives = {
+  ascendants: string[]
+  bilateral: string[]
+  unilateral: string[]
+  others: string[]
+  spouse?: string
+}
+
+function relativesInheritance(
+  list: Readonly<PersonList>,
+  results: Record<string, string>,
+  total: Fraction,
+  relatives: Relatives
+) {
+  const { ascendants, bilateral, unilateral, others, spouse } = relatives
+  const numberRelatives = ascendants.length + bilateral.length + unilateral.length
+
+  if (spouse || numberRelatives > 0) {
+    if (spouse) {
       // only spouse:                 1
       // spouse and other relatives : 2/3
-      const forSpouse = numberRelatives > 0 ? total.div(3).mul(2) : total
+      const spouseCut = numberRelatives > 0 ? total.div(3).mul(2) : total
+      findInheritance(list, results, spouseCut, list[spouse])
+
       // if there's a spouse the other relatives get 1/3
-      inheritance.relatives = total.div(3)
-      findInheritance(list, results, forSpouse, list[spouse[0]])
+      total = total.div(3)
     }
 
-    if (numberAscendants > 0) {
-      inheritance.ascendants = inheritance.relatives.div(numberRelatives)
+    if (ascendants.length > 2) {
+      throw new Error("You can't have more than 2 parents")
+    }
+
+    if (ascendants.length > 0) {
+      let ascendantsCut = total.div(numberRelatives).mul(ascendants.length)
       // The parents receive at least half of the remaining inheritance
-      const totalParentsInheritance = inheritance.ascendants.mul(numberAscendants)
-      if (totalParentsInheritance < inheritance.relatives.div(2)) {
-        inheritance.ascendants = inheritance.relatives.div(2).div(numberAscendants)
+      if (ascendantsCut < total.div(2)) {
+        ascendantsCut = total.div(2)
       }
 
-      const parentsAlive = ascendants.filter((p) => list[p].available)
-      // If there's only one parent alive, all the inheritance goes to them
-      if (parentsAlive?.length === 1) {
-        findInheritance(list, results, inheritance.ascendants.mul(numberAscendants), list[parentsAlive[0]])
-      } else {
-        // If neither parents is alive but the grandparents are, they receive only 1 parent's worth
-        // When the spouse is present all ascendants get at least 1/4 of the total
-        if (!spousePresent && parentsAlive?.length === 0) {
-          inheritance.ascendants = inheritance.relatives
-            .div(1 + numberBilateral + numberUnilateral)
-            .div(numberAscendants)
-        }
-        ascendants.forEach((parent) => findInheritance(list, results, inheritance.ascendants, list[parent]))
+      const directParents = ascendants.filter((p) => list[p]?.available).length
+      switch (directParents) {
+        case 0:
+          // If neither parent is alive but the grandparents are, they receive only 1 parent's worth
+          // When the spouse is present ascendants get at least 1/4 of the non spouse remaining total
+          if (!spouse) {
+            ascendantsCut = total.div(1 + bilateral.length + unilateral.length)
+          }
+          const ascendantCut = ascendantsCut.div(ascendants.length)
+          ascendants.forEach((a) => findInheritance(list, results, ascendantCut, list[a]))
+          break
+        case 1:
+          // If there's only one parent alive, all the inheritance goes to them
+          findInheritance(list, results, ascendantsCut, list[ascendants[0]])
+          break
+        case 2:
+          const parentCut = ascendantsCut.div(2)
+          findInheritance(list, results, parentCut, list[ascendants[0]])
+          findInheritance(list, results, parentCut, list[ascendants[1]])
+          break
       }
-      inheritance.relatives = inheritance.relatives.sub(inheritance.ascendants.mul(numberAscendants))
+
+      total = total.sub(ascendantsCut)
     }
 
-    if (numberBilateral + numberUnilateral > 0) {
-      if (numberUnilateral === 0) {
-        // If there are no unilateral siblings all goes the bilateral siblings
-        inheritance.bilateral = inheritance.relatives.div(numberBilateral)
-      } else if (numberBilateral === 0) {
-        // If there are no bilateral siblings all goes to the unilateral siblings
-        inheritance.unilateral = inheritance.relatives.div(numberUnilateral)
-      } else {
-        // Otherwise an unilateral sibling gets 1/2 of what a bilateral one would get
-        inheritance.bilateral = inheritance.relatives.div(numberBilateral + numberUnilateral / 2)
-        inheritance.unilateral = inheritance.bilateral.div(2)
-      }
-      bilateral.forEach((sibling) => findInheritance(list, results, inheritance.bilateral, list[sibling]))
-      unilateral.forEach((sibling) => findInheritance(list, results, inheritance.unilateral, list[sibling]))
+    let bilateralCut = new Fraction(0)
+    let unilateralCut = new Fraction(0)
+    if (bilateral.length > 0 && unilateral.length > 0) {
+      // Unilateral sibling gets 1/2 of what a bilateral one would get
+      bilateralCut = total.div(bilateral.length + unilateral.length / 2)
+      unilateralCut = bilateralCut.div(2)
+    } else if (bilateral.length > 0) {
+      // If there are no unilateral siblings all goes the bilateral siblings
+      bilateralCut = total.div(bilateral.length)
+    } else if (unilateral.length > 0) {
+      // If there are no bilateral siblings all goes to the unilateral siblings
+      unilateralCut = total.div(unilateral.length)
     }
-  } else if (others.length > 0) {
+    bilateral.forEach((sibling) => findInheritance(list, results, bilateralCut, list[sibling]))
+    unilateral.forEach((sibling) => findInheritance(list, results, unilateralCut, list[sibling]))
+    return
+  }
+
+  if (others.length > 0) {
     // If there are people in others, they must be the only ones that can inherit
-    const inheritanceOneOther = inheritance.relatives.div(others.length)
+    const inheritanceOneOther = total.div(others.length)
     others.forEach((relative) => findInheritance(list, results, inheritanceOneOther, list[relative]))
   }
 }
