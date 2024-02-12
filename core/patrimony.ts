@@ -12,10 +12,9 @@ export function calculatePatrimony(list: PersonList): Record<string, string> {
 
   const patrimonyList: Record<string, string> = {}
   const root = getRoot(list)
-  const total = new Fraction(1)
-  const availableAmount = findPatrimony(list, patrimonyList, total, root)
-  const available = availableAmount.div(total).toFraction(true) ?? '0'
-  return { available, ...patrimonyList }
+  const available = findPatrimony(list, patrimonyList, new Fraction(1), root)
+
+  return { available: available.toFraction(true), ...patrimonyList }
 }
 
 function findPatrimony(
@@ -34,6 +33,20 @@ function findPatrimony(
 
   const { children, spouse, ascendants } = getAllRelatives(list, current)
 
+  if (current.category !== 'root') {
+    // If current is not root, 100% of the remainder should go to the children or if they are not present to the ascendants
+    // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
+    if (children.length > 0) {
+      const cut = remaining.div(children.length)
+      children.forEach((child) => findPatrimony(list, patrimonyList, cut, list[child]))
+    } else if (ascendants.length > 0) {
+      const cut = remaining.div(ascendants.length)
+      ascendants.forEach((ascendant) => findPatrimony(list, patrimonyList, cut, list[ascendant]))
+    }
+
+    return new Fraction(0)
+  }
+
   const spousePresent = spouse.length
   if (children.length > 0) {
     let forChildren = spousePresent
@@ -46,8 +59,6 @@ function findPatrimony(
       remains = spousePresent ? remaining.div(3) : remaining.div(2)
     }
 
-    // If current is not root, 100% of the remainder should go to the children
-    // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
     if (current.category !== 'root') {
       forChildren = remaining.div(children.length)
       remains = new Fraction(0)
@@ -71,11 +82,6 @@ function findPatrimony(
       ascendantsPatrimony = remaining.div(4)
 
       findPatrimony(list, patrimonyList, remaining.div(2), list[spouse[0]])
-    }
-
-    if (current.category !== 'root') {
-      ascendantsPatrimony = remaining.div(ascendants.length)
-      remains = new Fraction(0)
     }
 
     if (numberAscendantsPresent > 0) {
