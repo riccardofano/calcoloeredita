@@ -13,7 +13,7 @@ export function calculatePatrimony(list: PersonList): Record<string, string> {
   const patrimonyList: Record<string, string> = {}
   const root = getRoot(list)
   const total = new Fraction(1)
-  const availableAmount = findPatrimony(list, patrimonyList, total, root, root)
+  const availableAmount = findPatrimony(list, patrimonyList, total, root)
   const available = availableAmount.div(total).toFraction(true) ?? '0'
   return { available, ...patrimonyList }
 }
@@ -22,7 +22,6 @@ function findPatrimony(
   list: Readonly<PersonList>,
   patrimonyList: Record<string, string>,
   remaining: Fraction,
-  root: Person,
   current?: Person
 ): Fraction {
   if (remaining.equals(0) || !current) {
@@ -49,15 +48,15 @@ function findPatrimony(
 
     // If current is not root, 100% of the remainder should go to the children
     // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
-    if (current.id !== root.id) {
+    if (current.category !== 'root') {
       forChildren = remaining.div(children.length)
       remains = new Fraction(0)
     }
 
-    children.forEach((child) => findPatrimony(list, patrimonyList, forChildren, root, list[child]))
+    children.forEach((child) => findPatrimony(list, patrimonyList, forChildren, list[child]))
     if (spousePresent) {
       const denominator = children.length > 1 ? 4 : 3
-      findPatrimony(list, patrimonyList, remaining.div(denominator), root, list[spouse[0]])
+      findPatrimony(list, patrimonyList, remaining.div(denominator), list[spouse[0]])
     }
 
     return remains
@@ -71,17 +70,17 @@ function findPatrimony(
       remains = numberAscendantsPresent > 0 ? remaining.div(4) : remaining.div(2)
       ascendantsPatrimony = remaining.div(4)
 
-      findPatrimony(list, patrimonyList, remaining.div(2), root, list[spouse[0]])
+      findPatrimony(list, patrimonyList, remaining.div(2), list[spouse[0]])
     }
 
-    if (current.id !== root.id) {
+    if (current.category !== 'root') {
       ascendantsPatrimony = remaining.div(ascendants.length)
       remains = new Fraction(0)
     }
 
     if (numberAscendantsPresent > 0) {
       ascendants.forEach((ascendant) => {
-        findPatrimony(list, patrimonyList, ascendantsPatrimony.div(numberAscendantsPresent), root, list[ascendant])
+        findPatrimony(list, patrimonyList, ascendantsPatrimony.div(numberAscendantsPresent), list[ascendant])
       })
     }
 
