@@ -49,48 +49,49 @@ function findPatrimony(
 
   const spousePresent = spouse.length
   if (children.length > 0) {
-    let forChildren = spousePresent
-      ? remaining.div(2).div(children.length)
-      : remaining.div(3).mul(2).div(children.length)
-    let remains = spousePresent ? remaining.div(4) : remaining.div(3)
+    let available = remaining.div(3)
+    let childCut = remaining.div(3).mul(2).div(children.length)
 
-    if (children.length === 1) {
-      forChildren = spousePresent ? remaining.div(3) : remaining.div(2)
-      remains = spousePresent ? remaining.div(3) : remaining.div(2)
-    }
-
-    if (current.category !== 'root') {
-      forChildren = remaining.div(children.length)
-      remains = new Fraction(0)
-    }
-
-    children.forEach((child) => findPatrimony(list, patrimonyList, forChildren, list[child]))
     if (spousePresent) {
-      const denominator = children.length > 1 ? 4 : 3
-      findPatrimony(list, patrimonyList, remaining.div(denominator), list[spouse[0]])
+      let spouseCut = remaining.div(4)
+      childCut = remaining.div(2).div(children.length)
+      available = remaining.div(4)
+
+      if (children.length === 1) {
+        childCut = remaining.div(3)
+        available = remaining.div(3)
+        spouseCut = remaining.div(3)
+      }
+      findPatrimony(list, patrimonyList, spouseCut, list[spouse[0]])
+    } else if (children.length === 1) {
+      childCut = remaining.div(2)
+      available = remaining.div(2)
     }
 
-    return remains
+    children.forEach((child) => findPatrimony(list, patrimonyList, childCut, list[child]))
+    return available
   }
 
   const numberAscendantsPresent = ascendants.length
   if (spousePresent + numberAscendantsPresent > 0) {
     let ascendantsPatrimony = remaining.div(3)
-    let remains = remaining.div(3).mul(2)
+    let available = remaining.div(3).mul(2)
+
     if (spousePresent) {
-      remains = numberAscendantsPresent > 0 ? remaining.div(4) : remaining.div(2)
+      available = numberAscendantsPresent > 0 ? remaining.div(4) : remaining.div(2)
       ascendantsPatrimony = remaining.div(4)
 
       findPatrimony(list, patrimonyList, remaining.div(2), list[spouse[0]])
     }
 
     if (numberAscendantsPresent > 0) {
+      const cut = ascendantsPatrimony.div(numberAscendantsPresent)
       ascendants.forEach((ascendant) => {
-        findPatrimony(list, patrimonyList, ascendantsPatrimony.div(numberAscendantsPresent), list[ascendant])
+        findPatrimony(list, patrimonyList, cut, list[ascendant])
       })
     }
 
-    return remains
+    return available
   }
 
   return remaining
