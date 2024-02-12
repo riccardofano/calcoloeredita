@@ -3,7 +3,7 @@ import { stripGraph } from './graph'
 import { CategoryName } from './types/Category'
 import { getAllRelatives, getRoot, Person, PersonList } from './types/Person'
 
-export function calculatePatrimony(list: PersonList, total = 100): Record<string, string> {
+export function calculatePatrimony(list: PersonList): Record<string, string> {
   try {
     list = stripGraph({ ...list }, getRoot(list), getRelevantCategories)
   } catch (error) {
@@ -12,72 +12,89 @@ export function calculatePatrimony(list: PersonList, total = 100): Record<string
 
   const patrimonyList: Record<string, string> = {}
   const root = getRoot(list)
-  const availableAmount = findPatrimony(total, root)
-  const available = new Fraction(availableAmount / total).toFraction(true) ?? '0'
-  return { available, ...patrimonyList }
+  const available = findPatrimony(list, patrimonyList, new Fraction(1), root)
 
-  function findPatrimony(remaining: number, current?: Person): number {
-    if (remaining === 0 || !current) return remaining
+  return { available: available.toFraction(true), ...patrimonyList }
+}
 
-    if (current.available) {
-      patrimonyList[current.id] = new Fraction(remaining / 100).toFraction(true)
-    }
-
-    const { children, spouse, ascendants } = getAllRelatives(list, current)
-
-    const spousePresent = spouse.length
-    if (children.length > 0) {
-      let forChildren = spousePresent ? remaining / 2 / children.length : ((remaining / 3) * 2) / children.length
-      let remains = spousePresent ? remaining / 4 : remaining / 3
-
-      if (children.length === 1) {
-        forChildren = spousePresent ? remaining / 3 : remaining / 2
-        remains = spousePresent ? remaining / 3 : remaining / 2
-      }
-
-      // If current is not root, 100% of the remainder should go to the children
-      // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
-      if (current.id !== root.id) {
-        forChildren = remaining / children.length
-        remains = 0
-      }
-
-      children.forEach((child) => findPatrimony(forChildren, list[child]))
-      if (spousePresent) {
-        const denominator = children.length > 1 ? 4 : 3
-        findPatrimony(remaining / denominator, list[spouse[0]])
-      }
-
-      return remains
-    }
-
-    const numberAscendantsPresent = ascendants.length
-    if (spousePresent + numberAscendantsPresent > 0) {
-      let ascendantsPatrimony = remaining / 3
-      let remains = (remaining / 3) * 2
-      if (spousePresent) {
-        remains = numberAscendantsPresent > 0 ? remaining / 4 : remaining / 2
-        ascendantsPatrimony = remaining / 4
-
-        findPatrimony(remaining / 2, list[spouse[0]])
-      }
-
-      if (current.id !== root.id) {
-        ascendantsPatrimony = remaining / ascendants.length
-        remains = 0
-      }
-
-      if (numberAscendantsPresent > 0) {
-        ascendants.forEach((ascendant) => {
-          findPatrimony(ascendantsPatrimony / numberAscendantsPresent, list[ascendant])
-        })
-      }
-
-      return remains
-    }
-
+function findPatrimony(
+  list: Readonly<PersonList>,
+  patrimonyList: Record<string, string>,
+  remaining: Fraction,
+  current?: Person
+): Fraction {
+  if (remaining.equals(0) || !current) {
     return remaining
   }
+
+  if (current.available) {
+    patrimonyList[current.id] = remaining.toFraction(true)
+  }
+
+  const { children, spouse, ascendants } = getAllRelatives(list, current)
+
+  if (current.category !== 'root') {
+    // If current is not root, 100% of the remainder should go to the children or if they are not present to the ascendants
+    // because if someone is not an immediate relative of the deceased nothing should be reserved for the patrimony
+    if (children.length > 0) {
+      const cut = remaining.div(children.length)
+      children.forEach((child) => findPatrimony(list, patrimonyList, cut, list[child]))
+    } else if (ascendants.length > 0) {
+      const cut = remaining.div(ascendants.length)
+      ascendants.forEach((ascendant) => findPatrimony(list, patrimonyList, cut, list[ascendant]))
+    }
+
+    return new Fraction(0)
+  }
+
+  const spousePresent = spouse.length
+  if (children.length > 0) {
+    let available = remaining.div(3)
+    let childCut = remaining.div(3).mul(2).div(children.length)
+
+    if (spousePresent) {
+      let spouseCut = remaining.div(4)
+      childCut = remaining.div(2).div(children.length)
+      available = remaining.div(4)
+
+      if (children.length === 1) {
+        childCut = remaining.div(3)
+        available = remaining.div(3)
+        spouseCut = remaining.div(3)
+      }
+      findPatrimony(list, patrimonyList, spouseCut, list[spouse[0]])
+    } else if (children.length === 1) {
+      childCut = remaining.div(2)
+      available = remaining.div(2)
+    }
+
+    children.forEach((child) => findPatrimony(list, patrimonyList, childCut, list[child]))
+    return available
+  }
+
+  const numberAscendantsPresent = ascendants.length
+  if (spousePresent + numberAscendantsPresent > 0) {
+    let ascendantsPatrimony = remaining.div(3)
+    let available = remaining.div(3).mul(2)
+
+    if (spousePresent) {
+      available = numberAscendantsPresent > 0 ? remaining.div(4) : remaining.div(2)
+      ascendantsPatrimony = remaining.div(4)
+
+      findPatrimony(list, patrimonyList, remaining.div(2), list[spouse[0]])
+    }
+
+    if (numberAscendantsPresent > 0) {
+      const cut = ascendantsPatrimony.div(numberAscendantsPresent)
+      ascendants.forEach((ascendant) => {
+        findPatrimony(list, patrimonyList, cut, list[ascendant])
+      })
+    }
+
+    return available
+  }
+
+  return remaining
 }
 
 function getRelevantCategories(person: Person): CategoryName[] {
