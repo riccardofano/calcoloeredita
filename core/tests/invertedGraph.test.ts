@@ -8,8 +8,8 @@ test('Only one child', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    'only-child': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: [], root: '0' },
-    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['only-child'], root: null },
+    'only-child': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: [], previous: '0' },
+    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['only-child'], previous: null },
   })
 })
 
@@ -22,9 +22,9 @@ test('Child and spouse', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: [], root: '0' },
-    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 1, category: 'spouse', relatives: [], root: '0' },
-    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2'], root: null },
+    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: [], previous: '0' },
+    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 1, category: 'spouse', relatives: [], previous: '0' },
+    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2'], previous: null },
   })
 })
 
@@ -39,11 +39,11 @@ test('nested children', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: ['2'], root: '0' },
-    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'children', relatives: ['3'], root: '1' },
-    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 3, category: 'children', relatives: ['4'], root: '2' },
-    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 4, category: 'children', relatives: [], root: '3' },
-    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1'], root: null },
+    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 1, category: 'children', relatives: ['2'], previous: '0' },
+    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'children', relatives: ['3'], previous: '1' },
+    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 3, category: 'children', relatives: ['4'], previous: '2' },
+    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 4, category: 'children', relatives: [], previous: '3' },
+    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1'], previous: null },
   })
 })
 
@@ -58,11 +58,11 @@ test('siblings', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 2, category: 'bilinear', relatives: [], root: '0' },
-    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'bilinear', relatives: [], root: '0' },
-    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 2, category: 'bilinear', relatives: [], root: '0' },
-    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 2, category: 'bilinear', relatives: [], root: '0' },
-    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2', '3', '4'], root: null },
+    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
+    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
+    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
+    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
+    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2', '3', '4'], previous: null },
   })
 })
 
@@ -75,8 +75,8 @@ test('other relatives', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 3, category: 'others', relatives: [], root: '0' },
-    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 4, category: 'others', relatives: [], root: '0' },
-    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2'], root: null },
+    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 3, category: 'others', relatives: [], previous: '0' },
+    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 4, category: 'others', relatives: [], previous: '0' },
+    '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'children', relatives: ['1', '2'], previous: null },
   })
 })
