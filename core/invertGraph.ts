@@ -17,7 +17,7 @@ export function defaultRoot(): Person {
     available: false,
     degree: 0,
     previous: null,
-    category: 'children',
+    category: 'root',
     relatives: [],
   }
 }

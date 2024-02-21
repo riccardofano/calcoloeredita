@@ -96,6 +96,33 @@ test('Three children and one spouse', () => {
   expect(result['spouse']).toBe('1/3')
 })
 
+test('Three children, one dead but has two others and one spouse', () => {
+  // children get 2/3 of the total so 2/9 each
+  // grandchildren then get 1/9 each
+  // spouse gets 1/3 of the total
+  const list = {
+    ...newPerson({ id: 'spouse', category: 'spouse' }),
+    ...newDeceased(['first-child', 'second-child', 'third-child', 'spouse']),
+    ...newPerson({ id: 'first-child', category: 'children' }),
+    ...newPerson({ id: 'second-child', category: 'children' }),
+    ...newPerson({
+      id: 'third-child',
+      category: 'children',
+      available: false,
+      relatives: ['first-grandchild', 'second-grandchild'],
+    }),
+    ...newPerson({ id: 'first-grandchild', category: 'children' }),
+    ...newPerson({ id: 'second-grandchild', category: 'children' }),
+  }
+  const result = calculateInheritance(list)
+
+  expect(result['first-child']).toBe('2/9')
+  expect(result['second-child']).toBe('2/9')
+  expect(result['first-grandchild']).toBe('1/9')
+  expect(result['second-grandchild']).toBe('1/9')
+  expect(result['spouse']).toBe('1/3')
+})
+
 test('One child and parents, bilateral, or unilateral siblings ', () => {
   // Only the child should get the total
   const list = {
