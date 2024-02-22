@@ -58,10 +58,10 @@ test('siblings', () => {
 
   // prettier-ignore
   expect(graph).toStrictEqual({
-    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
-    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
-    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
-    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 2, category: 'bilinear', relatives: [], previous: '0' },
+    '1': { id: list[0].id, name: list[0].name, available: list[0].available, degree: 2, category: 'bilateral', relatives: [], previous: '0' },
+    '2': { id: list[1].id, name: list[1].name, available: list[1].available, degree: 2, category: 'bilateral', relatives: [], previous: '0' },
+    '3': { id: list[2].id, name: list[2].name, available: list[2].available, degree: 2, category: 'bilateral', relatives: [], previous: '0' },
+    '4': { id: list[3].id, name: list[3].name, available: list[3].available, degree: 2, category: 'bilateral', relatives: [], previous: '0' },
     '0': { id: '0', name: 'Defunto', available: false, degree: 0, category: 'root', relatives: ['1', '2', '3', '4'], previous: null },
   })
 })
