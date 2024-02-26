@@ -6,13 +6,15 @@ import { defaultRoot, invertGraph } from '../../../core/invertGraph'
 import { toCommonDenominator } from '../../../core/commonDenominator'
 
 const People = z.array(
-  z.object({
-    id: z.string(),
-    name: z.string(),
-    available: z.boolean(),
-    relation: z.string(),
-    relatedTo: z.string(),
-  })
+  z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      available: z.boolean(),
+      relation: z.string(),
+      relatedTo: z.string(),
+    })
+    .required()
 )
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
