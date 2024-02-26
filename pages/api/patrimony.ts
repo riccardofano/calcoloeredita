@@ -1,7 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
 
 import { calculatePatrimony } from '../../core/patrimony'
 import { toCommonDenominator } from '../../core/commonDenominator'
+import { categoryNames } from '../../core/types/Category'
+
+const People = z.record(
+  z.string().min(1),
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    available: z.boolean(),
+    degree: z.number().optional(),
+    previous: z.string().nullable(),
+    category: z.enum(categoryNames),
+    relatives: z.array(z.string()),
+  })
+)
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
