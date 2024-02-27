@@ -18,6 +18,10 @@ const People = z.record(
   })
 )
 
+export function validate(body: unknown) {
+  People.parse(body)
+}
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).send({ error: 'Method not allowed' })
@@ -28,7 +32,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    People.parse(req.body)
+    validate(req.body)
   } catch (error) {
     return res.status(400).send({ error: 'Invalid body' })
   }
