@@ -29,6 +29,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     People.parse(req.body)
+  } catch (error) {
+    return res.status(400).send({ error: 'Invalid body' })
+  }
+
+  try {
     const result = calculateInheritance(req.body)
 
     if (req.query['denominatorecomune'] === 'true') {
