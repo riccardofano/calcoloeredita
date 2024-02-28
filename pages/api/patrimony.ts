@@ -11,12 +11,29 @@ const People = z.record(
     id: z.string(),
     name: z.string(),
     available: z.boolean(),
-    degree: z.number().optional(),
+    degree: z.number(),
     previous: z.string().nullable(),
     category: z.enum(categoryNames),
     relatives: z.array(z.string()),
   })
 )
+
+// TODO: This will change when the server calculate the money too
+export function validate(body: unknown) {
+  const res = People.safeParse(body)
+
+  if (!res.success) {
+    throw new Error(`Failed to parse body: ${res.error}`)
+  }
+  if (!res.data['0']) {
+    throw new Error('Body does not contain root node')
+  }
+  if (res.data['0'].category !== 'root') {
+    throw new Error('0 is not root')
+  }
+
+  return res.data
+}
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -27,14 +44,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).send({ error: 'Content type not allowed' })
   }
 
+  let parsed
   try {
-    People.parse(req.body)
+    parsed = People.parse(req.body)
   } catch (error) {
+    console.error(error)
     return res.status(400).send({ error: 'Invalid body' })
   }
 
   try {
-    const result = calculatePatrimony(req.body)
+    const result = calculatePatrimony(parsed)
 
     if (req.query['denominatorecomune'] === 'true') {
       toCommonDenominator(result)
