@@ -11,7 +11,8 @@ const People = z.record(
     id: z.string(),
     name: z.string(),
     available: z.boolean(),
-    degree: z.number().optional(),
+    // TODO: make degree optional since I need to calculated it anyway to be sure
+    degree: z.number(),
     previous: z.string().nullable(),
     category: z.enum(categoryNames),
     relatives: z.array(z.string()),
@@ -43,15 +44,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).send({ error: 'Content type not allowed' })
   }
 
+  let parsed
   try {
-    validate(req.body)
+    parsed = validate(req.body)
   } catch (error) {
+    console.error(error)
     return res.status(400).send({ error: 'Invalid body' })
   }
 
   try {
-    const result = calculateInheritance(req.body)
-
+    const result = calculateInheritance(parsed)
     if (req.query['denominatorecomune'] === 'true') {
       toCommonDenominator(result)
     }

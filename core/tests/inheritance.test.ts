@@ -724,12 +724,12 @@ describe('Inheritance body validation', () => {
     expect(() => validate(body)).toThrow()
   })
 
-  it('Should allow object with missing degree', () => {
+  it('Should reject object with missing degree', () => {
     // prettier-ignore
     const body: unknown = {
       '0': { id: 'string', name: 'Defunto', available: false, previous: null, category: 'root', relatives: ['1'] }
     }
-    expect(() => validate(body)).not.toThrow()
+    expect(() => validate(body)).toThrow()
   })
 
   it('Should reject object with missing previous key', () => {
