@@ -755,4 +755,18 @@ describe('Inheritance body validation', () => {
     }
     expect(() => validate(body)).toThrow()
   })
+
+  it('Should reject object without a 0 key', () => {
+    const body: unknown = {
+      '1': { id: 'string', name: 'Defunto', available: false, degree: 0, previous: null, category: 'root' },
+    }
+    expect(() => validate(body)).toThrow()
+  })
+
+  it('Should reject object whose 0 key is not root', () => {
+    const body: unknown = {
+      '0': { id: 'string', name: 'Defunto', available: false, degree: 0, previous: null, category: 'children' },
+    }
+    expect(() => validate(body)).toThrow()
+  })
 })

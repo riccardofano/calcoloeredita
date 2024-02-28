@@ -19,7 +19,19 @@ const People = z.record(
 )
 
 export function validate(body: unknown) {
-  People.parse(body)
+  const res = People.safeParse(body)
+
+  if (!res.success) {
+    throw new Error(`Failed to parse body: ${res.error}`)
+  }
+  if (!res.data['0']) {
+    throw new Error('Body does not contain root node')
+  }
+  if (res.data['0'].category !== 'root') {
+    throw new Error('0 is not root')
+  }
+
+  return res.data
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
