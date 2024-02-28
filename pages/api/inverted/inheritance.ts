@@ -6,16 +6,27 @@ import { defaultRoot, invertGraph } from '../../../core/invertGraph'
 import { toCommonDenominator } from '../../../core/commonDenominator'
 
 const People = z.array(
-  z
-    .object({
-      id: z.string(),
-      name: z.string(),
-      available: z.boolean(),
-      relation: z.string(),
-      relatedTo: z.string(),
-    })
-    .required()
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    available: z.boolean(),
+    relation: z.string(),
+    relatedTo: z.string(),
+  })
 )
+
+export function validate(body: unknown) {
+  const res = People.safeParse(body)
+
+  if (!res.success) {
+    throw new Error('Failed to parse body')
+  }
+  if (res.data.findIndex((person) => person.id === '0') !== -1) {
+    throw new Error('Root already present in body')
+  }
+
+  return res
+}
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
